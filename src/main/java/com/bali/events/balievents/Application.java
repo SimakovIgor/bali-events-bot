@@ -21,13 +21,18 @@ public class Application {
         return args -> {
             WebDriver webDriver = new ChromeDriver();
             webDriver.get("https://thebeatbali.com/bali-events/");
-            Thread.sleep(25000);
+//          webDriver.findElement(By.id("cookie_action_close_header")).click();
+//          Thread.sleep(25000);
             WebElement element = webDriver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]"));
             var childs = element.findElements(By.xpath("./child::*"));
+            int ii = 1;
             for (WebElement child : childs) {
-                String address = child.findElement(By.xpath("//p/a/span[3]/span[2]")).getAttribute("data-location_address");
-                System.out.println(address);
+                System.out.println("Child: " + ii + "\n" + child.getAttribute("outerHTML") + "\n\n\n");
+                ii ++;
+//              String address = child.findElement(By.xpath("//p/a/span[3]/span[2]")).getAttribute("data-location_address");
+//              System.out.println(address);
             }
+            webDriver.quit(); // закрываем окно браузера
         };
     }
 
