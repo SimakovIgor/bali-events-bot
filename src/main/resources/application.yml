@@ -1,0 +1,34 @@
+server:
+  # start the program -> http://localhost:8080/swagger-ui/index.html
+  port: 8080
+  shutdown: graceful
+
+logging.level:
+  org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: bali-events
+  datasource:
+    url: jdbc:postgresql://localhost:5433/bali-events
+    username: postgres
+    password: postgres
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+logging:
+  level:
+    org.zalando.logbook: TRACE
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
