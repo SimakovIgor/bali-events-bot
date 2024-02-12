@@ -19,4 +19,5 @@ public class EventDto {
     private String eventUrl;
     private String imageUrl;
     private String serviceName;
+    private String coordinates;
 }
