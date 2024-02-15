@@ -45,6 +45,9 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
         int i = 1;
         for (WebElement child : childs) {
+            if (153 < i && i < 155) {
+                i = i;
+            }
             try {
                 String externalId = child.getAttribute("id");
                 String eventName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
