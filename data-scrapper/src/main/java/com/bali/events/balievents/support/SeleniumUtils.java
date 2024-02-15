@@ -10,14 +10,11 @@ import org.openqa.selenium.WebElement;
 public class SeleniumUtils {
     public static String getAttributeByXpath(final WebElement child, final String xpathExpression, final String attribute) {
         try {
-            WebElement metaElement = child.findElement(By.xpath(xpathExpression));
-            if (metaElement != null) {
-                return metaElement.getAttribute(attribute);
-            }
+            return child.findElement(By.xpath(xpathExpression)).getAttribute(attribute);
         } catch (Exception e) {
             log.info("Element not found: {}", e.getMessage());
+            return null;
         }
-        return null;
     }
 
     public static String getAttributeByClass(final WebElement child, final String className, final String attribute) {
@@ -25,7 +22,7 @@ public class SeleniumUtils {
             return child.findElement(By.className(className)).getAttribute(attribute);
         } catch (Exception e) {
             log.info("Element not found: {}", e.getMessage());
+            return null;
         }
-        return null;
     }
 }
