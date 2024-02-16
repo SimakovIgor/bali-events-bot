@@ -1,16 +1,12 @@
 server:
-  # start the program -> http://localhost:8082/swagger-ui/index.html
-  port: 8082
+  # start the program -> http://localhost:8080/swagger-ui/index.html
+  port: 8085
   shutdown: graceful
 
 logging.level:
   org.springframework.orm.jpa.JpaTransactionManager: DEBUG
 
 spring:
-  flyway:
-    baseline-on-migrate: true
-    baseline-version: 0
-    enabled: true
   main:
     banner-mode: off
   application:
@@ -22,18 +18,15 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: 'true'
-  Liquibase:
-    change-log: classpath:/db/changelog/db.changelog-master.xml
 
 logging:
   level:
     org.zalando.logbook: TRACE
   pattern:
     level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
-

@@ -2,8 +2,9 @@
  * Создал Андрей Антонов 2/13/2024 11:57 AM.
  **/
 
-package com.example.telegrambot;
+package com.example.telegrambot.configuration;
 
+import com.example.telegrambot.service.MyTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class TelegramBotConfiguration {
 
     @Bean
-    public TelegramBotsApi telegramBotsApi (MyTelegramBot myTelegramBot) {
+    public TelegramBotsApi telegramBotsApi(MyTelegramBot myTelegramBot) {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(myTelegramBot);
@@ -25,10 +26,5 @@ public class TelegramBotConfiguration {
             log.error(e.getMessage());
             throw new IllegalStateException(e);
         }
-     }
-
-    @Bean
-    public KeyboardUtil keyboardUtil() {
-        return new KeyboardUtil();
     }
 }

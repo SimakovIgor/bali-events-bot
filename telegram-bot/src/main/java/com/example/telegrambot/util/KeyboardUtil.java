@@ -2,8 +2,9 @@
  * Создал Андрей Антонов 2/14/2024 12:57 PM.
  **/
 
-package com.example.telegrambot;
+package com.example.telegrambot.util;
 
+import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
@@ -12,14 +13,15 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
+@UtilityClass
 public class KeyboardUtil {
     public static ReplyKeyboardMarkup getKeyboard(Integer currentMonth, Integer currentYear) {
         if (currentMonth == null || currentMonth == 0) {
             currentMonth = LocalDate.now().getMonthValue(); // Получаем номер текущего месяца
         }
         Month month = Month.of(currentMonth); // название текущего месяца
-        Month monthNext = null; // следующий месяц
-        Month monthPrevious = null; // предыдущий месяц
+        Month monthNext; // следующий месяц
+        Month monthPrevious; // предыдущий месяц
         if (currentMonth == 12) {
             monthNext = Month.of(1);
             monthPrevious = Month.of(currentMonth - 1);
@@ -37,7 +39,7 @@ public class KeyboardUtil {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
-        String buttonText = "";
+        String buttonText;
 
         int char1310 = 10; // сколько дней в одной строке
         if (daysInMonth == 31) {
