@@ -10,8 +10,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @UtilityClass
 public class KeyboardUtil {
@@ -34,7 +36,7 @@ public class KeyboardUtil {
         }
 
         int daysInMonth = month.length(LocalDate.now().isLeapYear()); // Получаем количество дней в месяце
-        String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.getDefault()); // Получаем две буквы названия месяца
+        String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH); // Получаем две буквы названия месяца на английском а если нужно на вашем языке, то вместо Locale.ENGLISH -> java.util.Locale.getDefault()
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboard = new ArrayList<>();

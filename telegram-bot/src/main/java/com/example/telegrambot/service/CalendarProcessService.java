@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,19 +33,20 @@ public class CalendarProcessService {
     public SendMessage process(Update update,
                                AtomicInteger getDay,
                                AtomicInteger getMonth,
-                               AtomicInteger getYear) {
+                               AtomicInteger getYear,
+                               List<InputMediaPhoto> media) {
         String text = update.getMessage().getText();
 
-        SendMessage sendMessage = new SendMessage();                        // создаем класс для отправки сообщения
-        sendMessage.setChatId(update.getMessage().getChatId());             // присваиваем идентификатор получателя сообщения
+        SendMessage sendMessage = new SendMessage();                  // создаем класс для отправки сообщения
+        sendMessage.setChatId(update.getMessage().getChatId());       // присваиваем идентификатор получателя сообщения
 
-        if (DateUtil.getMonthNumber(text) > 0) {                              // Наличие в строке месяца
+        if (DateUtil.getMonthNumber(text) > 0) {                      // Наличие в строке месяца
             if (getDay.get() > 0) {
                 this.day = getDay.get();                              // найденный ДЕНЬ присваиваем глобально
             }
-            getMonthAndSendList(text, sendMessage);                         // Получаем месяц из строки
+            getMonthAndSendList(text, sendMessage, media);        // Получаем месяц из строки
 
-        } else if (getDay.get() > 0) {                                      // наличие в строке числа
+        } else if (getDay.get() > 0) {                                // наличие в строке числа
             this.day = getDay.get();                                  // найденный ДЕНЬ присваиваем глобально
             if (getMonth.get() > 0) {
                 this.month = getMonth.get();                          // найденный МЕСЯЦ присваиваем глобально
@@ -52,12 +54,13 @@ public class CalendarProcessService {
             if (getYear.get() > 0) {
                 this.year = getYear.get();                            // найденный ГОД присваиваем глобально
             }
-            sendMessageToDay(sendMessage);
+            sendMessageToDay(sendMessage, media);
         }
+
         return sendMessage;
     }
 
-    private void getMonthAndSendList(String text, SendMessage sendMessage) {
+    private void getMonthAndSendList(String text, SendMessage sendMessage, List<InputMediaPhoto> media) {
         int monthNumber = DateUtil.getMonthNumber(text);
         if (0 < monthNumber && monthNumber < 13) {
             if (this.month == 12 && monthNumber == 1) {       // переход на следующий год
@@ -68,20 +71,30 @@ public class CalendarProcessService {
             }
             this.month = monthNumber;
 
-            sendMessageToDay(sendMessage);
+            sendMessageToDay(sendMessage, media);
         } else {
             sendMessage.setText(Constants.WE_DO_NOT_HAVE_SUCH_DATA + text);
         }
     }
 
-    private void sendMessageToDay(SendMessage sendMessage) {
+    private void sendMessageToDay(SendMessage sendMessage, List<InputMediaPhoto> media) {
         if (isValidDate(this.day, this.month, this.year)) {
-            String eventListToday = findEventListToday();
+            String eventListToday = findEventListToday(media);                   // запрос к базе данных
 
             sendMessage.setText(String.format("%s %02d.%02d.%d \n\n\n %s",
                 Constants.LIST_OF_EVENTS_ON, this.day, this.month, this.year, eventListToday));
 
-            sendMessage.setReplyMarkup(KeyboardUtil.getKeyboard(this.month, this.year));
+/////////////////////////////////////// конфликтное место
+            sendMessage.setReplyMarkup(
+                KeyboardUtil.getKeyboard(this.month, this.year));           // календарь
+
+/////////////////////////////////////// конфликтное место
+            sendMessage.setReplyMarkup(InlineKeyboardMarkupUtil
+                .createInlineKeyboardMarkup("Show more info"));    // кнопка 'Show more info' для текстового сообщения
+
+/////////////////////////////////////// конфликтное место
+
+
         } else {
             // Если дата недействительна, выполните необходимые действия
             // Например, отправьте пользователю сообщение об ошибке
@@ -105,7 +118,7 @@ public class CalendarProcessService {
         }
     }
 
-    private String findEventListToday() {
+    private String findEventListToday(List<InputMediaPhoto> media) {
         LocalDateTime from = LocalDateTime.of(this.year, this.month, this.day, 0, 0);
         LocalDateTime end = LocalDateTime.of(this.year, this.month, this.day, 23, 59);
 
@@ -114,19 +127,26 @@ public class CalendarProcessService {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
             Event event = eventList.get(i);
-            stringBuilder.append(i + 1).append(". ")
-                .append(event.getEventName())
-                .append("\n\n")
+            stringBuilder.append(i + 1).append(". ")    // создаем нумерованный список событий на указанный день в виде строки
+                .append(GetLink.getLink(event.getEventName(), event.getEventUrl()))
+                //.append("\n")
+                //.append(GetLink.getImageLink(event.getImageUrl()))
+                .append("\n")
                 .append("Location:")
                 .append("\n")
                 .append(event.getLocationAddress())
                 .append("\n")
                 .append("Coordinates:")
                 .append("\n")
-                .append(event.getCoordinates())
+                .append(GetGoogleMapLink.GetGoogleMapLink(event.getCoordinates(), event.getCoordinates()))
                 .append("\n")
                 .append("----------------")
                 .append("\n\n\n");
+
+            // Создаем объект InputMediaPhoto
+            InputMediaPhoto inputMediaPhoto = new InputMediaPhoto();
+            inputMediaPhoto.setMedia(event.getImageUrl());
+            media.add(inputMediaPhoto);
         }
 
         return stringBuilder.toString();

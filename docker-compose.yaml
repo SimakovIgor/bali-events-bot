@@ -1,5 +1,6 @@
 version: '3.5'
 # start DOCKER  C:\Java\account-service> docker-compose up -d
+
 services:
   postgres:
     container_name: postgres_container

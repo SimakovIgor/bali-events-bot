@@ -23,7 +23,7 @@
         </dependency>
     </dependencies>
 
-    <groupId>com.example</groupId>
+     <groupId>com.example</groupId>
     <artifactId>telegram-bot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
