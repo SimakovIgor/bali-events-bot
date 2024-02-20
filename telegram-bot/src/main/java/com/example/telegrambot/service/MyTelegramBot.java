@@ -26,7 +26,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     public MyTelegramBot(final CalendarProcessService calendarProcessService,
                          final ImageProcessService imageProcessService,
-                         CalendarStoreService calendarStoreService) {
+                         final CalendarStoreService calendarStoreService) {
         super("6781420399:AAHi0vGFUPnh-7wBzC7si7hw1XRQmrNmPzA");
 
         this.calendarProcessService = calendarProcessService;

@@ -6,12 +6,10 @@ package com.example.telegrambot.util;
 
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,11 +18,11 @@ import java.util.Locale;
 public class KeyboardUtil {
     public static ReplyKeyboardMarkup getKeyboard(Integer currentMonth, Integer currentYear) {
         if (currentMonth == null || currentMonth == 0) {
-            currentMonth = LocalDate.now().getMonthValue(); // Получаем номер текущего месяца
+            currentMonth = LocalDate.now().getMonthValue();
         }
-        Month month = Month.of(currentMonth); // название текущего месяца
-        Month monthNext; // следующий месяц
-        Month monthPrevious; // предыдущий месяц
+        Month month = Month.of(currentMonth);
+        Month monthNext;
+        Month monthPrevious;
         if (currentMonth == 12) {
             monthNext = Month.of(1);
             monthPrevious = Month.of(currentMonth - 1);
@@ -36,49 +34,49 @@ public class KeyboardUtil {
             monthPrevious = Month.of(currentMonth - 1);
         }
 
-        int daysInMonth = month.length(LocalDate.now().isLeapYear()); // Получаем количество дней в месяце
-        String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH); // Получаем две буквы названия месяца на английском а если нужно на вашем языке, то вместо Locale.ENGLISH -> java.util.Locale.getDefault()
+        int daysInMonth = month.length(LocalDate.now().isLeapYear());
+        String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
         String buttonText;
 
-        int char1310 = 10; // сколько дней в одной строке
+        int char1310 = 10;
         if (daysInMonth == 31) {
             char1310 = char1310 + 1;
         }
-        // Добавляем кнопки для дней в месяце
-        for (int i = 1; i <= daysInMonth; i++) {
-            buttonText = String.format("%02d %s", i, monthName); // Добавляем название месяца к номеру
-            row.add(buttonText); // текст для кнопки
 
-            if (row.size() % char1310 == 0) { // Добавляем не более 11 полей в строке
+        for (int i = 1; i <= daysInMonth; i++) {
+            buttonText = String.format("%02d %s", i, monthName);
+            row.add(buttonText);
+
+            if (row.size() % char1310 == 0) {
                 keyboard.add(row);
-                row = new KeyboardRow(); // ссылка на новую строку
+                row = new KeyboardRow();
             }
         }
 
-        keyboard.add(row); // Добавляем строку для кнопок следующего и предыдущего месяца
-        row = new KeyboardRow(); // ссылка на новую строку
+        keyboard.add(row);
+        row = new KeyboardRow();
 
         if (currentMonth == 12) {
-            buttonText = String.format("%s (%02d.%04d)", monthPrevious, currentMonth - 1, currentYear); // Добавляем название предыдущего
+            buttonText = String.format("%s (%02d.%04d)", monthPrevious, currentMonth - 1, currentYear);
             row.add(buttonText);
 
-            buttonText = String.format("%s (%02d.%04d)", monthNext, 1, currentYear + 1); // Добавляем название следующего месяца
+            buttonText = String.format("%s (%02d.%04d)", monthNext, 1, currentYear + 1);
             row.add(buttonText);
         } else if (currentMonth == 1) {
-            buttonText = String.format("%s (%02d.%04d)", monthPrevious, 12, currentYear - 1); // Добавляем название предыдущего
+            buttonText = String.format("%s (%02d.%04d)", monthPrevious, 12, currentYear - 1);
             row.add(buttonText);
 
-            buttonText = String.format("%s (%02d.%04d)", monthNext, currentMonth + 1, currentYear); // Добавляем название следующего месяца
+            buttonText = String.format("%s (%02d.%04d)", monthNext, currentMonth + 1, currentYear);
             row.add(buttonText);
         } else {
-            buttonText = String.format("%s (%02d.%04d)", monthPrevious, currentMonth - 1, currentYear); // Добавляем название предыдущего
+            buttonText = String.format("%s (%02d.%04d)", monthPrevious, currentMonth - 1, currentYear);
             row.add(buttonText);
 
-            buttonText = String.format("%s (%02d.%04d)", monthNext, currentMonth + 1, currentYear); // Добавляем название следующего месяца
+            buttonText = String.format("%s (%02d.%04d)", monthNext, currentMonth + 1, currentYear);
             row.add(buttonText);
         }
 
