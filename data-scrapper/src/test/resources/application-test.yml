@@ -1,0 +1,8 @@
+logging:
+  level:
+    org.springframework.test.context.cache: debug
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
