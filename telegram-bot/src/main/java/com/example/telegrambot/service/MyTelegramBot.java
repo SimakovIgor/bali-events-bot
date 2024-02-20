@@ -42,55 +42,33 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            log.info(update.getMessage().getFrom().getFirstName());
-            log.info(update.getMessage().getText());
-
-            String text = update.getMessage().getText();
-
-            LocalDate localDate = calendarStoreService.putOrUpdate(update);
+            final String text = update.getMessage().getText();
 
             if (text.contains("/start")) {
+                calendarStoreService.put(update);
                 execute(getStartMessage(update, calendarStoreService.get(update)));
             } else if (DateUtil.isCorrectDateFormat(text)) {
+                final LocalDate localDate = calendarStoreService.putOrUpdate(update);
                 execute(calendarProcessService.process(update, localDate));
-                execute(imageProcessService.process(update, localDate));
+                executeSendMediaGroup(update, localDate);
             } else {
                 execute(getMisUnderstandingMessage(update));
             }
-
         } catch (TelegramApiException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
-    //todo: remove?
-//    private boolean showMoreButton(Update update) {
-//        if (update.hasCallbackQuery()) { // Обработка нажатия кнопки "Show more"
-//            CallbackQuery callbackQuery = update.getCallbackQuery();
-//            Long chatId = callbackQuery.getMessage().getChatId();
-//            String callbackData = callbackQuery.getData();
-//            callbackQuery.getInlineMessageId();
-//
-//            if (callbackData.equals("show_more")) {
-//                // Загрузка дополнительной информации с сервера
-//                String additionalInfo = loadAdditionalInfo();
-//
-//                // Обновление сообщения с дополнительной информацией
-//                SendMessage additionalMessage = new SendMessage();
-//                additionalMessage.setChatId(chatId);
-////                additionalMessage.setReplyToMessageId(startMessageId.get());
-//
-//                additionalMessage.setText(callbackData + "\n\nДополнительная информация: " + additionalInfo);
-//                try {
-//                    execute(additionalMessage);
-//                } catch (TelegramApiException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
+    private void executeSendMediaGroup(final Update update, final LocalDate localDate) {
+        imageProcessService.process(update, localDate)
+            .forEach(sendMediaGroup -> {
+                try {
+                    execute(sendMediaGroup);
+                } catch (TelegramApiException e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
+            });
+    }
 
     private SendMessage getStartMessage(Update update, LocalDate localDate) {
         return SendMessage.builder()

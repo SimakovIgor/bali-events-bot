@@ -13,7 +13,7 @@ public class CalendarStoreService {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
 
-    public LocalDate putOrUpdate(Update update) {
+    public LocalDate putOrUpdate(final Update update) {
         Long chatId = update.getMessage().getChatId();
         LocalDate dateToStore = calendarStore.containsKey(chatId)
                                 ? LocalDate.parse(update.getMessage().getText(), DATE_TIME_FORMATTER)
@@ -24,7 +24,13 @@ public class CalendarStoreService {
         return calendarStore.get(chatId);
     }
 
-    public LocalDate get(Update update) {
+    public LocalDate put(final Update update) {
+        final Long chatId = update.getMessage().getChatId();
+        calendarStore.put(chatId, LocalDate.now());
+        return calendarStore.get(chatId);
+    }
+
+    public LocalDate get(final Update update) {
         return calendarStore.get(update.getMessage().getChatId());
     }
 

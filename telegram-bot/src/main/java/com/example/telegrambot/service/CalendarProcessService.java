@@ -3,6 +3,7 @@ package com.example.telegrambot.service;
 import com.example.telegrambot.contant.Constants;
 import com.example.telegrambot.model.entity.Event;
 import com.example.telegrambot.repository.EventRepository;
+import com.example.telegrambot.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -28,8 +29,7 @@ public class CalendarProcessService {
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(String.format("%s %02d.%02d.%d %n%n%n %s", Constants.LIST_OF_EVENTS_ON,
-                day, month, year, eventListToday))
+            .text(String.format("%s %02d.%02d.%d %n%n%n %s", Constants.LIST_OF_EVENTS_ON, day, month, year, eventListToday))
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
             .build();
@@ -45,7 +45,7 @@ public class CalendarProcessService {
         for (int i = 0; i < eventList.size(); i++) {
             Event event = eventList.get(i);
             stringBuilder.append(i + 1).append(". ")
-                .append(GetLink.getLink(event.getEventName(), event.getEventUrl()))
+                .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
                 .append("\n");
         }
 
