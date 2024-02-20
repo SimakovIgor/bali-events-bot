@@ -9,6 +9,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
+    <groupId>com.example</groupId>
+    <artifactId>telegram-bot</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
     <properties>
         <telegrambots.version>6.9.7.0</telegrambots.version>
     </properties>
@@ -22,9 +26,5 @@
             <version>${telegrambots.version}</version>
         </dependency>
     </dependencies>
-
-     <groupId>com.example</groupId>
-    <artifactId>telegram-bot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
 
 </project>
