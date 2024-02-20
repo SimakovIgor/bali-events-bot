@@ -1,7 +1,3 @@
-/**
- * Создал Андрей Антонов 2/17/2024 11:05 AM.
- **/
-
 package com.example.telegrambot.util;
 
 import lombok.experimental.UtilityClass;

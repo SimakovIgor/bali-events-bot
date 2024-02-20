@@ -1,7 +1,3 @@
-/**
- * Создал Андрей Антонов 2/13/2024 10:16 AM.
- **/
-
 package com.example.telegrambot.service;
 
 import com.example.telegrambot.contant.Constants;

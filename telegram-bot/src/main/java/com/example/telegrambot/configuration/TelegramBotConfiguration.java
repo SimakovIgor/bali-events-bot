@@ -1,7 +1,3 @@
-/**
- * Создал Андрей Антонов 2/13/2024 11:57 AM.
- **/
-
 package com.example.telegrambot.configuration;
 
 import com.example.telegrambot.service.MyTelegramBot;
