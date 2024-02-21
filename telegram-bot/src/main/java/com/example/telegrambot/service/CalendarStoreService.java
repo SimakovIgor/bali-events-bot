@@ -14,20 +14,31 @@ public class CalendarStoreService {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
 
-    public LocalDate update(final Update update) {
+    public LocalDate updateWithSelectedDate(final Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final String messageText = update.getMessage().getText();
-        final LocalDate currentLocalDate = calendarStore.get(chatId);
+        final String text = update.getMessage().getText();
+        final LocalDate storedLocalDate = calendarStore.get(chatId);
 
-        final String text = DateUtil.isContainsTextMonth(messageText)
-                            ? DateUtil.convertToLocalDateString(messageText, currentLocalDate)
-                            : messageText;
+        final String localDateText = DateUtil.isContainsTextMonth(text)
+                                     ? DateUtil.convertToLocalDateSelected(text, storedLocalDate)
+                                     : text;
 
-        final LocalDate dateToStore = LocalDate.parse(text, DATE_TIME_FORMATTER);
+        final LocalDate dateToStore = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
 
         calendarStore.put(chatId, dateToStore);
 
         return dateToStore;
+    }
+
+    public void updateWithCalendarMonthChanged(final Update update) {
+        final Long chatId = update.getMessage().getChatId();
+        final String text = update.getMessage().getText();
+        final LocalDate storedLocalDate = calendarStore.get(chatId);
+
+        final String localDateText = DateUtil.convertToDateTimeCalendarMonthChanged(text, storedLocalDate);
+        final LocalDate localDate = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
+
+        calendarStore.put(chatId, localDate);
     }
 
     public void put(final Update update) {

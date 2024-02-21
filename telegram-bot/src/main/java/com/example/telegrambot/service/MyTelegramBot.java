@@ -43,8 +43,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             if (text.contains("/start")) {
                 calendarStoreService.put(update);
                 execute(getStartMessage(update, calendarStoreService.get(update)));
-            } else if (DateUtil.isSupportedDateFormat(text)) {
-                final LocalDate localDate = calendarStoreService.update(update);
+            } else if (DateUtil.isCalendarMonthChanged(text)) {
+                calendarStoreService.updateWithCalendarMonthChanged(update);
+                execute(getCalendarMonthChangedMessage(update));
+            } else if (DateUtil.isDateSelected(text)) {
+                final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
                 execute(calendarProcessService.process(update, localDate));
                 executeSendMediaGroup(update, localDate);
             } else {
@@ -78,6 +81,13 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(Constants.THIS_WORD_IS_NOT_RESERVED + update.getMessage().getText() + Constants.LIST_OF_RESERVED_WORDS_HELP)
+            .build();
+    }
+
+    private SendMessage getCalendarMonthChangedMessage(final Update update) {
+        return SendMessage.builder()
+            .chatId(update.getMessage().getChatId())
+            .text(Constants.CHOOSE_DATE_OR_INSERT)
             .build();
     }
 

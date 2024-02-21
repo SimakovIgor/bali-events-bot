@@ -43,56 +43,60 @@ public class DateUtil {
         }
     }
 
+    public static boolean isCalendarMonthChanged(final String messageText) {
+        return DateUtil.getFullMonthNumber(messageText) > 0;
+    }
+
     public static int getFullMonthNumber(final String text) {
-        if (text.toUpperCase(Locale.ENGLISH).contains("JANUARY (01.20")) {
+        if (text.toUpperCase(Locale.ENGLISH).contains("JANUARY")) {
             return 1;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("FEBRUARY (02.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("FEBRUARY")) {
             return 2;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("MARCH (03.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("MARCH")) {
             return 3;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("APRIL (04.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("APRIL")) {
             return 4;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("MAY (05.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("MAY")) {
             return 5;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("JUNE (06.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("JUNE")) {
             return 6;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("JULY (07.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("JULY")) {
             return 7;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("AUGUST (08.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("AUGUST")) {
             return 8;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("SEPTEMBER (09.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("SEPTEMBER")) {
             return 9;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("OCTOBER (10.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("OCTOBER")) {
             return 10;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("NOVEMBER (11.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("NOVEMBER")) {
             return 11;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("DECEMBER (12.20")) {
+        } else if (text.toUpperCase(Locale.ENGLISH).contains("DECEMBER")) {
             return 12;
         } else {
             return 0;
         }
     }
 
-    public static boolean isSupportedDateFormat(final String text) {
+    public static boolean isDateSelected(final String text) {
         final String datePattern = "\\d{2}\\.\\d{2}\\.\\d{4}";
         return Pattern.matches(datePattern, text)
             || DateUtil.isContainsTextMonth(text);
     }
 
-    public static String convertToLocalDateString(final String text, final LocalDate currentLocalDate) {
-        int day = currentLocalDate.getDayOfMonth();
-        int month = currentLocalDate.getMonthValue();
-        int year = currentLocalDate.getYear();
+    public static String convertToLocalDateSelected(final String text, final LocalDate currentLocalDate) {
+        final int year = currentLocalDate.getYear();
+        final int month = DateUtil.getMonthNumber(text);
+        final int day = getDayFromText(text);
 
-        final int monthNumber = DateUtil.getFullMonthNumber(text);
-        if (monthNumber > 0) {
-            year = adjustYearForMonthTransition(month, monthNumber, year);
-            month = monthNumber;
-        } else {
-            day = getDayFromText(text);
-            month = DateUtil.getMonthNumber(text);
-        }
         return String.format("%02d.%02d.%d", day, month, year);
+    }
+
+    public static String convertToDateTimeCalendarMonthChanged(final String text, final LocalDate currentLocalDate) {
+        final int day = currentLocalDate.getDayOfMonth();
+        final int monthNumber = DateUtil.getMonthNumber(text);
+        final int year = adjustYearForMonthTransition(currentLocalDate.getMonthValue(), monthNumber, currentLocalDate.getYear());
+
+        return String.format("%02d.%02d.%d", day, monthNumber, year);
     }
 
     private static int adjustYearForMonthTransition(final int currentMonth, final int newMonth, final int currentYear) {
