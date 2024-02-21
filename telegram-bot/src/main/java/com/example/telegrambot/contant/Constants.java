@@ -13,7 +13,7 @@ public class Constants {
     public final String GOOGLE_MAPS = "https://www.google.com/maps";
     public final String GOOGLE_MAPS_WITH_COORDINATES = "https://www.google.com/maps/place/%s+%s/@%s,%s,17z/data=!4m4!3m3!8m2!3d%s!4d%s?authuser=0&entry=ttu";
     public final String THERE_ARE_NO_RECORDS_IN_THE_DATABASE_FOR_THIS_DATE = "В базе нет записей на эту дату.";
-    public final String HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI = "Привет! Я бот, который поможет тебе найти события на Бали. Напиши дату в формате: 'dd.mm.yyyy'";
+    public final String HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI = "Привет! Я бот, который поможет найти события на Бали.\n Напиши дату в формате: 'dd.mm.yyyy'\nНапример: ";
 
 
 

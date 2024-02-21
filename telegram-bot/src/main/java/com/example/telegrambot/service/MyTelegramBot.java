@@ -15,6 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -47,11 +49,13 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
             String text = update.getMessage().getText();
 
-            LocalDate localDate = calendarStoreService.putOrUpdate(update);
+            // создаем глобальный список пользователей в -> private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
+            LocalDate localDate = calendarStoreService.putOrUpdate(update); // Преобразуем строку "15 Jan" или JANUARY (01.2024) в "15.01.2024" и сохраняем
+            String newtext =  String.format("%02d.%02d.%d", localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear()); // перезаписываем воходящую строку
 
             if (text.contains("/start")) {
                 execute(getStartMessage(update, calendarStoreService.get(update)));
-            } else if (DateUtil.isCorrectDateFormat(text)) {
+            } else if (DateUtil.isCorrectDateFormat(newtext)) {
                 execute(calendarProcessService.process(update, localDate));
                 execute(imageProcessService.process(update, localDate));
             } else {
@@ -95,7 +99,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private SendMessage getStartMessage(Update update, LocalDate localDate) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(Constants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI)
+            .text(Constants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI  )
             .replyMarkup(KeyboardUtil.getKeyboard(localDate.getMonthValue(), localDate.getYear()))
             .build();
     }
