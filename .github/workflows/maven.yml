@@ -24,7 +24,8 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-
+          distribution: 'corretto'
+          cache: maven
       - name: Analyze with SonarCloud
         run: mvn -B verify sonar:sonar
         env:
