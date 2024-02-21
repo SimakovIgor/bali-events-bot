@@ -33,6 +33,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
+    needs: sonar
     name: Build and Package
     runs-on: ubuntu-latest
     steps:
