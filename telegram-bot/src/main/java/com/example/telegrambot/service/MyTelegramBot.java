@@ -43,8 +43,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             if (text.contains("/start")) {
                 calendarStoreService.put(update);
                 execute(getStartMessage(update, calendarStoreService.get(update)));
-            } else if (DateUtil.isCorrectDateFormat(text)) {
-                final LocalDate localDate = calendarStoreService.putOrUpdate(update);
+            } else if (DateUtil.isSupportedDateFormat(text)) {
+                final LocalDate localDate = calendarStoreService.update(update);
                 execute(calendarProcessService.process(update, localDate));
                 executeSendMediaGroup(update, localDate);
             } else {

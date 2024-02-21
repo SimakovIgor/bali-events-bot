@@ -11,60 +11,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class CalendarStoreService {
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy"); // Формат даты
-    private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100); // глобальный список пользователей и их последня дата запроса
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
 
-    public LocalDate putOrUpdate(final Update update) {
-        final Long chatId = update.getMessage().getChatId();              // идентификатор чата
-        String text = update.getMessage().getText();                // сообщение из чата
+    public LocalDate update(final Update update) {
+        final Long chatId = update.getMessage().getChatId();
+        final String messageText = update.getMessage().getText();
+        final LocalDate currentLocalDate = calendarStore.get(chatId);
 
-        if (DateUtil.getMonthNumber(text) > 0) {                    // Проверяем наличие месяца в строке JAN, FEB, MAR, APR, MAY .... "JANUARY (01.2024)"
-            text = getLocalDate(chatId, text);                      // Преобразуем строку "15 Jan" или "JANUARY (01.2024)" в "15.01.2024"
-        }
+        final String text = DateUtil.isContainsTextMonth(messageText)
+                            ? DateUtil.convertToLocalDateString(messageText, currentLocalDate)
+                            : messageText;
 
-        final LocalDate dateToStore = calendarStore.containsKey(chatId)
-                                      ? LocalDate.parse(text, DATE_TIME_FORMATTER)
-                                      : LocalDate.now();
+        final LocalDate dateToStore = LocalDate.parse(text, DATE_TIME_FORMATTER);
 
         calendarStore.put(chatId, dateToStore);
 
-        return calendarStore.get(chatId);
-    }
-
-    /**
-     * Преобразует строку "15 Jan" или "JANUARY (01.2024)" в "15.01.2024"
-     * @param chatId
-     * @param text
-     * @return String "15.01.2024"
-     */
-    private String getLocalDate(final Long chatId, final String text) {
-        final LocalDate dateToStore = calendarStore.containsKey(chatId)   // Получаем дату из данных по пользователю или текущую дату
-                                ? LocalDate.parse(calendarStore.get(chatId).format(DATE_TIME_FORMATTER), DATE_TIME_FORMATTER)
-                                : LocalDate.now();                  // текущая дата
-
-        // Получаем дату, месяц и год из текущих значений
-        int day = dateToStore.getDayOfMonth();                      // Дата
-        int month = dateToStore.getMonthValue();                    // Месяц
-        int year = dateToStore.getYear();                           // Год
-
-        final int monthNumber = DateUtil.getFullMonthNumber(text);        // если есть переход месяца
-        if (monthNumber > 0) {                                      //  нажали кнопку перехода на другой месяц
-            if (0 < monthNumber && monthNumber < 13) {
-                if (month == 12 && monthNumber == 1) {              // переход на следующий год
-                    year++;
-                } else if (month == 1 && monthNumber == 12) {       // переход на предыдущий год
-                    year--;
-                }
-                month = monthNumber;                                // перехода на другой месяц
-            }
-        } else {                                                    // иначе нажали день в календаре, и нужно получить число
-            final int firstTwoDigits = Integer.parseInt(text.substring(0, 2));
-            if (firstTwoDigits > 0 && firstTwoDigits < 32) {
-                day = firstTwoDigits;                               // устанавливаем день
-                month = DateUtil.getMonthNumber(text);              // устанавливаем месяц
-            }
-        }
-        return isValidDate(day, month, year);                       // проверка на правильность даты
+        return dateToStore;
     }
 
     public void put(final Update update) {
@@ -76,19 +39,4 @@ public class CalendarStoreService {
         return calendarStore.get(update.getMessage().getChatId());
     }
 
-    private String isValidDate(final int day, final int month, final int year) {
-        try {
-            LocalDate.of(year, month, day);
-            return String.format("%02d.%02d.%d", day, month, year);
-        } catch (java.time.DateTimeException e) {
-            int day2 = day;
-            day2--;
-            if (day > 0) {
-                return String.format("%02d.%02d.%d", day2, month, year);
-            } else {
-                final LocalDate currentDate = LocalDate.now();
-                return String.format("%02d.%02d.%d", currentDate.getDayOfMonth(), currentDate.getMonthValue(), currentDate.getYear());
-            }
-        }
-    }
 }
