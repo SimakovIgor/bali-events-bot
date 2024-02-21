@@ -33,12 +33,12 @@ public class CalendarStoreService {
 
     /**
      * Преобразует строку "15 Jan" или "JANUARY (01.2024)" в "15.01.2024"
-     * @param chatId.
-     * @param text.
+     * @param chatId
+     * @param text
      * @return String "15.01.2024"
      */
-    private String getLocalDate(Long chatId, String text) {
-        LocalDate dateToStore = calendarStore.containsKey(chatId)   // Получаем дату из данных по пользователю или текущую дату
+    private String getLocalDate(final Long chatId, final String text) {
+        final LocalDate dateToStore = calendarStore.containsKey(chatId)   // Получаем дату из данных по пользователю или текущую дату
                                 ? LocalDate.parse(calendarStore.get(chatId).format(DATE_TIME_FORMATTER), DATE_TIME_FORMATTER)
                                 : LocalDate.now();                  // текущая дата
 
@@ -47,7 +47,7 @@ public class CalendarStoreService {
         int month = dateToStore.getMonthValue();                    // Месяц
         int year = dateToStore.getYear();                           // Год
 
-        int monthNumber = DateUtil.getFullMonthNumber(text);        // если есть переход месяца
+        final int monthNumber = DateUtil.getFullMonthNumber(text);        // если есть переход месяца
         if (monthNumber > 0) {                                      //  нажали кнопку перехода на другой месяц
             if (0 < monthNumber && monthNumber < 13) {
                 if (month == 12 && monthNumber == 1) {              // переход на следующий год
@@ -58,7 +58,7 @@ public class CalendarStoreService {
                 month = monthNumber;                                // перехода на другой месяц
             }
         } else {                                                    // иначе нажали день в календаре, и нужно получить число
-            int firstTwoDigits = Integer.parseInt(text.substring(0, 2));
+            final int firstTwoDigits = Integer.parseInt(text.substring(0, 2));
             if (firstTwoDigits > 0 && firstTwoDigits < 32) {
                 day = firstTwoDigits;                               // устанавливаем день
                 month = DateUtil.getMonthNumber(text);              // устанавливаем месяц
@@ -76,16 +76,17 @@ public class CalendarStoreService {
         return calendarStore.get(update.getMessage().getChatId());
     }
 
-    private String isValidDate(int day, int month, int year) {
+    private String isValidDate(final int day, final int month, final int year) {
         try {
             LocalDate.of(year, month, day);
             return String.format("%02d.%02d.%d", day, month, year);
         } catch (java.time.DateTimeException e) {
-            day--;
+            int day2 = day;
+            day2--;
             if (day > 0) {
-                return String.format("%02d.%02d.%d", day, month, year);
+                return String.format("%02d.%02d.%d", day2, month, year);
             } else {
-                LocalDate currentDate = LocalDate.now();
+                final LocalDate currentDate = LocalDate.now();
                 return String.format("%02d.%02d.%d", currentDate.getDayOfMonth(), currentDate.getMonthValue(), currentDate.getYear());
             }
         }
