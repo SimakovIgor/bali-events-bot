@@ -15,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 @Mapper(config = MapperConfiguration.class)
 public interface EventMapper {
 
+    DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-M-d'T'HH:mm");
+
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "externalId", source = "externalId")
     @Mapping(target = "eventName", source = "eventName")
@@ -28,23 +30,18 @@ public interface EventMapper {
     @Mapping(target = "coordinates", source = "coordinates")
     Event toEventEntity(EventDto eventDto);
 
+    //Входящей строки "2024-1-1T22:00+08:00"
     @Named("toLocalDateTime")
-    default LocalDateTime toLocalDateTime(String fromDateTime) {
+    default LocalDateTime toLocalDateTime(final String fromDateTime) {
+        final LocalDateTime localDateTime = LocalDateTime.parse(fromDateTime.substring(0, fromDateTime.indexOf("+")), FORMATTER);
 
-        // Разбираем строку в объект OffsetDateTime; String fromDateTime = "2024-1-1T22:00+08:00";
-        // Разбираем дату и время с явным указанием формата
-        LocalDateTime localDateTime = LocalDateTime.parse(fromDateTime.substring(0, fromDateTime.indexOf("+")), DateTimeFormatter.ofPattern("yyyy-M-d'T'HH:mm"));
+        final String offsetString = fromDateTime.substring(fromDateTime.indexOf("+") + 1);
+        final int hours = Integer.parseInt(offsetString.split(":")[0]);
+        final int minutes = Integer.parseInt(offsetString.split(":")[1]);
+        final ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(hours, minutes);
 
-        // Разбираем смещение временной зоны
-        String offsetString = fromDateTime.substring(fromDateTime.indexOf("+") + 1); // Извлекаем только строку смещения
-        int hours = Integer.parseInt(offsetString.split(":")[0]); // Получаем часы из строки
-        int minutes = Integer.parseInt(offsetString.split(":")[1]); // Получаем минуты из строки
-        ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(hours, minutes); // Создаем ZoneOffset
+        final OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, zoneOffset);
 
-        // Создаем OffsetDateTime с помощью LocalDateTime и ZoneOffset
-        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, zoneOffset);
-
-        // Получаем LocalDateTime из OffsetDateTime
         return offsetDateTime.toLocalDateTime();
     }
 }

@@ -5,6 +5,7 @@ import com.bali.events.balievents.model.Scrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -31,7 +32,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
     @Override
     public void process() {
-        WebDriver webDriver = new ChromeDriver();
+        final WebDriver webDriver = new ChromeDriver();
         webDriver.get(rootName());
 
         try {
@@ -40,23 +41,23 @@ public class TheBeatBaliScrapperService implements ScrapperService {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        List<WebElement> childs = webDriver.findElement(BY_EVENT_WRAPPER)
+        final List<WebElement> childs = webDriver.findElement(BY_EVENT_WRAPPER)
             .findElements(By.xpath(BY_CHILDS));
 
         int i = 1;
         for (WebElement child : childs) {
             try {
-                String externalId = child.getAttribute("id");
-                String eventName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
-                String locationName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
-                String locationAddress = getAttributeByClass(child, "event_location_attrs", "data-location_address");
-                String startDate = getAttributeByXpath(child, "div/meta[2]", "content");
-                String endDate = getAttributeByXpath(child, "div/meta[3]", "content");
-                String eventUrl = getAttributeByXpath(child, "div/a", "href");
-                String imageUrl = getAttributeByClass(child, "ev_ftImg", "data-img");
-                String coordinates = getAttributeByClass(child, "evcal_location", "data-latlng");
+                final String externalId = child.getAttribute("id");
+                final String eventName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
+                final String locationName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
+                final String locationAddress = getAttributeByClass(child, "event_location_attrs", "data-location_address");
+                final String startDate = getAttributeByXpath(child, "div/meta[2]", "content");
+                final String endDate = getAttributeByXpath(child, "div/meta[3]", "content");
+                final String eventUrl = getAttributeByXpath(child, "div/a", "href");
+                final String imageUrl = getAttributeByClass(child, "ev_ftImg", "data-img");
+                final String coordinates = getAttributeByClass(child, "evcal_location", "data-latlng");
 
-                EventDto eventDto = EventDto.builder()
+                final EventDto eventDto = EventDto.builder()
                     .externalId(externalId)
                     .eventName(eventName)
                     .locationName(locationName)
@@ -70,7 +71,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
                     .build();
 
                 updateEventService.saveOrUpdate(eventDto);
-            } catch (Exception e) {
+            } catch (NoSuchElementException e) {
                 log.error("Error processing element: {}", e.getMessage());
             }
             log.info("processed {} / {}", i++, childs.size());

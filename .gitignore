@@ -137,7 +137,6 @@ allure-results
 
 application.yml
 !src/main/resources/application.yml
-/config/
 /key/
 /sec/
 /k8s-ansible/

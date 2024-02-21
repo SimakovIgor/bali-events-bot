@@ -20,7 +20,7 @@ public class SchedulerService {
         theBeatBaliScrapperService.process();
 
         // Генерируем случайную задержку от 1 до 2 минут
-        long randomDelay = getRandomDelay();
+        final long randomDelay = getRandomDelay();
         try {
             Thread.sleep(randomDelay);
         } catch (InterruptedException e) {

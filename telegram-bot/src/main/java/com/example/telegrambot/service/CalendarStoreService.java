@@ -14,20 +14,19 @@ public class CalendarStoreService {
     private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
 
     public LocalDate putOrUpdate(final Update update) {
-        Long chatId = update.getMessage().getChatId();
-        LocalDate dateToStore = calendarStore.containsKey(chatId)
-                                ? LocalDate.parse(update.getMessage().getText(), DATE_TIME_FORMATTER)
-                                : LocalDate.now();
+        final Long chatId = update.getMessage().getChatId();
+        final LocalDate dateToStore = calendarStore.containsKey(chatId)
+                                      ? LocalDate.parse(update.getMessage().getText(), DATE_TIME_FORMATTER)
+                                      : LocalDate.now();
 
         calendarStore.put(chatId, dateToStore);
 
         return calendarStore.get(chatId);
     }
 
-    public LocalDate put(final Update update) {
+    public void put(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         calendarStore.put(chatId, LocalDate.now());
-        return calendarStore.get(chatId);
     }
 
     public LocalDate get(final Update update) {

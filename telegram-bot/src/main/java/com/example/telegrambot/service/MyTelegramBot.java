@@ -36,7 +36,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     @Override
-    public void onUpdateReceived(Update update) {
+    public void onUpdateReceived(final Update update) {
         try {
             final String text = update.getMessage().getText();
 
@@ -66,7 +66,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             });
     }
 
-    private SendMessage getStartMessage(Update update, LocalDate localDate) {
+    private SendMessage getStartMessage(final Update update, final LocalDate localDate) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(Constants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI)
@@ -74,7 +74,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
-    private SendMessage getMisUnderstandingMessage(Update update) {
+    private SendMessage getMisUnderstandingMessage(final Update update) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(Constants.THIS_WORD_IS_NOT_RESERVED + update.getMessage().getText() + Constants.LIST_OF_RESERVED_WORDS_HELP)

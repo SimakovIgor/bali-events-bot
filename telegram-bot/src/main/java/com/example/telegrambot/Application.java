@@ -11,8 +11,7 @@ public class Application {
     //todo: возвращать карту к каждому событию
     //todo: Кнопка и календарь вместе работать не могут
 
-    //Иначе выдавать ошибку
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(Application.class, args);
     }
 

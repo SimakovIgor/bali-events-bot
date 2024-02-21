@@ -9,9 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(initializers = {
-    PostgreSqlInitializer.class
-})
+@ContextConfiguration(initializers = PostgreSqlInitializer.class)
 @ActiveProfiles("test")
 class ApplicationTests {
 

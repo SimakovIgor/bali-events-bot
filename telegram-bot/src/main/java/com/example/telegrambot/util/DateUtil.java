@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
 public class DateUtil {
 
     /**
-     * Проверка на корректность введенной даты dd.mm.YYYY
+     * Проверка на корректность введенной даты dd.mm.YYYY.
      *
      * @param text - текст
      * @return boolean
      */
-    public static boolean isCorrectDateFormat(String text) {
-        String datePattern = "\\d{2}\\.\\d{2}\\.\\d{4}";
+    public static boolean isCorrectDateFormat(final String text) {
+        final String datePattern = "\\d{2}\\.\\d{2}\\.\\d{4}";
         return Pattern.matches(datePattern, text);
     }
 }

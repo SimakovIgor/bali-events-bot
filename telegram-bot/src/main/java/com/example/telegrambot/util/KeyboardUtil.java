@@ -12,25 +12,24 @@ import java.util.Locale;
 
 @UtilityClass
 public class KeyboardUtil {
-    public static ReplyKeyboardMarkup getKeyboard(int currentMonth, int currentYear) {
-        if (currentMonth == 0) {
-            currentMonth = LocalDate.now().getMonthValue();
-        }
+    public static ReplyKeyboardMarkup getKeyboard(final int currentMonth, final int currentYear) {
+        final int currentMonthNoZero = currentMonth == 0
+                                       ? LocalDate.now().getMonthValue()
+                                       : currentMonth;
 
-        Month month = Month.of(currentMonth);
-        Month monthNext = Month.of(currentMonth % 12 + 1);
-        Month monthPrevious = Month.of((currentMonth + 10) % 12 + 1);
+        final Month month = Month.of(currentMonthNoZero);
+        final Month monthNext = Month.of(currentMonthNoZero % 12 + 1);
+        final Month monthPrevious = Month.of((currentMonthNoZero + 10) % 12 + 1);
 
-        int daysInMonth = month.length(LocalDate.now().isLeapYear());
-        String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
+        final int daysInMonth = month.length(LocalDate.now().isLeapYear());
+        final String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
 
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboard = new ArrayList<>();
+        final ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        final List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
-        String buttonText;
 
         for (int i = 1; i <= daysInMonth; i++) {
-            buttonText = String.format("%02d %s", i, monthName);
+            final String buttonText = String.format("%02d %s", i, monthName);
             row.add(buttonText);
 
             if (i % 10 == 0) {
@@ -42,18 +41,18 @@ public class KeyboardUtil {
         keyboard.add(row);
         row = new KeyboardRow();
 
-        buttonText = String.format("%s (%02d.%04d)",
+        final String buttonPreviousMonthText = String.format("%s (%02d.%04d)",
             monthPrevious,
-            (currentMonth + 10) % 12 + 1,
-            currentMonth == 1 ? currentYear - 1 : currentYear);
+            (currentMonthNoZero + 10) % 12 + 1,
+            currentMonthNoZero == 1 ? currentYear - 1 : currentYear);
 
-        row.add(buttonText);
+        row.add(buttonPreviousMonthText);
 
-        buttonText = String.format("%s (%02d.%04d)",
+        final String buttonNextMonthText = String.format("%s (%02d.%04d)",
             monthNext,
-            currentMonth % 12 + 1,
-            currentMonth == 12 ? currentYear + 1 : currentYear);
-        row.add(buttonText);
+            currentMonthNoZero % 12 + 1,
+            currentMonthNoZero == 12 ? currentYear + 1 : currentYear);
+        row.add(buttonNextMonthText);
 
         keyboard.add(row);
 

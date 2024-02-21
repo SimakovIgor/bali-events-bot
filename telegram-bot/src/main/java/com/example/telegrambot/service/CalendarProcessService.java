@@ -20,12 +20,12 @@ public class CalendarProcessService {
 
     private final EventRepository eventRepository;
 
-    public SendMessage process(Update update, LocalDate localDate) {
-        int day = localDate.getDayOfMonth();
-        int month = localDate.getMonthValue();
-        int year = localDate.getYear();
+    public SendMessage process(final Update update, final LocalDate localDate) {
+        final int day = localDate.getDayOfMonth();
+        final int month = localDate.getMonthValue();
+        final int year = localDate.getYear();
 
-        String eventListToday = findEventListToday(day, month, year);
+        final String eventListToday = findEventListToday(day, month, year);
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
@@ -35,15 +35,15 @@ public class CalendarProcessService {
             .build();
     }
 
-    private String findEventListToday(int day, int month, int year) {
-        LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
-        LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
+    private String findEventListToday(final int day, final int month, final int year) {
+        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
+        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
 
-        List<Event> eventList = eventRepository.findEventsByStartDateBetween(from, end);
+        final List<Event> eventList = eventRepository.findEventsByStartDateBetween(from, end);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
-            Event event = eventList.get(i);
+            final Event event = eventList.get(i);
             stringBuilder.append(i + 1).append(". ")
                 .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
                 .append("\n");
