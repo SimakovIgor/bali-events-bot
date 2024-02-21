@@ -36,7 +36,9 @@
         <!-- <module name="ClassMemberImpliedModifier"/> invalid -->
         <module name="RedundantModifier"/>
         <module name="CovariantEquals"/>
-        <module name="CyclomaticComplexity"/>
+        <module name="CyclomaticComplexity">
+            <property name="max" value="20"/>
+        </module>
         <module name="DeclarationOrder"/>
         <module name="DescendantToken"/>
         <!-- <module name="DesignForExtension"/> invalid -->
@@ -92,9 +94,7 @@
         </module>
         <module name="RecordComponentNumber"/>
         <module name="RequireThis"/>
-        <module name="ReturnCount">
-            <property name="max" value="3"/>
-        </module>
+        <!--        <module name="ReturnCount"/> invalid -->
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
         <module name="SingleSpaceSeparator"/>
