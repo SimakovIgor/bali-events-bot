@@ -6,7 +6,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +15,7 @@ public class CalendarStoreService {
     private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100); // глобальный список пользователей и их последня дата запроса
 
     public LocalDate putOrUpdate(final Update update) {
-        Long chatId = update.getMessage().getChatId();              // идентификатор чата
+        final Long chatId = update.getMessage().getChatId();              // идентификатор чата
         String text = update.getMessage().getText();                // сообщение из чата
 
         if (DateUtil.getMonthNumber(text) > 0) {                    // Проверяем наличие месяца в строке JAN, FEB, MAR, APR, MAY .... "JANUARY (01.2024)"
@@ -34,8 +33,8 @@ public class CalendarStoreService {
 
     /**
      * Преобразует строку "15 Jan" или "JANUARY (01.2024)" в "15.01.2024"
-     * @param chatId
-     * @param text
+     * @param chatId.
+     * @param text.
      * @return String "15.01.2024"
      */
     private String getLocalDate(Long chatId, String text) {
