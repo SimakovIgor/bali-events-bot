@@ -108,5 +108,4 @@ public class DateUtil {
         final int firstTwoDigits = Integer.parseInt(text.substring(0, 2));
         return (firstTwoDigits > 0 && firstTwoDigits < 32) ? firstTwoDigits : 0;
     }
-
 }

@@ -10,7 +10,6 @@ public class Application {
     //todo: Перевести все сообщения на английский
     //todo: возвращать карту к каждому событию
     //todo: Кнопка и календарь вместе работать не могут
-
     public static void main(final String[] args) {
         SpringApplication.run(Application.class, args);
     }

@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -17,7 +18,7 @@ public class CalendarStoreService {
     public LocalDate update(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         final String messageText = update.getMessage().getText();
-        final LocalDate currentLocalDate = calendarStore.get(chatId);
+        final LocalDate currentLocalDate = Optional.ofNullable(calendarStore.get(chatId)).orElse(LocalDate.now());
 
         final String text = DateUtil.isContainsTextMonth(messageText)
                             ? DateUtil.convertToLocalDateString(messageText, currentLocalDate)
@@ -37,6 +38,10 @@ public class CalendarStoreService {
 
     public LocalDate get(final Update update) {
         return calendarStore.get(update.getMessage().getChatId());
+    }
+
+    public LocalDate getById(final Long value) {
+        return calendarStore.get(value);
     }
 
 }
