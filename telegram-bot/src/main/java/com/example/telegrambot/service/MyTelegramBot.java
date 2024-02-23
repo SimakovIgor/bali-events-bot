@@ -22,16 +22,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private final CalendarProcessService calendarProcessService;
     private final ImageProcessService imageProcessService;
     private final CalendarStoreService calendarStoreService;
-    private final MessageStorage messageStorage = new MessageStorage();
+    private final MessageStorage messageStorage;
 
     public MyTelegramBot(final CalendarProcessService calendarProcessService,
                          final ImageProcessService imageProcessService,
-                         final CalendarStoreService calendarStoreService) {
+                         final CalendarStoreService calendarStoreService,
+                         final MessageStorage messageStorage) {
         super("6781420399:AAHi0vGFUPnh-7wBzC7si7hw1XRQmrNmPzA");
 
         this.calendarProcessService = calendarProcessService;
         this.imageProcessService = imageProcessService;
         this.calendarStoreService = calendarStoreService;
+        this.messageStorage = messageStorage;
     }
 
     @Override
@@ -65,7 +67,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 } else if (DateUtil.isDateSelected(text)) {
                     final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
                     execute(calendarProcessService.processShort(update, localDate));
-                    execute(calendarProcessService.process(update, localDate));
                     executeSendMediaGroup(update, localDate);
                     final Message messageExecute = execute(getSignature(update, messageStorage));  // сообщение сообщение Show_More
                     messageStorage.addUser(messageExecute, update, localDate, messageStorage);          // сохраняем номер третьего сообщения
@@ -82,7 +83,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         imageProcessService.process(update, localDate)
             .forEach(sendMediaGroup -> {
                 try {
-                    execute(sendMediaGroup);
+                    //todo: считать общее количество и бить пополам, если <= 1 то что?
+                    if (sendMediaGroup.getMedias().size() > 1) {
+                        execute(sendMediaGroup);
+                    }
+
                 } catch (TelegramApiException e) {
                     throw new IllegalStateException(e.getMessage(), e);
                 }
@@ -115,17 +120,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private SendMessage getCalendarMonthChangedMessage(final Update update) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(Constants.CHOOSE_DATE_OR_INSERT)
+            .text(MyConstants.CHOOSE_DATE_OR_INSERT)
             .build();
-    }
-
-    private int getMessageIdFromCallbackData(final String callbackData) throws NumberFormatException {
-        final String[] parts = callbackData.split(MyConstants.SHOW_SEPARATOR);
-        if (parts.length < 2 || parts[1].isEmpty()) {
-            throw new NumberFormatException("Invalid callback data format");
-        }
-
-        return Integer.parseInt(parts[1]);
     }
 }
 

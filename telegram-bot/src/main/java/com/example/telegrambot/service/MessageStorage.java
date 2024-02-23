@@ -4,41 +4,29 @@
 
 package com.example.telegrambot.service;
 
-import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class MessageStorage {
-    private static final MessageStorage MESSAGE_STORAGE = new MessageStorage();
-    private Map<String, Map<Integer, Map<String, LocalDate>>> storage;
-
-    public MessageStorage() {
-        storage = new HashMap<>();
-    }
-
-    public static MessageStorage getMessageStorage() {
-        return MESSAGE_STORAGE;
-    }
-
-    @PostConstruct
-    public void init() {
-        storage = new HashMap<>();
-    }
-    // Добавляем метод для получения экземпляра MessageStorage
+    private final Map<String, Map<Integer, Map<String, LocalDate>>> storage = new ConcurrentHashMap<>();
 
     public void addUser(final Message sentMessage, final Update update, final LocalDate timestamp, final MessageStorage messageStorage) {
-        final String userId = update.getMessage().getChatId().toString();     // Получаем идентификатор пользователя
-        final int nextMessageNumber = getNextMessageNumber(userId);           // Получаем МОЙ номер сообщения для этого пользователя, который мы отправили в сообщение
+        final String chatId = update.getMessage().getChatId().toString();     // Получаем идентификатор пользователя
+        final int nextMessageNumber = getNextMessageNumber(chatId);           // Получаем МОЙ номер сообщения для этого пользователя, который мы отправили в сообщение
         final String messageId = sentMessage.getMessageId().toString();       // Получить идентификатор отправленного сообщения
 
-        // Сохраняем: userId    - Id чата,
+        // Сохраняем: chatId    - Id чата,
         // nextMessageNumber    - МОЙ Id сообщения для этого чата,
         // messageId            - Id отправленного сообщения
         // timestamp            - дату запроса для этого сообщения
-        messageStorage.addMessage(userId, nextMessageNumber, messageId, timestamp);
+        messageStorage.addMessage(chatId, nextMessageNumber, messageId, timestamp);
     }
 
     public void addMessage(final String userId, final int messageNumber, final String messageId, final LocalDate timestamp) {
@@ -70,15 +58,4 @@ public class MessageStorage {
         return messages.values().stream().findFirst().orElse(null);
     }
 
-    /*    public static void main(final String[] args) {
-        final MessageStorage messageStorage = MessageStorage.getMessageStorage();
-        messageStorage.addMessage("user1", 1, "messageId1111", LocalDate.now());
-        messageStorage.addMessage("user1", 2, "messageId2222", LocalDate.now());
-        messageStorage.addMessage("user2", 1, "messageId3333", LocalDate.now());
-
-        System.out.println(messageStorage.getMessageId("user1", 1)); // Output: messageId1
-        System.out.println(messageStorage.getMessageId("user2", 1)); // Output: messageId3
-        System.out.println(messageStorage.getMessageId("user1", 2)); // Output: messageId2
-        System.out.println(messageStorage.getMessageId("user1", 3)); // Output: null
-    }*/
 }
