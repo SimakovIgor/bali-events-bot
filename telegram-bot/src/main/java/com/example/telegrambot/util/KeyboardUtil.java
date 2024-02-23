@@ -1,9 +1,7 @@
 package com.example.telegrambot.util;
 
 import com.example.telegrambot.contant.MyConstants;
-import com.example.telegrambot.service.MessageStorage;
 import lombok.experimental.UtilityClass;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -71,18 +69,15 @@ public class KeyboardUtil {
         return keyboardMarkup;
     }
 
-    public static InlineKeyboardMarkup setNewButton(final String buttonText, final String buttonName, final Update update, final MessageStorage messageStorage) {
-
+    public static InlineKeyboardMarkup setNewButton(final Long nextMessageNumber) {
         final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         final List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
         final InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText(buttonText);
+        inlineKeyboardButton.setText(MyConstants.SHOW_MORE_TEXT);
 
-        // Получаем номер сообщения для этого пользователя
-        final int nextMessageNumber = messageStorage.getNextMessageNumber(update.getMessage().getChatId().toString());
         // Устанавливаем номер сообщения для этого пользователя
-        inlineKeyboardButton.setCallbackData(buttonName + MyConstants.SHOW_SEPARATOR + nextMessageNumber);
+        inlineKeyboardButton.setCallbackData(MyConstants.SHOW_MORE + MyConstants.SHOW_SEPARATOR + nextMessageNumber);
 
         rowInline.add(inlineKeyboardButton);
         rowsInline.add(rowInline);

@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
@@ -44,15 +45,15 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(final Update update) {
         try {
-            if (update.hasCallbackQuery()) { // Обработка нажатия кнопки "Show more"
+            if (update.hasCallbackQuery()) {
 
                 final CallbackQuery callbackQuery = update.getCallbackQuery();
                 final String callbackData = callbackQuery.getData();
                 if (callbackData.contains(MyConstants.SHOW_MORE)) {
-                    final EditMessageText editMessageText = calendarProcessService.processDig(update, messageStorage);
+                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageStorage);
                     execute(editMessageText);
                 } else if (callbackData.contains(MyConstants.SHOW_LESS)) {
-                    final EditMessageText editMessageText = calendarProcessService.processFew(update, messageStorage);
+                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageStorage);
                     execute(editMessageText);
                 }
             } else {
@@ -62,14 +63,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     calendarStoreService.put(update);
                     execute(getStartMessage(update, calendarStoreService.get(update)));
                 } else if (DateUtil.isCalendarMonthChanged(text)) {
-                    calendarStoreService.updateWithCalendarMonthChanged(update);
-                    execute(getCalendarMonthChangedMessage(update));
+                    final LocalDate localDate = calendarStoreService.updateWithCalendarMonthChanged(update);
+                    execute(getCalendarMonthChangedMessage(update, localDate));
                 } else if (DateUtil.isDateSelected(text)) {
                     final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
                     execute(calendarProcessService.processShort(update, localDate));
                     executeSendMediaGroup(update, localDate);
-                    final Message messageExecute = execute(getSignature(update, messageStorage));  // сообщение сообщение Show_More
-                    messageStorage.addUser(messageExecute, update, localDate, messageStorage);          // сохраняем номер третьего сообщения
+                    final Message messageExecute = execute(getSignature(update));  // сообщение сообщение Show_More
+                    messageStorage.addUser(messageExecute, update, localDate);          // сохраняем номер третьего сообщения
                 } else {
                     execute(getMisUnderstandingMessage(update));
                 }
@@ -109,18 +110,22 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
-    private SendMessage getSignature(final Update update, final MessageStorage messageStorage) {
+    private SendMessage getSignature(final Update update) {
+        final String chatId = update.getMessage().getChatId().toString();
+        final Long nextMessageNumber = messageStorage.getNextMessageNumber(chatId);
+        final InlineKeyboardMarkup replyMarkup = KeyboardUtil.setNewButton(nextMessageNumber);
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(MyConstants.LIST_OF_MORE)
-            .replyMarkup(KeyboardUtil.setNewButton(MyConstants.SHOW_MORE_TEXT, MyConstants.SHOW_MORE, update, messageStorage))   // Название кнопки
+            .replyMarkup(replyMarkup)   // Название кнопки
             .build();
     }
 
-    private SendMessage getCalendarMonthChangedMessage(final Update update) {
+    private SendMessage getCalendarMonthChangedMessage(final Update update, final LocalDate localDate) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(MyConstants.CHOOSE_DATE_OR_INSERT)
+            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
             .build();
     }
 }

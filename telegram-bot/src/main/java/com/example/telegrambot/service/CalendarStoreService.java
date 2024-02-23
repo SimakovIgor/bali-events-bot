@@ -30,7 +30,7 @@ public class CalendarStoreService {
         return dateToStore;
     }
 
-    public void updateWithCalendarMonthChanged(final Update update) {
+    public LocalDate updateWithCalendarMonthChanged(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
         final LocalDate storedLocalDate = calendarStore.get(chatId);
@@ -39,6 +39,7 @@ public class CalendarStoreService {
         final LocalDate localDate = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
 
         calendarStore.put(chatId, localDate);
+        return localDate;
     }
 
     public void put(final Update update) {

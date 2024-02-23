@@ -39,14 +39,14 @@ public class CalendarProcessService {
             .build();
     }
 
-    public EditMessageText processDig(final Update update, final MessageStorage messageStorage) {
+    public EditMessageText processShowMore(final Update update, final MessageStorage messageStorage) {
 
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
         // Получение идентификатора сообщения из колбэк-данных Пример SHOW_MORE:123
         final String chatIdString = callbackQuery.getMessage().getChatId().toString();    // ID пользователя чата
-        final Integer messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
+        final Long messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
         final Integer messageId = Integer.parseInt(messageStorage.getMessageId(chatIdString, messageIdFromCallbackData)); // ID сообщения
         final LocalDate localDate = messageStorage.getLocalDate(chatIdString, getMessageIdFromCallbackData(callbackData)); // Дата сообщения
         final String newCallbackData = MyConstants.SHOW_LESS + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
@@ -68,14 +68,14 @@ public class CalendarProcessService {
             .build();
     }
 
-    public EditMessageText processFew(final Update update, final MessageStorage messageStorage) {
+    public EditMessageText processShowLess(final Update update, final MessageStorage messageStorage) {
 
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
         // Получение идентификатора сообщения из колбэк-данных Пример SHOW_MORE:123
         final String chatIdString = callbackQuery.getMessage().getChatId().toString();    // ID чата
-        final Integer messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
+        final Long messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
         final Integer messageId = Integer.parseInt(messageStorage.getMessageId(chatIdString, messageIdFromCallbackData)); // ID сообщения
         final String newCallbackData = MyConstants.SHOW_MORE + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
 
@@ -134,11 +134,11 @@ public class CalendarProcessService {
         return stringBuilder.toString();
     }
 
-    private Integer getMessageIdFromCallbackData(final String callbackData) {
+    private Long getMessageIdFromCallbackData(final String callbackData) {
         final String[] parts = callbackData.split(MyConstants.SHOW_SEPARATOR);
         if (parts.length < 2 || parts[1].isEmpty()) {
             throw new NumberFormatException("Invalid callback data format");
         }
-        return Integer.parseInt(parts[1]);
+        return Long.parseLong(parts[1]);
     }
 }
