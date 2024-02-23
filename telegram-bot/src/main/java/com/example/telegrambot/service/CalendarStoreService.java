@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -15,20 +14,31 @@ public class CalendarStoreService {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
 
-    public LocalDate update(final Update update) {
+    public LocalDate updateWithSelectedDate(final Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final String messageText = update.getMessage().getText();
-        final LocalDate currentLocalDate = Optional.ofNullable(calendarStore.get(chatId)).orElse(LocalDate.now());
+        final String text = update.getMessage().getText();
+        final LocalDate storedLocalDate = calendarStore.get(chatId);
 
-        final String text = DateUtil.isContainsTextMonth(messageText)
-                            ? DateUtil.convertToLocalDateString(messageText, currentLocalDate)
-                            : messageText;
+        final String localDateText = DateUtil.isContainsTextMonth(text)
+                                     ? DateUtil.convertToLocalDateSelected(text, storedLocalDate)
+                                     : text;
 
-        final LocalDate dateToStore = LocalDate.parse(text, DATE_TIME_FORMATTER);
+        final LocalDate dateToStore = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
 
         calendarStore.put(chatId, dateToStore);
 
         return dateToStore;
+    }
+
+    public void updateWithCalendarMonthChanged(final Update update) {
+        final Long chatId = update.getMessage().getChatId();
+        final String text = update.getMessage().getText();
+        final LocalDate storedLocalDate = calendarStore.get(chatId);
+
+        final String localDateText = DateUtil.convertToDateTimeCalendarMonthChanged(text, storedLocalDate);
+        final LocalDate localDate = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
+
+        calendarStore.put(chatId, localDate);
     }
 
     public void put(final Update update) {
@@ -38,10 +48,6 @@ public class CalendarStoreService {
 
     public LocalDate get(final Update update) {
         return calendarStore.get(update.getMessage().getChatId());
-    }
-
-    public LocalDate getById(final Long value) {
-        return calendarStore.get(value);
     }
 
 }

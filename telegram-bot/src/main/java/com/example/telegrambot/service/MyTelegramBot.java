@@ -58,11 +58,15 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
                 if (text.contains("/start")) {
                     calendarStoreService.put(update);
-                    execute(getStartMessage(update, calendarStoreService.get(update))); // отправляем "Привет! Я бот, который ... "
-                } else if (DateUtil.isSupportedDateFormat(text)) {                     // проверяем сообщение на наличие даты
-                    final LocalDate localDate = calendarStoreService.update(update);  // сообщение со списком событий
-                    execute(calendarProcessService.processShort(update, localDate)); // сообщение с пакетом картинок
-                    executeSendMediaGroup(update, localDate);                       // сообщение с картинкой
+                    execute(getStartMessage(update, calendarStoreService.get(update)));
+                } else if (DateUtil.isCalendarMonthChanged(text)) {
+                    calendarStoreService.updateWithCalendarMonthChanged(update);
+                    execute(getCalendarMonthChangedMessage(update));
+                } else if (DateUtil.isDateSelected(text)) {
+                    final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
+                    execute(calendarProcessService.processShort(update, localDate));
+                    execute(calendarProcessService.process(update, localDate));
+                    executeSendMediaGroup(update, localDate);
                     final Message messageExecute = execute(getSignature(update, messageStorage));  // сообщение сообщение Show_More
                     messageStorage.addUser(messageExecute, update, localDate, messageStorage);          // сохраняем номер третьего сообщения
                 } else {
@@ -86,7 +90,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     private SendMessage getStartMessage(final Update update, final LocalDate localDate) {
-
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(MyConstants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI)
@@ -94,8 +97,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
-    private SendMessage getSignature(final Update update, final MessageStorage messageStorage) {
+    private SendMessage getMisUnderstandingMessage(final Update update) {
+        return SendMessage.builder()
+            .chatId(update.getMessage().getChatId())
+            .text(MyConstants.THIS_WORD_IS_NOT_RESERVED + update.getMessage().getText() + MyConstants.LIST_OF_RESERVED_WORDS_HELP)
+            .build();
+    }
 
+    private SendMessage getSignature(final Update update, final MessageStorage messageStorage) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(MyConstants.LIST_OF_MORE)
@@ -103,10 +112,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
-    private SendMessage getMisUnderstandingMessage(final Update update) {
+    private SendMessage getCalendarMonthChangedMessage(final Update update) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(MyConstants.THIS_WORD_IS_NOT_RESERVED + update.getMessage().getText() + MyConstants.LIST_OF_RESERVED_WORDS_HELP)
+            .text(Constants.CHOOSE_DATE_OR_INSERT)
             .build();
     }
 
@@ -119,3 +128,4 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         return Integer.parseInt(parts[1]);
     }
 }
+

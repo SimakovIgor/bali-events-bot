@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <selenium-java.version>4.17.0</selenium-java.version>
+        <selenium-java.version>4.18.1</selenium-java.version>
     </properties>
 
     <dependencies>

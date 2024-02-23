@@ -10,11 +10,14 @@
 
 ### Используемые технологии
 
-- **Spring Boot 3.2**: Для быстрого развития и простой настройки.
-- **Java 21**: Язык программирования, используемый для проекта.
-- **База данных PostgreSQL**: Для хранения скрапнутых данных и другой актуальной информации.
+- **Spring Boot 3.2**
+- **Java 21**
+- **PostgreSQL**
 - **MapStruct**: Используется для отображения между различными типами Java bean.
 - **Selenium**: Используется для веб-скрапинга для извлечения данных о событиях с веб-сайтов.
+- **SonarQube** [https://sonarcloud.io/project/overview?id=SimakovIgor_bali-events-bot]
+- **Git Hub Actions** CI/CD [https://github.com/SimakovIgor/bali-events-bot/actions]
+- **Docker Hub** Используется для хранения образов https://hub.docker.com/repositories/simakoff
 
 ### Модули
 
@@ -28,14 +31,13 @@
 Модуль Telegram бота облегчает взаимодействие с пользователями. Он извлекает данные о событиях из
 базы данных и предоставляет их пользователям через сообщения Telegram.
 
-### Инструкции по установке
+### Инструкции по локальному запуску установке
 
-1. Клонируйте репозиторий: `git clone [repository_url]`
+1. Клонируйте репозиторий: `git clone [https://github.com/SimakovIgor/bali-events-bot.git]`
 2. Перейдите в директорию проекта: `cd bali-events-bot`
 3. Соберите проект: `mvn clean install`
-4. Настройте базу данных PostgreSQL в соответствии с `application.properties`.
-5. Убедитесь, что Selenium WebDriver настроен правильно для веб-скрапинга.
-6. Запустите приложение: `java -jar [module_name].jar`
+4. Запустите `docker compose -f docker-compose.yaml -p bali-events up -d` [docker-compose.yaml](docker-compose.yaml)
+5. Запустите приложение: `java -jar [module_name].jar`
 
 ### Лицензия
 
