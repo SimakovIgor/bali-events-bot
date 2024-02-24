@@ -16,7 +16,7 @@ public class SchedulerService {
     @Scheduled(fixedDelay = 30000)
     public void scheduleTask() {
 
-        log.info("Scheduled task started!");
+        log.info("Scheduled task started!"); // логика работы программы начинается отсюда !!!!
         theBeatBaliScrapperService.process();
 
         // Генерируем случайную задержку от 1 до 2 минут
