@@ -48,11 +48,11 @@ public class TheBeatBaliScrapperService implements ScrapperService {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        WebElement nextButton = webDriver.findElement(BY_BUTTON_WRAPPER)        // блок где находится кнопка следующего месяца
+        final WebElement nextButton = webDriver.findElement(BY_BUTTON_WRAPPER)        // блок где находится кнопка следующего месяца
             .findElement(By.id(BY_BUTTON));                                     //  Кнопка следующего месяца
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(8) + 1;                         // числа от 1 до 9 -> сколько месяцев информации скачиваем с сайта
+        final Random random = new Random();
+        final int randomNumber = random.nextInt(8) + 1;                         // числа от 1 до 9 -> сколько месяцев информации скачиваем с сайта
 
         List<WebElement> childs = null;                                         // СОБЫТИЯ -> читаем список событий из загруженного правого блока
         for (int i = 0; i < randomNumber; i++) {                                // цикл на два года вперед
@@ -104,7 +104,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
                 // Этот сайт запрашивает у вас согласие на использование ваших данных
                 // Кнопка появляется рандомно и блокирует все другие нажатия
                 // но по ней можно попробовать кликнуть, даже если ее нет, мы просто попадаем в NoSuchElementException
-                WebElement specialButton = webDriver.findElement(BY_BUTTON_ACCESS);
+                final WebElement specialButton = webDriver.findElement(BY_BUTTON_ACCESS);
                 specialButton.click();
 
                 try {

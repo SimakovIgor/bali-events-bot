@@ -1,7 +1,5 @@
 package com.bali.events.balievents.configuration;
 
-import com.bali.events.balievents.Application;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
