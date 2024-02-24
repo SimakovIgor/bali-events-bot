@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
 import java.time.LocalDate;
@@ -17,6 +18,16 @@ import java.util.List;
 public class ImageProcessService {
 
     private final EventRepository eventRepository;
+
+    private static boolean isOnlyOneGroupWithOneMedia(final List<SendMediaGroup> sendMediaGroups) {
+        return sendMediaGroups.size() == 1
+            && sendMediaGroups.getFirst().getMedias().size() == 1;
+    }
+
+    private static boolean isMultipleGroupsAndLastHaveOnlyOneMedia(final List<SendMediaGroup> sendMediaGroups) {
+        return sendMediaGroups.size() > 1
+            && sendMediaGroups.getLast().getMedias().size() == 1;
+    }
 
     public List<SendMediaGroup> process(final Update update, final LocalDate eventDate) {
         final List<InputMediaPhoto> eventPhotos = findEventPhotos(eventDate);
@@ -36,6 +47,20 @@ public class ImageProcessService {
             sendMediaGroups.add(sendMediaGroup);
         }
 
+        // Если в последней группы 1 элемент, то перекидываем к нему из предыдущей группы
+        if (isMultipleGroupsAndLastHaveOnlyOneMedia(sendMediaGroups)) {
+            final SendMediaGroup lastSendMediaGroup = sendMediaGroups.getLast();
+            final SendMediaGroup previousSendMediaGroup = sendMediaGroups.get(sendMediaGroups.size() - 2);
+
+            if (lastSendMediaGroup.getMedias().size() == 1) {
+                final InputMedia lastMediaInPreviousGroup = previousSendMediaGroup.getMedias().getLast();
+                lastSendMediaGroup.getMedias().addFirst(lastMediaInPreviousGroup);
+                previousSendMediaGroup.getMedias().removeLast();
+            }
+        } else if (isOnlyOneGroupWithOneMedia(sendMediaGroups)) {
+            sendMediaGroups.removeFirst();
+        }
+
         return sendMediaGroups;
     }
 
@@ -52,6 +77,7 @@ public class ImageProcessService {
             .map(event -> {
                 final InputMediaPhoto inputMediaPhoto = new InputMediaPhoto();
                 inputMediaPhoto.setMedia(event.getImageUrl());
+                inputMediaPhoto.setCaption(event.getEventName());
                 return inputMediaPhoto;
             })
             .toList();

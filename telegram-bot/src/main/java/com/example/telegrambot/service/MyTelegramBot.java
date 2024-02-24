@@ -84,11 +84,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         imageProcessService.process(update, localDate)
             .forEach(sendMediaGroup -> {
                 try {
-                    //todo: считать общее количество и бить пополам, если <= 1 то что?
-                    if (sendMediaGroup.getMedias().size() > 1) {
-                        execute(sendMediaGroup);
-                    }
-
+                    execute(sendMediaGroup);
                 } catch (TelegramApiException e) {
                     throw new IllegalStateException(e.getMessage(), e);
                 }
@@ -117,7 +113,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(MyConstants.LIST_OF_MORE)
-            .replyMarkup(replyMarkup)   // Название кнопки
+            .replyMarkup(replyMarkup)
             .build();
     }
 
