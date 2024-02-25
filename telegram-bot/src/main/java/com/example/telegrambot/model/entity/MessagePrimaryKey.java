@@ -11,7 +11,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Data
 @Builder
-public class ShowMorePrimaryKey {
+public class MessagePrimaryKey {
     private String chatId;
     private Long messageNumber;
 
@@ -23,7 +23,7 @@ public class ShowMorePrimaryKey {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final ShowMorePrimaryKey that = (ShowMorePrimaryKey) o;
+        final MessagePrimaryKey that = (MessagePrimaryKey) o;
         return Objects.equals(chatId, that.chatId) && Objects.equals(messageNumber, that.messageNumber);
     }
 

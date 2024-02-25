@@ -17,7 +17,10 @@ public class CalendarStoreService {
     public LocalDate updateWithSelectedDate(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
-        final LocalDate storedLocalDate = calendarStore.get(chatId);
+
+        final LocalDate storedLocalDate = calendarStore.get(chatId) == null
+                                          ? LocalDate.now()
+                                          : calendarStore.get(chatId);
 
         final String localDateText = DateUtil.isContainsTextMonth(text)
                                      ? DateUtil.convertToLocalDateSelected(text, storedLocalDate)

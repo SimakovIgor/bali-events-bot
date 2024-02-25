@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Builder
-public class ShowMoreData {
+public class MessageData {
     private String messageId;
     private LocalDate timestamp;
 }
