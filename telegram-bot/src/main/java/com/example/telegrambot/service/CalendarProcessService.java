@@ -39,16 +39,15 @@ public class CalendarProcessService {
             .build();
     }
 
-    public EditMessageText processShowMore(final Update update, final MessageStorage messageStorage) {
-
+    public EditMessageText processShowMore(final Update update, final MessageDataStorage messageDataStorage) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
         // Получение идентификатора сообщения из колбэк-данных Пример SHOW_MORE:123
         final String chatIdString = callbackQuery.getMessage().getChatId().toString();    // ID пользователя чата
         final Long messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
-        final Integer messageId = Integer.parseInt(messageStorage.getMessageId(chatIdString, messageIdFromCallbackData)); // ID сообщения
-        final LocalDate localDate = messageStorage.getLocalDate(chatIdString, getMessageIdFromCallbackData(callbackData)); // Дата сообщения
+        final Integer messageId = Integer.parseInt(messageDataStorage.getMessageTimestamp(chatIdString, messageIdFromCallbackData)); // ID сообщения
+        final LocalDate localDate = messageDataStorage.getLocalDate(chatIdString, getMessageIdFromCallbackData(callbackData)); // Дата сообщения
         final String newCallbackData = MyConstants.SHOW_LESS + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
 
         final int day = localDate.getDayOfMonth();
@@ -64,19 +63,18 @@ public class CalendarProcessService {
             .text(String.format("%s %02d.%02d.%d%n%s", MyConstants.LIST_OF_EVENTS_ON, day, month, year, eventListToday)) // текст сообщения
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
-            .replyMarkup(KeyboardUtil.updateButton(newCallbackData))   // Изменение названия и содержание кнопки
+            .replyMarkup(KeyboardUtil.updateButton(newCallbackData))
             .build();
     }
 
-    public EditMessageText processShowLess(final Update update, final MessageStorage messageStorage) {
-
+    public EditMessageText processShowLess(final Update update, final MessageDataStorage messageDataStorage) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
         // Получение идентификатора сообщения из колбэк-данных Пример SHOW_MORE:123
-        final String chatIdString = callbackQuery.getMessage().getChatId().toString();    // ID чата
+        final String chatIdString = callbackQuery.getMessage().getChatId().toString();
         final Long messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
-        final Integer messageId = Integer.parseInt(messageStorage.getMessageId(chatIdString, messageIdFromCallbackData)); // ID сообщения
+        final Integer messageId = Integer.parseInt(messageDataStorage.getMessageTimestamp(chatIdString, messageIdFromCallbackData)); // ID сообщения
         final String newCallbackData = MyConstants.SHOW_MORE + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
 
         final Long chatId = callbackQuery.getMessage().getChatId();
@@ -84,18 +82,15 @@ public class CalendarProcessService {
         return EditMessageText.builder()
             .chatId(chatId)
             .messageId(messageId)
-            .text(MyConstants.LIST_OF_MORE) // текст сообщения
+            .text(MyConstants.LIST_OF_MORE)
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
-            .replyMarkup(KeyboardUtil.restoreButton(newCallbackData))   // Изменение названия и содержание кнопки
+            .replyMarkup(KeyboardUtil.restoreButton(newCallbackData))
             .build();
     }
 
     private String findEventListToday(final int day, final int month, final int year) {
-        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
-
-        final List<Event> eventList = eventRepository.findEventsByStartDateBetween(from, end);
+        final List<Event> eventList = findEvents(day, month, year);
 
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
@@ -108,15 +103,12 @@ public class CalendarProcessService {
     }
 
     private String findListToday(final int day, final int month, final int year) {
-        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
-
-        final List<Event> eventList = eventRepository.findEventsByStartDateBetween(from, end);
+        final List<Event> eventList = findEvents(day, month, year);
 
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
             final Event event = eventList.get(i);
-            stringBuilder.append(i + 1).append(". ")    // создаем нумерованный список событий на указанный день в виде строки
+            stringBuilder.append(i + 1).append(". ")
                 .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
                 .append("\n")
                 .append("Location:")
@@ -128,10 +120,16 @@ public class CalendarProcessService {
                 .append(GetGoogleMapLink.getGoogleMapLinkFull(event.getCoordinates(), event.getCoordinates()))
                 .append("\n")
                 .append("----------------")
-                .append("\n\n\n");
+                .append("\n\n");
         }
 
         return stringBuilder.toString();
+    }
+
+    private List<Event> findEvents(int day, int month, int year) {
+        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
+        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
+        return eventRepository.findEventsByStartDateBetween(from, end);
     }
 
     private Long getMessageIdFromCallbackData(final String callbackData) {

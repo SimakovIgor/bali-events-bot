@@ -111,7 +111,6 @@ public class KeyboardUtil {
     }
 
     public InlineKeyboardMarkup restoreButton(final String callbackData) {
-        // Получаем разметку кнопки с помощью нашего метода
         return setNewButton(MyConstants.SHOW_MORE_TEXT, callbackData);
     }
 }

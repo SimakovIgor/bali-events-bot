@@ -23,18 +23,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private final CalendarProcessService calendarProcessService;
     private final ImageProcessService imageProcessService;
     private final CalendarStoreService calendarStoreService;
-    private final MessageStorage messageStorage;
+    private final MessageDataStorage messageDataStorage;
 
     public MyTelegramBot(final CalendarProcessService calendarProcessService,
                          final ImageProcessService imageProcessService,
                          final CalendarStoreService calendarStoreService,
-                         final MessageStorage messageStorage) {
+                         final MessageDataStorage messageDataStorage) {
         super("6781420399:AAHi0vGFUPnh-7wBzC7si7hw1XRQmrNmPzA");
 
         this.calendarProcessService = calendarProcessService;
         this.imageProcessService = imageProcessService;
         this.calendarStoreService = calendarStoreService;
-        this.messageStorage = messageStorage;
+        this.messageDataStorage = messageDataStorage;
     }
 
     @Override
@@ -50,10 +50,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 final CallbackQuery callbackQuery = update.getCallbackQuery();
                 final String callbackData = callbackQuery.getData();
                 if (callbackData.contains(MyConstants.SHOW_MORE)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageStorage);
+                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage);
                     execute(editMessageText);
                 } else if (callbackData.contains(MyConstants.SHOW_LESS)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageStorage);
+                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage);
                     execute(editMessageText);
                 }
             } else {
@@ -69,8 +69,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
                     execute(calendarProcessService.processShort(update, localDate));
                     executeSendMediaGroup(update, localDate);
-                    final Message messageExecute = execute(getSignature(update));  // сообщение сообщение Show_More
-                    messageStorage.addUser(messageExecute, update, localDate);          // сохраняем номер третьего сообщения
+                    final Message messageExecute = execute(getSignature(update));
+                    messageDataStorage.addUserMessageData(messageExecute, update, localDate);
                 } else {
                     execute(getMisUnderstandingMessage(update));
                 }
@@ -102,13 +102,13 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private SendMessage getMisUnderstandingMessage(final Update update) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(MyConstants.THIS_WORD_IS_NOT_RESERVED + update.getMessage().getText() + MyConstants.LIST_OF_RESERVED_WORDS_HELP)
+            .text(String.format("Это слово(а) не зарезервировано: %s Список зарезервированных слов /help ", update.getMessage().getText()))
             .build();
     }
 
     private SendMessage getSignature(final Update update) {
         final String chatId = update.getMessage().getChatId().toString();
-        final Long nextMessageNumber = messageStorage.getNextMessageNumber(chatId);
+        final Long nextMessageNumber = messageDataStorage.calculateNextMessageId(chatId);
         final InlineKeyboardMarkup replyMarkup = KeyboardUtil.setNewButton(nextMessageNumber);
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
