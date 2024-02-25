@@ -126,7 +126,7 @@ public class CalendarProcessService {
         return stringBuilder.toString();
     }
 
-    private List<Event> findEvents(int day, int month, int year) {
+    private List<Event> findEvents(final int day, final int month, final int year) {
         final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
         final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
         return eventRepository.findEventsByStartDateBetween(from, end);
