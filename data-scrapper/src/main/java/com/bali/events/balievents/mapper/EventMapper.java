@@ -30,9 +30,14 @@ public interface EventMapper {
     @Mapping(target = "coordinates", source = "coordinates")
     Event toEventEntity(EventDto eventDto);
 
-
+    /**
+     * Приведение строки формат: "2024-1-1T22:00+08:00" к стандартному LocalDateTime формат: "yyyy-M-d'T'HH:mm"
+     *
+     * @param fromDateTime - строка формат: "2024-1-1T22:00+08:00"
+     * @return - LocalDateTime
+     */
     @Named("toLocalDateTime")
-    default LocalDateTime toLocalDateTime(final String fromDateTime) {  // приведение строки формат: "2024-1-1T22:00+08:00" к стандартному LocalDateTime формат: "yyyy-M-d'T'HH:mm"
+    default LocalDateTime toLocalDateTime(final String fromDateTime) {
         final LocalDateTime localDateTime = LocalDateTime.parse(fromDateTime.substring(0, fromDateTime.indexOf("+")), FORMATTER);
 
         final String offsetString = fromDateTime.substring(fromDateTime.indexOf("+") + 1);

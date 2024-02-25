@@ -13,13 +13,16 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SchedulerService {
     private final TheBeatBaliScrapperService theBeatBaliScrapperService;
 
+    /**
+     * Запускаем задачу каждые 30 секунд
+     * Логика работы программы начинается отсюда
+     */
     @Scheduled(fixedDelay = 30000)
     public void scheduleTask() {
 
-        log.info("Scheduled task started!"); // логика работы программы начинается отсюда !!!!
+        log.info("Scheduled task started!");
         theBeatBaliScrapperService.process();
 
-        // Генерируем случайную задержку от 1 до 2 минут
         final long randomDelay = getRandomDelay();
         try {
             Thread.sleep(randomDelay);
@@ -29,6 +32,11 @@ public class SchedulerService {
         }
     }
 
+    /**
+     * Генерируем случайную задержку от 1 до 2 минут
+     *
+     * @return - случайная задержка
+     */
     private long getRandomDelay() {
         return ThreadLocalRandom.current().nextLong(60000) + 60000;
     }
