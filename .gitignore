@@ -140,4 +140,3 @@ application.yml
 /key/
 /sec/
 /k8s-ansible/
-/Dockerfile
