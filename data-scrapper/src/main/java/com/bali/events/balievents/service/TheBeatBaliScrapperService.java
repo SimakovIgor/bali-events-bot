@@ -51,7 +51,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         for (int i = 0; i < MAX_MONTH_COUNT_WITH_EVENTS; i++) {
             final List<WebElement> parsedEventList = getParsedEventList(webDriver);
 
-            // Если объектов менее 1, то это только объект рекламы у которого нет ID
+            // Если объектов менее 2, то это только объект рекламы у которого нет ID
             if (parsedEventList.size() > 1) {
                 processEvents(parsedEventList);
             } else {
@@ -66,6 +66,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     private void processEvents(final List<WebElement> parsedEventList) {
+        int ii = 1;
         for (WebElement child : parsedEventList) {
 
             final String externalId = child.getAttribute("id");
@@ -76,6 +77,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
             final EventDto eventDto = createEventDto(child);
             updateEventService.saveOrUpdate(eventDto);
+            log.info("processed {} / {}", ii++, parsedEventList.size());
         }
     }
 
@@ -146,15 +148,18 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     /**
      * Этот сайт запрашивает у вас согласие на использование ваших данных
      * Кнопка появляется рандомно и блокирует все другие нажатия,
-     * но по ней можно попробовать кликнуть, даже если ее нет, мы просто попадаем в NoSuchElementException
+     * нужно по ней кликнуть если она есть
      *
      * @param webDriver - открытый браузер
      */
     private void handleConsentForDataUsageButton(final WebDriver webDriver) {
         try {
-            final WebElement specialButton = webDriver.findElement(BY_BUTTON_ACCESS);
-            specialButton.click();
-            delay(2000);
+            final List<WebElement> specialButtons = webDriver.findElements(BY_BUTTON_ACCESS);
+            if (!specialButtons.isEmpty()) {
+                final WebElement specialButton = specialButtons.getFirst();
+                specialButton.click();
+                delay(2000);
+            }
         } catch (NoSuchElementException e) {
             log.error("Error processing element: {}", e.getMessage());
         }
