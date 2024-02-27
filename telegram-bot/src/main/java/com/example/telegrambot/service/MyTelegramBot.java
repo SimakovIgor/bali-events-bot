@@ -44,7 +44,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     /***
      * начало программы для
-     * @param update
+     *
+     * @param update - событие из телеграмма
      */
     @Override
     public void onUpdateReceived(final Update update) {

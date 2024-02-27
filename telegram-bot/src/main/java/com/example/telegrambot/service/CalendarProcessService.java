@@ -128,7 +128,8 @@ public class CalendarProcessService {
 
     /**
      * Позволяет создать кликабельную ссылку на дату, но только на первое число /10
-     * @return
+     *
+     * @return - кликабельная ссылка
      */
     public static String getClickableStart() {
         return "<a href=\"command:\">/10.02.2024</a>";

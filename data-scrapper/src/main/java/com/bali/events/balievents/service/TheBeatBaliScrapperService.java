@@ -142,7 +142,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
      */
     private void navigateToWebsite(final WebDriver webDriver) {
         webDriver.get(rootName());
-            delay(25000);
+        delay(25000);
     }
 
     /**
@@ -154,9 +154,9 @@ public class TheBeatBaliScrapperService implements ScrapperService {
      */
     private void handleConsentForDataUsageButton(final WebDriver webDriver) {
         try {
-            List<WebElement> specialButtons = webDriver.findElements(BY_BUTTON_ACCESS);
+            final List<WebElement> specialButtons = webDriver.findElements(BY_BUTTON_ACCESS);
             if (!specialButtons.isEmpty()) {
-                WebElement specialButton = specialButtons.getFirst();
+                final WebElement specialButton = specialButtons.getFirst();
                 specialButton.click();
                 delay(2000);
             }
