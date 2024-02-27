@@ -112,18 +112,27 @@ public class CalendarProcessService {
                 .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
                 .append("\n")
                 .append("Location:")
+                .append(getClickableStart())
                 .append("\n")
                 .append(event.getLocationAddress())
                 .append("\n")
-                .append("Coordinates:")
-                .append("\n")
-                .append(GetGoogleMapLink.getGoogleMapLinkFull(event.getCoordinates(), event.getCoordinates()))
+                .append("Google Maps:")
+                .append(GetGoogleMapLink.getGoogleMap(event.getCoordinates(), event.getCoordinates()))
                 .append("\n")
                 .append("----------------")
                 .append("\n\n");
         }
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * Позволяет создать кликабельную ссылку на дату, но только на первое число /10
+     *
+     * @return - кликабельная ссылка
+     */
+    public static String getClickableStart() {
+        return "<a href=\"command:\">/10.02.2024</a>";
     }
 
     private List<Event> findEvents(final int day, final int month, final int year) {
