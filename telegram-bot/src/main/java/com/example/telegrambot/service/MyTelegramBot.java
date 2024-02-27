@@ -51,6 +51,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      *
      * @param update - событие из телеграмма
      */
+
     @Override
     public void onUpdateReceived(final Update update) {
         try {
@@ -58,10 +59,16 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 final CallbackQuery callbackQuery = update.getCallbackQuery();
                 final String callbackData = callbackQuery.getData();
                 if (callbackData.contains(MyConstants.SHOW_MORE)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage);
+                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage, MyConstants.SHOW_MORE);
                     execute(editMessageText);
                 } else if (callbackData.contains(MyConstants.SHOW_LESS)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage);
+                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage, MyConstants.SHOW_MORE);
+                    execute(editMessageText);
+                } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
+                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage, MyConstants.SHOW_SHORT_MONTH);
+                    execute(editMessageText);
+                } else if (callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
+                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage, MyConstants.SHOW_FULL_MONTH);
                     execute(editMessageText);
                 }
             } else {
@@ -70,14 +77,19 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 if (text.contains("/start")) {
                     calendarStoreService.put(update);
                     execute(getStartMessage(update, calendarStoreService.get(update)));
+                    final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_FULL_MONTH));
+                    messageDataStorage.addUserMessageData(messageExecute, update, calendarStoreService.get(update));
                 } else if (DateUtil.isCalendarMonthChanged(text)) {
                     final LocalDate localDate = calendarStoreService.updateWithCalendarMonthChanged(update);
-                    execute(calendarProcessService.processCalendarMonthChanged(update, localDate));
+                    final String listOfDates = calendarProcessService.processCalendarMonthChanged(localDate, 1, 5);
+                    execute(getsListOfDates(update, listOfDates, localDate));
+                    final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_FULL_MONTH));
+                    messageDataStorage.addUserMessageData(messageExecute, update, localDate);
                 } else if (DateUtil.isDateSelected(text)) {
                     final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
                     execute(calendarProcessService.processShort(update, localDate));
                     executeSendMediaGroup(update, localDate);
-                    final Message messageExecute = execute(getSignature(update));
+                    final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_MORE));
                     messageDataStorage.addUserMessageData(messageExecute, update, localDate);
                 } else {
                     execute(getMisUnderstandingMessage(update));
@@ -117,9 +129,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     private SendMessage getStartMessage(final Update update, final LocalDate localDate) {
+        final String listOfDates = MyConstants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI + "\n"
+             + calendarProcessService.processCalendarMonthChanged(localDate, 1, 5);
+
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(MyConstants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI)
+            .text(listOfDates)
             .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear())) // календарь
             .build();
     }
@@ -131,10 +146,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
-    private SendMessage getSignature(final Update update) {
+    /**
+     * Создание кнопки под сообщением на текущую дату.
+     *
+     * @param update - событие из телеграмма
+     *        text - текст сообщения
+     *        showMore - метка, которая будет возвращаться при нажатие на кнопку
+     * @return SendMessage - класс для отправки сообщения в телеграмм
+     */
+    private SendMessage getSignature(final Update update, final String callbackName) {
         final String chatId = update.getMessage().getChatId().toString();
         final Long nextMessageNumber = messageDataStorage.calculateNextMessageId(chatId);
-        final InlineKeyboardMarkup replyMarkup = KeyboardUtil.setNewButton(nextMessageNumber);
+        final InlineKeyboardMarkup replyMarkup = KeyboardUtil.setNewButton(nextMessageNumber, callbackName);
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(MyConstants.LIST_OF_MORE)
@@ -142,5 +165,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
+    private SendMessage getsListOfDates(final Update update, final String textMessage, final LocalDate localDate) {
+        final String text = update.getMessage().getText();
+
+        return SendMessage.builder()
+            .chatId(update.getMessage().getChatId())
+            .text(String.format("%s %s%n%s", MyConstants.LIST_OF_EVENTS_ON, text, textMessage)) // текст сообщения
+            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear())) // календарь
+            .build();
+    }
 }
 

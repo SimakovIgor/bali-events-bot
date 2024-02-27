@@ -69,7 +69,7 @@ public class KeyboardUtil {
         return keyboardMarkup;
     }
 
-    public static InlineKeyboardMarkup setNewButton(final Long nextMessageNumber) {
+    public static InlineKeyboardMarkup setNewButton(final Long nextMessageNumber, final String showMore) {
         final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         final List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class KeyboardUtil {
         inlineKeyboardButton.setText(MyConstants.SHOW_MORE_TEXT);
 
         // Устанавливаем номер сообщения для этого пользователя
-        inlineKeyboardButton.setCallbackData(MyConstants.SHOW_MORE + MyConstants.SHOW_SEPARATOR + nextMessageNumber);
+        inlineKeyboardButton.setCallbackData(showMore + MyConstants.SHOW_SEPARATOR + nextMessageNumber);
 
         rowInline.add(inlineKeyboardButton);
         rowsInline.add(rowInline);

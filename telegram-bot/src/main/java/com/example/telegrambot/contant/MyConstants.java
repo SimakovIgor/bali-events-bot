@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 public class MyConstants {
     public static final String LIST_OF_EVENTS_ON = "Список событий на:";
     public static final String LIST_OF_MORE = "Показать больше информации ";
+    public static final String SHOW_FULL_MONTH = "show_month_full";
+    public static final String SHOW_SHORT_MONTH = "show_month_less";
     public static final String SHOW_MORE = "show_more";
     public static final String SHOW_LESS = "show_less";
     public static final String SHOW_MORE_TEXT = "Show more";
