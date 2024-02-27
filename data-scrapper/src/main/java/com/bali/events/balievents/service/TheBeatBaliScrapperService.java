@@ -58,7 +58,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
                 break;
             }
 
-            handleConsentForDataUsageButton(webDriver); // здесь ошибка при выходе из цикла
+            handleConsentForDataUsageButton(webDriver);
             navigateToNextPage(webDriver);
         }
 
