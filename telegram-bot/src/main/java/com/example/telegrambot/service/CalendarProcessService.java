@@ -16,12 +16,33 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CalendarProcessService {
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd_MM_yyyy");
     private final EventRepository eventRepository;
+
+    private static StringBuilder getCalendarMonthChangedText(final Map<LocalDate, List<Event>> eventMap) {
+        final Map<LocalDate, List<Event>> reverseSortedMap = new TreeMap<>(eventMap);
+        final StringBuilder stringBuilder = new StringBuilder();
+        reverseSortedMap.forEach((key, value) ->
+            stringBuilder.append("/").append(key.format(DATE_TIME_FORMATTER))
+                .append(" : ")
+                .append(value.size())
+                .append(" events")
+                .append("\n"));
+
+        if (stringBuilder.isEmpty()) {
+            stringBuilder.append("No events");
+        }
+        return stringBuilder;
+    }
 
     public SendMessage processShort(final Update update, final LocalDate localDate) {
         final int day = localDate.getDayOfMonth();
@@ -89,6 +110,22 @@ public class CalendarProcessService {
             .build();
     }
 
+    public SendMessage processCalendarMonthChanged(final Update update, final LocalDate localDate) {
+        final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), 1, 0, 0);
+        final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), localDate.lengthOfMonth(), 23, 59);
+
+        final Map<LocalDate, List<Event>> eventMap = eventRepository.findEventsByStartDateBetween(start, end)
+            .stream()
+            .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
+
+        final StringBuilder stringBuilder = getCalendarMonthChangedText(eventMap);
+        return SendMessage.builder()
+            .chatId(update.getMessage().getChatId())
+            .text(stringBuilder.toString())
+            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
+            .build();
+    }
+
     private String findEventListToday(final int day, final int month, final int year) {
         final List<Event> eventList = findEvents(day, month, year);
 
@@ -139,4 +176,5 @@ public class CalendarProcessService {
         }
         return Long.parseLong(parts[1]);
     }
+
 }

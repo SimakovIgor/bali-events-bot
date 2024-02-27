@@ -46,7 +46,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(final Update update) {
         try {
             if (update.hasCallbackQuery()) {
-
                 final CallbackQuery callbackQuery = update.getCallbackQuery();
                 final String callbackData = callbackQuery.getData();
                 if (callbackData.contains(MyConstants.SHOW_MORE)) {
@@ -64,7 +63,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     execute(getStartMessage(update, calendarStoreService.get(update)));
                 } else if (DateUtil.isCalendarMonthChanged(text)) {
                     final LocalDate localDate = calendarStoreService.updateWithCalendarMonthChanged(update);
-                    execute(getCalendarMonthChangedMessage(update, localDate));
+                    execute(calendarProcessService.processCalendarMonthChanged(update, localDate));
                 } else if (DateUtil.isDateSelected(text)) {
                     final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
                     execute(calendarProcessService.processShort(update, localDate));
@@ -117,12 +116,5 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             .build();
     }
 
-    private SendMessage getCalendarMonthChangedMessage(final Update update, final LocalDate localDate) {
-        return SendMessage.builder()
-            .chatId(update.getMessage().getChatId())
-            .text(MyConstants.CHOOSE_DATE_OR_INSERT)
-            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
-            .build();
-    }
 }
 

@@ -14,6 +14,16 @@ public class CalendarStoreService {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final Map<Long, LocalDate> calendarStore = new ConcurrentHashMap<>(100);
 
+    private static String parseSelectedDate(final String text, final LocalDate storedLocalDate) {
+        if (DateUtil.isContainsTextMonth(text)) {
+            return DateUtil.convertToLocalDateSelected(text, storedLocalDate);
+        } else if (text.startsWith("/")) {
+            return text.substring(1).replace("_", ".");
+        } else {
+            return text;
+        }
+    }
+
     public LocalDate updateWithSelectedDate(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
@@ -22,10 +32,7 @@ public class CalendarStoreService {
                                           ? LocalDate.now()
                                           : calendarStore.get(chatId);
 
-        final String localDateText = DateUtil.isContainsTextMonth(text)
-                                     ? DateUtil.convertToLocalDateSelected(text, storedLocalDate)
-                                     : text;
-
+        final String localDateText = parseSelectedDate(text, storedLocalDate);
         final LocalDate dateToStore = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
 
         calendarStore.put(chatId, dateToStore);
