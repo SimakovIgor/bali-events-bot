@@ -119,9 +119,11 @@ public class CalendarProcessService {
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
 
         final StringBuilder stringBuilder = getCalendarMonthChangedText(eventMap);
+
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(stringBuilder.toString())
+            .text(String.format("%s %s%n%s", MyConstants.LIST_OF_EVENTS_ON, update.getMessage().getText(), stringBuilder)) // текст сообщения
             .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
             .build();
     }
@@ -149,7 +151,6 @@ public class CalendarProcessService {
                 .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
                 .append("\n")
                 .append("Location:")
-                .append(getClickableStart())
                 .append("\n")
                 .append(event.getLocationAddress())
                 .append("\n")

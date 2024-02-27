@@ -7,14 +7,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -85,14 +89,31 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     private void executeSendMediaGroup(final Update update, final LocalDate localDate) {
-        imageProcessService.process(update, localDate)
-            .forEach(sendMediaGroup -> {
-                try {
-                    execute(sendMediaGroup);
-                } catch (TelegramApiException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
-            });
+        final List<InputMediaPhoto> eventPhotos = imageProcessService.findEventPhotos(localDate);
+        // Если есть только одна фотография, отправляем ее как одиночный медиа-объект
+        if (eventPhotos.size() == 1) {
+            // Создаем объект запроса для отправки фотографии
+            final SendPhoto sendPhoto = new SendPhoto();
+            // Указываем chatId - ID чата, куда отправляем фотографию
+            sendPhoto.setChatId(update.getMessage().getChatId());
+            // Указываем фотографию, которую хотим отправить
+            sendPhoto.setPhoto(new InputFile(eventPhotos.get(0).getMedia()));
+            try {
+                // Выполняем запрос на отправку фотографии
+                execute(sendPhoto);
+            } catch (TelegramApiException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        } else {
+            imageProcessService.process(update, localDate)
+                .forEach(sendMediaGroup -> {
+                    try {
+                        execute(sendMediaGroup);
+                    } catch (TelegramApiException e) {
+                        throw new IllegalStateException(e.getMessage(), e);
+                    }
+                });
+        }
     }
 
     private SendMessage getStartMessage(final Update update, final LocalDate localDate) {

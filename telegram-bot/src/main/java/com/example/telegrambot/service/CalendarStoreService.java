@@ -43,7 +43,7 @@ public class CalendarStoreService {
     public LocalDate updateWithCalendarMonthChanged(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
-        final LocalDate storedLocalDate = calendarStore.get(chatId);
+        final LocalDate storedLocalDate = (calendarStore.get(chatId) != null) ? calendarStore.get(chatId) : LocalDate.now();
 
         final String localDateText = DateUtil.convertToDateTimeCalendarMonthChanged(text, storedLocalDate);
         final LocalDate localDate = LocalDate.parse(localDateText, DATE_TIME_FORMATTER);
