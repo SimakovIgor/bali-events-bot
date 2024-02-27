@@ -42,6 +42,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         return "BaliEventsCoordinatebot";
     }
 
+    /***
+     * начало программы для
+     * @param update
+     */
     @Override
     public void onUpdateReceived(final Update update) {
         try {
