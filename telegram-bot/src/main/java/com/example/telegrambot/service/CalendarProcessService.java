@@ -60,7 +60,7 @@ public class CalendarProcessService {
             .build();
     }
 
-    public EditMessageText processShowMore(final Update update, final MessageDataStorage messageDataStorage) {
+    public EditMessageText processShowMore(final Update update, final MessageDataStorage messageDataStorage, final String showWord) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
@@ -69,26 +69,33 @@ public class CalendarProcessService {
         final Long messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
         final Integer messageId = Integer.parseInt(messageDataStorage.getMessageTimestamp(chatIdString, messageIdFromCallbackData)); // ID сообщения
         final LocalDate localDate = messageDataStorage.getLocalDate(chatIdString, getMessageIdFromCallbackData(callbackData)); // Дата сообщения
-        final String newCallbackData = MyConstants.SHOW_LESS + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
-
         final int day = localDate.getDayOfMonth();
         final int month = localDate.getMonthValue();
         final int year = localDate.getYear();
 
-        final String eventListToday = findListToday(day, month, year);
+        String text = "";
+        String newCallbackData = "";
+        if (showWord.contains(MyConstants.SHOW_MORE)) {
+            text = String.format("%s %02d.%02d.%d%n%s", MyConstants.LIST_OF_EVENTS_ON, day, month, year, findListToday(day, month, year));
+            newCallbackData = MyConstants.SHOW_LESS + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
+        } else if (showWord.contains(MyConstants.SHOW_SHORT_MONTH)) {
+            text = processCalendarMonthChanged(localDate, 6, localDate.lengthOfMonth());
+            newCallbackData = MyConstants.SHOW_SHORT_MONTH + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
+        }
+
         final Long chatId = callbackQuery.getMessage().getChatId();
 
         return EditMessageText.builder()
             .chatId(chatId)
             .messageId(messageId)
-            .text(String.format("%s %02d.%02d.%d%n%s", MyConstants.LIST_OF_EVENTS_ON, day, month, year, eventListToday)) // текст сообщения
+            .text(text) // текст сообщения
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
             .replyMarkup(KeyboardUtil.updateButton(newCallbackData))
             .build();
     }
 
-    public EditMessageText processShowLess(final Update update, final MessageDataStorage messageDataStorage) {
+    public EditMessageText processShowLess(final Update update, final MessageDataStorage messageDataStorage, final String myConstants) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
@@ -96,7 +103,7 @@ public class CalendarProcessService {
         final String chatIdString = callbackQuery.getMessage().getChatId().toString();
         final Long messageIdFromCallbackData = getMessageIdFromCallbackData(callbackData);
         final Integer messageId = Integer.parseInt(messageDataStorage.getMessageTimestamp(chatIdString, messageIdFromCallbackData)); // ID сообщения
-        final String newCallbackData = MyConstants.SHOW_MORE + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
+        final String newCallbackData = myConstants + MyConstants.SHOW_SEPARATOR + messageIdFromCallbackData;
 
         final Long chatId = callbackQuery.getMessage().getChatId();
 
@@ -110,22 +117,24 @@ public class CalendarProcessService {
             .build();
     }
 
-    public SendMessage processCalendarMonthChanged(final Update update, final LocalDate localDate) {
-        final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), 1, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), localDate.lengthOfMonth(), 23, 59);
+    /***
+     * Получим строку в которой будет Список событий по дням на указанный месяц
+     *
+     * @param localDate - дата для запроса пользователя получается из "FEBRUARY (02.2024)"
+     * @param dayStart  - начальный день запроса. Минимум может быть: 1
+     * @param dayFinish - последний дней запроса. Максимум может быть: localDate.lengthOfMonth()
+     * @return String   - текст сообщеня
+     */
+    public String processCalendarMonthChanged(final LocalDate localDate, final int dayStart, final int dayFinish) {
+        final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayStart, 0, 0);
+        final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayFinish, 23, 59);
 
         final Map<LocalDate, List<Event>> eventMap = eventRepository.findEventsByStartDateBetween(start, end)
             .stream()
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
 
         final StringBuilder stringBuilder = getCalendarMonthChangedText(eventMap);
-
-        return SendMessage.builder()
-            .chatId(update.getMessage().getChatId())
-            .text(stringBuilder.toString())
-            .text(String.format("%s %s%n%s", MyConstants.LIST_OF_EVENTS_ON, update.getMessage().getText(), stringBuilder)) // текст сообщения
-            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
-            .build();
+        return stringBuilder.toString();
     }
 
     private String findEventListToday(final int day, final int month, final int year) {
@@ -162,15 +171,6 @@ public class CalendarProcessService {
         }
 
         return stringBuilder.toString();
-    }
-
-    /**
-     * Позволяет создать кликабельную ссылку на дату, но только на первое число /10
-     *
-     * @return - кликабельная ссылка
-     */
-    public static String getClickableStart() {
-        return "<a href=\"command:\">/10.02.2024</a>";
     }
 
     private List<Event> findEvents(final int day, final int month, final int year) {
