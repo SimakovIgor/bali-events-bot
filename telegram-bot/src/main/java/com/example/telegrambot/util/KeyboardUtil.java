@@ -69,7 +69,7 @@ public class KeyboardUtil {
         return keyboardMarkup;
     }
 
-    public static InlineKeyboardMarkup setNewButton(final Long nextMessageNumber, final String showMore) {
+    public static InlineKeyboardMarkup setShowMoreButtonKeyboard(final Long nextMessageNumber, final String callbackName) {
         final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         final List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class KeyboardUtil {
         inlineKeyboardButton.setText(MyConstants.SHOW_MORE_TEXT);
 
         // Устанавливаем номер сообщения для этого пользователя
-        inlineKeyboardButton.setCallbackData(showMore + MyConstants.SHOW_SEPARATOR + nextMessageNumber);
+        inlineKeyboardButton.setCallbackData(callbackName + MyConstants.COLON_MARK + nextMessageNumber);
 
         rowInline.add(inlineKeyboardButton);
         rowsInline.add(rowInline);
@@ -88,7 +88,7 @@ public class KeyboardUtil {
         return markupInline;
     }
 
-    public InlineKeyboardMarkup setNewButton(final String buttonText, final String buttonName) {
+    public InlineKeyboardMarkup setShowMoreButtonKeyboard(final String buttonText, final String buttonName) {
         final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         final List<InlineKeyboardButton> rowInline = new ArrayList<>();
 
@@ -107,10 +107,10 @@ public class KeyboardUtil {
 
     public InlineKeyboardMarkup updateButton(final String callbackData) {
         // Получаем разметку кнопки с помощью нашего метода
-        return setNewButton(MyConstants.SHOW_LESS_TEXT, callbackData);
+        return setShowMoreButtonKeyboard(MyConstants.SHOW_LESS_TEXT, callbackData);
     }
 
     public InlineKeyboardMarkup restoreButton(final String callbackData) {
-        return setNewButton(MyConstants.SHOW_MORE_TEXT, callbackData);
+        return setShowMoreButtonKeyboard(MyConstants.SHOW_MORE_TEXT, callbackData);
     }
 }

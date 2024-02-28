@@ -101,6 +101,16 @@ public class DateUtil {
         return String.format("%02d.%02d.%d", day, monthNumber, year);
     }
 
+    public static String parseSelectedDate(final String text, final LocalDate storedLocalDate) {
+        if (DateUtil.isContainsTextMonth(text)) {
+            return DateUtil.convertToLocalDateSelected(text, storedLocalDate);
+        } else if (text.startsWith("/")) {
+            return text.substring(1).replace("_", ".");
+        } else {
+            return text;
+        }
+    }
+
     private static int adjustYearForMonthTransition(final int currentMonth, final int newMonth, final int currentYear) {
         if (currentMonth == 12 && newMonth == 1) {
             return currentYear + 1;
