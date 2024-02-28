@@ -64,7 +64,7 @@ public class ImageProcessService {
         return sendMediaGroups;
     }
 
-    private List<InputMediaPhoto> findEventPhotos(final LocalDate eventDate) {
+    List<InputMediaPhoto> findEventPhotos(final LocalDate eventDate) {
         final int year = eventDate.getYear();
         final int month = eventDate.getMonthValue();
         final int dayOfMonth = eventDate.getDayOfMonth();
@@ -77,7 +77,7 @@ public class ImageProcessService {
             .map(event -> {
                 final InputMediaPhoto inputMediaPhoto = new InputMediaPhoto();
                 inputMediaPhoto.setMedia(event.getImageUrl());
-                inputMediaPhoto.setCaption(event.getEventName());
+                //inputMediaPhoto.setCaption(event.getEventName());
                 return inputMediaPhoto;
             })
             .toList();
