@@ -56,47 +56,67 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(final Update update) {
         try {
             if (update.hasCallbackQuery()) {
-                final CallbackQuery callbackQuery = update.getCallbackQuery();
-                final String callbackData = callbackQuery.getData();
-                if (callbackData.contains(MyConstants.SHOW_MORE)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage, MyConstants.SHOW_MORE);
-                    execute(editMessageText);
-                } else if (callbackData.contains(MyConstants.SHOW_LESS)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage, MyConstants.SHOW_MORE);
-                    execute(editMessageText);
-                } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage, MyConstants.SHOW_SHORT_MONTH);
-                    execute(editMessageText);
-                } else if (callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
-                    final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage, MyConstants.SHOW_FULL_MONTH);
-                    execute(editMessageText);
-                }
+                processCallbackQuery(update);
             } else {
-                final String text = update.getMessage().getText();
-
-                if (text.contains("/start")) {
-                    calendarStoreService.put(update);
-                    execute(getStartMessage(update, calendarStoreService.get(update)));
-                    final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_FULL_MONTH));
-                    messageDataStorage.addUserMessageData(messageExecute, update, calendarStoreService.get(update));
-                } else if (DateUtil.isCalendarMonthChanged(text)) {
-                    final LocalDate localDate = calendarStoreService.updateWithCalendarMonthChanged(update);
-                    final String listOfDates = calendarProcessService.processCalendarMonthChanged(localDate, 1, 5);
-                    execute(getsListOfDates(update, listOfDates, localDate));
-                    final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_FULL_MONTH));
-                    messageDataStorage.addUserMessageData(messageExecute, update, localDate);
-                } else if (DateUtil.isDateSelected(text)) {
-                    final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
-                    execute(calendarProcessService.processShort(update, localDate));
-                    executeSendMediaGroup(update, localDate);
-                    final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_MORE));
-                    messageDataStorage.addUserMessageData(messageExecute, update, localDate);
-                } else {
-                    execute(getMisUnderstandingMessage(update));
-                }
+                processTextMessage(update);
             }
         } catch (TelegramApiException e) {
             throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Обработка текстовых сообщений от пользователя
+     *
+     * @param update - все возможные события от пользователя
+     * @throws TelegramApiException - отдает сообщение пользователю по его запросу
+     */
+    private void processTextMessage(final Update update) throws TelegramApiException {
+        final String text = update.getMessage().getText();
+
+        if (text.contains("/start")) {
+            calendarStoreService.put(update);
+            execute(getStartMessage(update, calendarStoreService.get(update)));
+            final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_FULL_MONTH));
+            messageDataStorage.addUserMessageData(messageExecute, update, calendarStoreService.get(update));
+        } else if (DateUtil.isCalendarMonthChanged(text)) {
+            final LocalDate localDate = calendarStoreService.updateWithCalendarMonthChanged(update);
+            final String listOfDates = calendarProcessService.processCalendarMonthChanged(localDate, 1, 5);
+            execute(getsListOfDates(update, listOfDates, localDate));
+            final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_FULL_MONTH));
+            messageDataStorage.addUserMessageData(messageExecute, update, localDate);
+        } else if (DateUtil.isDateSelected(text)) {
+            final LocalDate localDate = calendarStoreService.updateWithSelectedDate(update);
+            execute(calendarProcessService.processShort(update, localDate));
+            executeSendMediaGroup(update, localDate);
+            final Message messageExecute = execute(getSignature(update, MyConstants.SHOW_MORE));
+            messageDataStorage.addUserMessageData(messageExecute, update, localDate);
+        } else {
+            execute(getMisUnderstandingMessage(update));
+        }
+    }
+
+    /**
+     * Обработка сообщений от нажатых кнопок
+     *
+     * @param update - все возможные события от пользователя
+     * @throws TelegramApiException - отдает сообщение пользователю по его запросу
+     */
+    private void processCallbackQuery(final Update update) throws TelegramApiException {
+        final CallbackQuery callbackQuery = update.getCallbackQuery();
+        final String callbackData = callbackQuery.getData();
+        if (callbackData.contains(MyConstants.SHOW_MORE)) {
+            final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage, MyConstants.SHOW_MORE);
+            execute(editMessageText);
+        } else if (callbackData.contains(MyConstants.SHOW_LESS)) {
+            final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage, MyConstants.SHOW_MORE);
+            execute(editMessageText);
+        } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
+            final EditMessageText editMessageText = calendarProcessService.processShowMore(update, messageDataStorage, MyConstants.SHOW_SHORT_MONTH);
+            execute(editMessageText);
+        } else if (callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
+            final EditMessageText editMessageText = calendarProcessService.processShowLess(update, messageDataStorage, MyConstants.SHOW_FULL_MONTH);
+            execute(editMessageText);
         }
     }
 
