@@ -33,7 +33,6 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
-        <image>registry.hub.docker.com/simakoff/${project.artifactId}:${project.version}</image>
     </properties>
 
     <dependencies>
@@ -81,7 +80,7 @@
         </dependency>
     </dependencies>
 
-    <!--TODO maven-checkstyle-plugin, maven-pmd-plugin, jacoco-maven-plugin-->
+    <!--TODO maven-pmd-plugin, jacoco-maven-plugin-->
     <build>
         <plugins>
             <plugin>
@@ -183,7 +182,7 @@
                 </executions>
             </plugin>
         </plugins>
-        <!-- Defines plugins that are used in the modules. -->
+
         <pluginManagement>
             <plugins>
                 <plugin>
