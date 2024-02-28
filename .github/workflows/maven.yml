@@ -47,7 +47,7 @@ jobs:
   #        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SimakovIgor_bali-events-bot
 
   build:
-    needs: sonar
+#    needs: sonar
     name: Build & push Docker image
     runs-on: ubuntu-latest
     steps:
