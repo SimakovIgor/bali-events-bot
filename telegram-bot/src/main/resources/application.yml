@@ -30,3 +30,9 @@ logging:
     org.zalando.logbook: TRACE
   pattern:
     level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+com:
+  balievent:
+    bot:
+      token: 6781420399:AAHi0vGFUPnh-7wBzC7si7hw1XRQmrNmPzA
+      username: BaliEventsCoordinatebot
