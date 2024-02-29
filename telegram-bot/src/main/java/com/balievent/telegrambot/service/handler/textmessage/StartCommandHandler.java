@@ -25,7 +25,7 @@ public class StartCommandHandler implements TextMessageHandler {
     @Override
     public SendMessage handle(final Update update) {
         final LocalDate localDate = calendarDataStorage.put(update);
-        final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 1, 5);
+        final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 5, 0);
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())

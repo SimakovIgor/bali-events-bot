@@ -13,6 +13,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,16 +30,26 @@ public class DateSelectedHandler implements TextMessageHandler {
 
     @Override
     public SendMessage handle(final Update update) {
+        final int rowStart = 0;
+        final int rowFinish = 9;
         final LocalDate localDate = calendarDataStorage.updateWithSelectedDate(update);
         final int day = localDate.getDayOfMonth();
         final int month = localDate.getMonthValue();
         final int year = localDate.getYear();
+        String lineCut = "";
 
         final String eventListToday = getBriefEventsForToday(day, month, year);
 
+        if (rowStart == 0) {
+            final String format = String.format("%s %02d.%02d.%d%n%s", MyConstants.LIST_OF_EVENTS_ON, day, month, year, eventListToday);
+            lineCut = getLineIsCutOff(format, 0, rowFinish);
+        } else if (rowStart > 0) {
+            lineCut = getLineIsCutOff(eventListToday, rowStart, rowFinish);
+        }
+
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(String.format("%s %02d.%02d.%d%n%s", MyConstants.LIST_OF_EVENTS_ON, day, month, year, eventListToday))
+            .text(lineCut)
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
             .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
@@ -55,5 +67,20 @@ public class DateSelectedHandler implements TextMessageHandler {
                 .append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    private String getLineIsCutOff(final String formattedMessage, final int startIndex, final int endIndex) {
+        final String[] linesArray = formattedMessage.split("\n");
+        final List<String> lines = new ArrayList<>();
+        Collections.addAll(lines, linesArray);
+        //final List<String> lines = Arrays.asList(formattedMessage.split("\n"));
+        int newEndIndex = 0;
+        if (endIndex > lines.size()) {
+            newEndIndex = lines.size();
+        } else {
+            newEndIndex = endIndex;
+        }
+        final List<String> events = lines.subList(startIndex, newEndIndex);
+        return String.join("\n", events);
     }
 }

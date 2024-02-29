@@ -63,7 +63,7 @@ public class ShowMoreHandler extends AbstractShowHandler {
             return String.format("%s %s %n %s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(DATE_TIME_FORMATTER),
                 getDetailedEventsForToday(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear()));
         } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            return eventService.getMessageWithEventsGroupedByDay(localDate, 6, localDate.lengthOfMonth());
+            return eventService.getMessageWithEventsGroupedByDay(localDate, 0, 5);
         }
         return "";
     }
