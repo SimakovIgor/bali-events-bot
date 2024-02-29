@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service;
 
+import com.balievent.telegrambot.configuration.TelegramBotProperties;
 import com.balievent.telegrambot.contant.MyConstants;
 import com.balievent.telegrambot.service.handler.callback.AbstractShowHandler;
 import com.balievent.telegrambot.service.handler.callback.ShowLessHandler;
@@ -31,6 +32,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private final SendShowMoreMessageHandler sendShowMoreMessageHandler;
     private final AbstractShowHandler showLessHandler;
     private final AbstractShowHandler showMoreHandler;
+    private final TelegramBotProperties telegramBotProperties;
 
     public MyTelegramBot(
         final MediaHandler mediaHandler,
@@ -38,20 +40,23 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         final SendShowMoreMessageHandler sendShowMoreMessageHandler,
         final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers,
         final ShowLessHandler showLessHandler,
-        final ShowMoreHandler showMoreHandler) {
-        super("6781420399:AAHi0vGFUPnh-7wBzC7si7hw1XRQmrNmPzA");
+        final ShowMoreHandler showMoreHandler,
+        final TelegramBotProperties telegramBotProperties
+    ) {
+        super(telegramBotProperties.getToken());
         this.mediaHandler = mediaHandler;
         this.messageDataStorage = messageDataStorage;
         this.sendShowMoreMessageHandler = sendShowMoreMessageHandler;
         this.textMessageHandlers = textMessageHandlers;
         this.showLessHandler = showLessHandler;
         this.showMoreHandler = showMoreHandler;
+        this.telegramBotProperties = telegramBotProperties;
 
     }
 
     @Override
     public String getBotUsername() {
-        return "BaliEventsCoordinatebot";
+        return telegramBotProperties.getUsername();
     }
 
     @Override
@@ -105,14 +110,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     private void processCallbackQuery(final Update update) throws TelegramApiException {
         final String callbackData = update.getCallbackQuery().getData();
-
-        if (callbackData.contains(MyConstants.SHOW_MORE)) {
+        if (callbackData.contains(MyConstants.SHOW_MORE) || callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
             execute(showMoreHandler.handle(update));
-        } else if (callbackData.contains(MyConstants.SHOW_LESS)) {
-            execute(showLessHandler.handle(update));
-        } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            execute(showMoreHandler.handle(update));
-        } else if (callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
+        } else if (callbackData.contains(MyConstants.SHOW_LESS) || callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
             execute(showLessHandler.handle(update));
         }
     }
