@@ -1,6 +1,7 @@
-package com.balievent.telegrambot.service.handler.callback;
+package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
 import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
 import com.balievent.telegrambot.service.storage.MessageDataStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 @Service
-public abstract class AbstractShowHandler {
+public abstract class AbstractShowHandler implements CallbackHandler {
     @Autowired
     protected MessageDataStorage messageDataStorage;
 
@@ -23,12 +24,13 @@ public abstract class AbstractShowHandler {
         return Long.parseLong(parts[1]);
     }
 
+    @Override
     public EditMessageText handle(final Update update) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
         final String callbackData = callbackQuery.getData();
 
         final Long callbackMessageId = getCallbackMessageId(callbackData);
-        final String callbackChatId = callbackQuery.getMessage().getChatId().toString();
+        final Long callbackChatId = callbackQuery.getMessage().getChatId();
         final Integer messageId = Integer.parseInt(messageDataStorage.getMessageTimestamp(callbackChatId, callbackMessageId));
 
         final String text = getText(update);

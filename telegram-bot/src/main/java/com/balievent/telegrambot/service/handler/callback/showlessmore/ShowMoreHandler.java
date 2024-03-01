@@ -1,7 +1,9 @@
-package com.balievent.telegrambot.service.handler.callback;
+package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
 import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.contant.Settings;
 import com.balievent.telegrambot.model.entity.Event;
+import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.service.support.EventService;
 import com.balievent.telegrambot.util.CommonUtil;
 import com.balievent.telegrambot.util.GetGoogleMapLink;
@@ -12,13 +14,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ShowMoreHandler extends AbstractShowHandler {
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final EventService eventService;
 
     private static String getShowWord(final String showWord) {
@@ -27,6 +27,11 @@ public class ShowMoreHandler extends AbstractShowHandler {
         } else {
             return MyConstants.SHOW_SHORT_MONTH;
         }
+    }
+
+    @Override
+    public CallbackHandlerMessageType getHandlerType() {
+        return CallbackHandlerMessageType.SHOW_MORE;
     }
 
     private String getDetailedEventsForToday(final int day, final int month, final int year) {
@@ -54,16 +59,16 @@ public class ShowMoreHandler extends AbstractShowHandler {
 
     @Override
     protected String getText(final Update update) {
-        final String callbackChatId = update.getCallbackQuery().getMessage().getChatId().toString();
+        final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
         final String callbackData = update.getCallbackQuery().getData();
         final Long callbackMessageId = getCallbackMessageId(callbackData);
         final LocalDate localDate = messageDataStorage.getLocalDate(callbackChatId, callbackMessageId);
 
         if (callbackData.contains(MyConstants.SHOW_MORE)) {
-            return String.format("%s %s %n %s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(DATE_TIME_FORMATTER),
+            return String.format("%s %s %n %s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(Settings.PRINT_DATE_TIME_FORMATTER),
                 getDetailedEventsForToday(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear()));
         } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            return eventService.getMessageWithEventsGroupedByDay(localDate, 6, localDate.lengthOfMonth());
+            return eventService.getMessageWithEventsGroupedByDayFull(localDate, 6, localDate.lengthOfMonth());
         }
         return "";
     }

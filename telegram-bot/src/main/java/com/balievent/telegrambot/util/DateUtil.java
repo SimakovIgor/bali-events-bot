@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.util;
 
+import com.balievent.telegrambot.contant.Settings;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
@@ -93,21 +94,24 @@ public class DateUtil {
         return String.format("%02d.%02d.%d", day, month, year);
     }
 
-    public static String convertToDateTimeCalendarMonthChanged(final String text, final LocalDate currentLocalDate) {
+    public static LocalDate convertToDateTimeCalendarMonthChanged(final String text, final LocalDate currentLocalDate) {
         final int day = currentLocalDate.getDayOfMonth();
         final int monthNumber = DateUtil.getMonthNumber(text);
         final int year = adjustYearForMonthTransition(currentLocalDate.getMonthValue(), monthNumber, currentLocalDate.getYear());
 
-        return String.format("%02d.%02d.%d", day, monthNumber, year);
+        final String formatted = String.format("%02d.%02d.%d", day, monthNumber, year);
+        return LocalDate.parse(formatted, Settings.PRINT_DATE_TIME_FORMATTER);
     }
 
-    public static String parseSelectedDate(final String text, final LocalDate storedLocalDate) {
+    public static LocalDate parseSelectedDate(final String text, final LocalDate storedLocalDate) {
         if (DateUtil.isContainsTextMonth(text)) {
-            return DateUtil.convertToLocalDateSelected(text, storedLocalDate);
+            final String strDate = DateUtil.convertToLocalDateSelected(text, storedLocalDate);
+            return LocalDate.parse(strDate, Settings.PRINT_DATE_TIME_FORMATTER);
         } else if (text.startsWith("/")) {
-            return text.substring(1).replace("_", ".");
+            final String strDate = text.substring(1).replace("_", ".");
+            return LocalDate.parse(strDate, Settings.PRINT_DATE_TIME_FORMATTER);
         } else {
-            return text;
+            return LocalDate.parse(text, Settings.PRINT_DATE_TIME_FORMATTER);
         }
     }
 

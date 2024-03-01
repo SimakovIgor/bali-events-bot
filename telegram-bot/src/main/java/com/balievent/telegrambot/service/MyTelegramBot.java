@@ -2,19 +2,20 @@ package com.balievent.telegrambot.service;
 
 import com.balievent.telegrambot.configuration.TelegramBotProperties;
 import com.balievent.telegrambot.contant.MyConstants;
-import com.balievent.telegrambot.service.handler.callback.AbstractShowHandler;
-import com.balievent.telegrambot.service.handler.callback.ShowLessHandler;
-import com.balievent.telegrambot.service.handler.callback.ShowMoreHandler;
+import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
+import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.service.handler.common.MediaHandler;
-import com.balievent.telegrambot.service.handler.common.SendShowMoreMessageHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandlerType;
 import com.balievent.telegrambot.service.storage.MessageDataStorage;
+import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessages;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
@@ -27,31 +28,27 @@ import java.util.Map;
 @Slf4j
 public class MyTelegramBot extends TelegramLongPollingBot {
     private final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers;
-    private final MediaHandler mediaHandler;
-    private final MessageDataStorage messageDataStorage;
-    private final SendShowMoreMessageHandler sendShowMoreMessageHandler;
-    private final AbstractShowHandler showLessHandler;
-    private final AbstractShowHandler showMoreHandler;
+    private final Map<CallbackHandlerMessageType, CallbackHandler> callbackHandlers;
     private final TelegramBotProperties telegramBotProperties;
+    private final MessageDataStorage messageDataStorage;
+    private final UserDataStorage userDataStorage;
+    private final MediaHandler mediaHandler;
 
     public MyTelegramBot(
         final MediaHandler mediaHandler,
         final MessageDataStorage messageDataStorage,
-        final SendShowMoreMessageHandler sendShowMoreMessageHandler,
         final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers,
-        final ShowLessHandler showLessHandler,
-        final ShowMoreHandler showMoreHandler,
-        final TelegramBotProperties telegramBotProperties
+        final Map<CallbackHandlerMessageType, CallbackHandler> callbackHandlers,
+        final TelegramBotProperties telegramBotProperties,
+        final UserDataStorage userDataStorage
     ) {
         super(telegramBotProperties.getToken());
         this.mediaHandler = mediaHandler;
         this.messageDataStorage = messageDataStorage;
-        this.sendShowMoreMessageHandler = sendShowMoreMessageHandler;
         this.textMessageHandlers = textMessageHandlers;
-        this.showLessHandler = showLessHandler;
-        this.showMoreHandler = showMoreHandler;
         this.telegramBotProperties = telegramBotProperties;
-
+        this.userDataStorage = userDataStorage;
+        this.callbackHandlers = callbackHandlers;
     }
 
     @Override
@@ -80,21 +77,21 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - отдает сообщение пользователю по его запросу
      */
     private void processTextMessage(final Update update) throws TelegramApiException {
+        final Long chatId = update.getMessage().getChatId();
         if (update.getMessage().getText().contains("/start")) { // обработчик команды /start
             // Обработчик класс StartCommandHandler
             execute(textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update));
-            executeSendShowMoreMessage(update, MyConstants.SHOW_FULL_MONTH);
+            executeSendShowMoreMessage(update, chatId);
 
         } else if (DateUtil.isCalendarMonthChanged(update.getMessage().getText())) { // обработчик изменения месяца в календаре
             // Обработчик класс CalendarMonthChangedHandler
             execute(textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED).handle(update));
-            executeSendShowMoreMessage(update, MyConstants.SHOW_FULL_MONTH);
+            executeSendShowMoreMessage(update, chatId);
 
         } else if (DateUtil.isDateSelected(update.getMessage().getText())) { // обработчик выбора даты
             // Обработчик класс DateSelectedHandler
             execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
-            executeSendMedia(update);
-            executeSendShowMoreMessage(update, MyConstants.SHOW_MORE);
+            executeSendMedia(chatId);
 
         } else { // обработчик непонятных сообщений
             // Обработчик класс MisUnderstandingMessageHandler
@@ -111,30 +108,64 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private void processCallbackQuery(final Update update) throws TelegramApiException {
         final String callbackData = update.getCallbackQuery().getData();
         if (callbackData.contains(MyConstants.SHOW_MORE) || callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            execute(showMoreHandler.handle(update));
+            // Обработчик класс ShowMoreHandler
+            execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_MORE).handle(update));
         } else if (callbackData.contains(MyConstants.SHOW_LESS) || callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
-            execute(showLessHandler.handle(update));
+            // Обработчик класс ShowLessHandler
+            execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_LESS).handle(update));
+        } else if (callbackData.contains("next_pagination")) {
+            // Обработчик класс NextPaginationHandler
+            execute(callbackHandlers.get(CallbackHandlerMessageType.NEXT_PAGINATION).handle(update));
+            updateMedia(update.getCallbackQuery().getMessage().getChatId());
+        } else if (callbackData.contains("previous_pagination")) {
+            // Обработчик класс PreviousPaginationHandler
+            execute(callbackHandlers.get(CallbackHandlerMessageType.PREVIOUS_PAGINATION).handle(update));
+            updateMedia(update.getCallbackQuery().getMessage().getChatId());
         }
     }
 
-    private void executeSendShowMoreMessage(final Update update, final String callbackName) throws TelegramApiException {
-        if (mediaHandler.findEventPhotosForUserDate(update).isEmpty()) {
-            return;
-        }
-        final Message messageExecute = execute(sendShowMoreMessageHandler.handle(update, callbackName));
-        messageDataStorage.addUserMessageData(messageExecute, update);
+    /**
+     * Обновление медиафайлов в чате пользователя (Удаление и создание новых)
+     *
+     * @param chatId - идентификатор чата
+     * @throws TelegramApiException - ошибка
+     */
+    private void updateMedia(final Long chatId) throws TelegramApiException {
+        execute(DeleteMessages.builder()
+            .chatId(chatId)
+            .messageIds(userDataStorage.getUserData(chatId).getMediaIdList())
+            .build());
+        executeSendMedia(chatId);
     }
 
-    private void executeSendMedia(final Update update) {
+    /**
+     * Отправка сообщения "Показать еще" пользователю
+     *
+     * @param update - все возможные события от пользователя
+     * @param chatId - идентификатор чата
+     * @throws TelegramApiException - ошибка
+     */
+    private void executeSendShowMoreMessage(final Update update, final Long chatId) throws TelegramApiException {
+        final SendMessage sendMessage = textMessageHandlers.get(TextMessageHandlerType.SEND_SHOW_MORE_MESSAGE)
+            .handle(update);
+        final Message messageExecute = execute(sendMessage);
+        messageDataStorage.addUserMessageData(messageExecute, chatId);
+    }
+
+    /**
+     * Отправка медиафайлов пользователю в зависимости от количества найденных фотографий
+     *
+     * @param chatId - идентификатор чата
+     */
+    private void executeSendMedia(final Long chatId) {
         try {
-            final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotosForUserDate(update);
+            final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotos(chatId);
             if (eventPhotos.size() == 1) {
-                execute(mediaHandler.handleSingleMedia(update, eventPhotos));
+                execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
             } else {
-                final List<SendMediaGroup> sendMediaGroups = mediaHandler.handleMultipleMedia(update, eventPhotos);
-                for (SendMediaGroup sendMediaGroup : sendMediaGroups) {
-                    execute(sendMediaGroup);
-                }
+                final SendMediaGroup sendMediaGroup = mediaHandler.handleMultipleMedia(chatId, eventPhotos);
+                final List<Message> messageList = execute(sendMediaGroup);
+                userDataStorage.saveMediaIdList(messageList, chatId);
             }
         } catch (TelegramApiException e) {
             log.error("Failed to send media", e);
