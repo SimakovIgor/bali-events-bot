@@ -26,7 +26,7 @@ public class CalendarMonthChangedHandler implements TextMessageHandler {
     @Override
     public SendMessage handle(final Update update) {
         final LocalDate localDate = userDataStorage.updateWithCalendarMonthChanged(update);
-        final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 1, 5);
+        final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 1, localDate.lengthOfMonth());
         final String text = update.getMessage().getText();
 
         return SendMessage.builder()

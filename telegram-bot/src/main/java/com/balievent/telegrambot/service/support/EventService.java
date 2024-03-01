@@ -53,7 +53,8 @@ public class EventService {
     public String getMessageWithEventsGroupedByDay(final LocalDate localDate,
                                                    final int dayStart,
                                                    final int dayFinish) {
-        final Map<LocalDate, List<Event>> eventMap = getEventsAndGroupByDay(localDate, dayStart, dayFinish)
+        final Map<LocalDate, List<Event>> eventsAndGroupByDay = getEventsAndGroupByDay(localDate, dayStart, dayFinish);
+        final Map<LocalDate, List<Event>> eventMap = eventsAndGroupByDay
             .entrySet()
             .stream()
             .sorted(COMPARING_BY_LOCAL_DATE)
