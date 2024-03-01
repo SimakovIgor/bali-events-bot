@@ -28,20 +28,16 @@ public class KeyboardUtil {
         final int daysInMonth = month.length(LocalDate.now().isLeapYear());
         final String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
 
-        final ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         final List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
 
-        int char1310 = 5; // количество дней в одной строке можно установить от 5 до 10
-        if (daysInMonth == 31 && char1310 == 10) { // если в месяце 31 день то делаема 11 колонок в строке
-            char1310 = char1310 + 1;
-        }
+        int colsCount = 5; // количество дней в одной строке можно установить от 5 до 10
 
         for (int i = 1; i <= daysInMonth; i++) {
             final String buttonText = String.format("%02d %s", i, monthName);
             row.add(buttonText);
 
-            if (i % char1310 == 0 && i < 30) {
+            if (i % colsCount == 0 && i < 30) {
                 keyboard.add(row);
                 row = new KeyboardRow();
             }
@@ -65,8 +61,10 @@ public class KeyboardUtil {
 
         keyboard.add(row);
 
-        keyboardMarkup.setKeyboard(keyboard);
-        return keyboardMarkup;
+        return ReplyKeyboardMarkup.builder()
+            .keyboard(keyboard)
+            .isPersistent(true)
+            .build();
     }
 
     public static InlineKeyboardMarkup setShowMoreButtonKeyboard(final Long nextMessageNumber, final String callbackName) {
