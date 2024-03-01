@@ -12,7 +12,7 @@ import java.util.Objects;
 @Data
 @Builder
 public class MessagePrimaryKey {
-    private String chatId;
+    private Long chatId;
     private Long messageNumber;
 
     @Override

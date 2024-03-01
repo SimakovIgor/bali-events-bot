@@ -9,7 +9,6 @@ import com.balievent.telegrambot.model.entity.MessagePrimaryKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -19,9 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class MessageDataStorage {
     private final Map<MessagePrimaryKey, MessageData> messageDataMap = new ConcurrentHashMap<>();
-    private final CalendarDataStorage calendarDataStorage;
+    private final UserDataStorage userDataStorage;
 
-    private static MessagePrimaryKey getMessagePrimaryKey(final String chatId, final Long messageNumber) {
+    private static MessagePrimaryKey getMessagePrimaryKey(final Long chatId, final Long messageNumber) {
         return MessagePrimaryKey.builder()
             .chatId(chatId)
             .messageNumber(messageNumber)
@@ -29,10 +28,9 @@ public class MessageDataStorage {
     }
 
     public void addUserMessageData(final Message sentMessage,
-                                   final Update update) {
-        final LocalDate timestamp = calendarDataStorage.get(update);
+                                   final Long chatId) {
+        final LocalDate timestamp = userDataStorage.getCalendarDate(chatId);
 
-        final String chatId = update.getMessage().getChatId().toString();
         final Long nextMessageNumber = calculateNextMessageId(chatId);
         final String messageId = sentMessage.getMessageId().toString();
 
@@ -47,7 +45,7 @@ public class MessageDataStorage {
      * @param messageId     - Id отправленного сообщения
      * @param timestamp     - дату запроса для этого сообщения
      */
-    public void addMessage(final String chatId,
+    public void addMessage(final Long chatId,
                            final Long messageNumber,
                            final String messageId,
                            final LocalDate timestamp) {
@@ -66,7 +64,7 @@ public class MessageDataStorage {
      * @param chatId - id chat
      * @return - Следующий свободный идентификатор сообщения
      */
-    public Long calculateNextMessageId(final String chatId) {
+    public Long calculateNextMessageId(final Long chatId) {
         return messageDataMap.keySet().stream()
             .filter(key -> key.getChatId().equals(chatId))
             .map(MessagePrimaryKey::getMessageNumber)
@@ -75,7 +73,7 @@ public class MessageDataStorage {
             .orElse(1L);
     }
 
-    public String getMessageTimestamp(final String chatId, final Long messageNumber) {
+    public String getMessageTimestamp(final Long chatId, final Long messageNumber) {
         final MessagePrimaryKey key = getMessagePrimaryKey(chatId, messageNumber);
         return messageDataMap.get(key).getMessageId();
     }
@@ -87,7 +85,7 @@ public class MessageDataStorage {
      * @param messageNumber - номер сообщения
      * @return - дата запроса
      */
-    public LocalDate getLocalDate(final String chatId, final Long messageNumber) {
+    public LocalDate getLocalDate(final Long chatId, final Long messageNumber) {
         final MessagePrimaryKey key = getMessagePrimaryKey(chatId, messageNumber);
         return messageDataMap.get(key).getTimestamp();
     }

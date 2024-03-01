@@ -105,6 +105,23 @@ public class KeyboardUtil {
         return markupInline;
     }
 
+    public static InlineKeyboardMarkup getPaginationKeyboard() {
+        final List<InlineKeyboardButton> row = List.of(
+            InlineKeyboardButton.builder()
+                .text("⬅️ Previous")
+                .callbackData("previous_pagination")
+                .build(),
+            InlineKeyboardButton.builder()
+                .text("Next ➡️")
+                .callbackData("next_pagination")
+                .build()
+        );
+
+        return InlineKeyboardMarkup.builder()
+            .keyboard(List.of(row))
+            .build();
+    }
+
     public InlineKeyboardMarkup updateButton(final String callbackData) {
         // Получаем разметку кнопки с помощью нашего метода
         return setShowMoreButtonKeyboard(MyConstants.SHOW_LESS_TEXT, callbackData);

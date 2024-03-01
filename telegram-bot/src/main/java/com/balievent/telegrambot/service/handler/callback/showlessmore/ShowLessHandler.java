@@ -1,6 +1,7 @@
-package com.balievent.telegrambot.service.handler.callback;
+package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
 import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,11 @@ public class ShowLessHandler extends AbstractShowHandler {
         } else {
             return MyConstants.SHOW_FULL_MONTH;
         }
+    }
+
+    @Override
+    public CallbackHandlerMessageType getHandlerType() {
+        return CallbackHandlerMessageType.SHOW_LESS;
     }
 
     @Override

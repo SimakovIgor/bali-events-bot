@@ -5,7 +5,6 @@ import com.bali.events.balievents.model.Scrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -25,7 +24,6 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     public static final int MAX_MONTH_COUNT_WITH_EVENTS = 9;
     private static final By BY_EVENT_GROUP = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]");
     private static final By BY_BUTTON_WRAPPER = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[1]");
-    private static final By BY_BUTTON_ACCESS = By.xpath("/html/body/div[11]/div[2]/div[1]/div[2]/div[2]/button[2]/p");
     private static final String BY_TOPICS = "./child::*";
     private static final String BY_NEXT_BUTTON = "evcal_next";
     private final UpdateEventService updateEventService;
@@ -58,7 +56,6 @@ public class TheBeatBaliScrapperService implements ScrapperService {
                 break;
             }
 
-            handleConsentForDataUsageButton(webDriver);
             navigateToNextPage(webDriver);
         }
 
@@ -143,26 +140,6 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private void navigateToWebsite(final WebDriver webDriver) {
         webDriver.get(rootName());
         delay(25000);
-    }
-
-    /**
-     * Этот сайт запрашивает у вас согласие на использование ваших данных
-     * Кнопка появляется рандомно и блокирует все другие нажатия,
-     * нужно по ней кликнуть если она есть
-     *
-     * @param webDriver - открытый браузер
-     */
-    private void handleConsentForDataUsageButton(final WebDriver webDriver) {
-        try {
-            final List<WebElement> specialButtons = webDriver.findElements(BY_BUTTON_ACCESS);
-            if (!specialButtons.isEmpty()) {
-                final WebElement specialButton = specialButtons.getFirst();
-                specialButton.click();
-                delay(2000);
-            }
-        } catch (NoSuchElementException e) {
-            log.error("Error processing element: {}", e.getMessage());
-        }
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
 import com.balievent.telegrambot.contant.MyConstants;
-import com.balievent.telegrambot.service.storage.CalendarDataStorage;
+import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.service.support.EventService;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class CalendarMonthChangedHandler implements TextMessageHandler {
 
     private final EventService eventService;
-    private final CalendarDataStorage calendarDataStorage;
+    private final UserDataStorage userDataStorage;
 
     @Override
     public TextMessageHandlerType getHandlerType() {
@@ -25,7 +25,7 @@ public class CalendarMonthChangedHandler implements TextMessageHandler {
 
     @Override
     public SendMessage handle(final Update update) {
-        final LocalDate localDate = calendarDataStorage.updateWithCalendarMonthChanged(update);
+        final LocalDate localDate = userDataStorage.updateWithCalendarMonthChanged(update);
         final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 1, 5);
         final String text = update.getMessage().getText();
 
