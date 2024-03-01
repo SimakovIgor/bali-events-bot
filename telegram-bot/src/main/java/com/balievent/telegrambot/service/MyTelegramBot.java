@@ -146,8 +146,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void executeSendShowMoreMessage(final Update update, final Long chatId) throws TelegramApiException {
-        final SendMessage sendMessage = textMessageHandlers.get(TextMessageHandlerType.SEND_SHOW_MORE_MESSAGE)
-            .handle(update);
+        final SendMessage sendMessage = textMessageHandlers.get(TextMessageHandlerType.SEND_SHOW_MORE_MESSAGE).handle(update);
         final Message messageExecute = execute(sendMessage);
         messageDataStorage.addUserMessageData(messageExecute, chatId);
     }

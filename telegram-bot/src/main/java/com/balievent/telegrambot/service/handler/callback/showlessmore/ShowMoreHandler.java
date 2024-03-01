@@ -65,10 +65,11 @@ public class ShowMoreHandler extends AbstractShowHandler {
         final LocalDate localDate = messageDataStorage.getLocalDate(callbackChatId, callbackMessageId);
 
         if (callbackData.contains(MyConstants.SHOW_MORE)) {
-            return String.format("%s %s %n %s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(Settings.PRINT_DATE_TIME_FORMATTER),
-                getDetailedEventsForToday(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear()));
+            final String detailedEventsForToday = getDetailedEventsForToday(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+            return String.format("%s %s %n %s", MyConstants.LIST_OF_EVENTS_ON,
+                localDate.format(Settings.PRINT_DATE_TIME_FORMATTER), detailedEventsForToday);
         } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            return eventService.getMessageWithEventsGroupedByDayFull(localDate, 6, localDate.lengthOfMonth());
+            return eventService.getMessageWithEventsGroupedByDayFull(localDate, 1, localDate.lengthOfMonth());
         }
         return "";
     }
