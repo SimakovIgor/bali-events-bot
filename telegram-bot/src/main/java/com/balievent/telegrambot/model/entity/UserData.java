@@ -16,5 +16,6 @@ public class UserData {
     private LocalDate calendarDate;
     private Integer page;
     private List<Integer> mediaIdList;
+    private Integer lastDateSelectedMessageId;
 
 }

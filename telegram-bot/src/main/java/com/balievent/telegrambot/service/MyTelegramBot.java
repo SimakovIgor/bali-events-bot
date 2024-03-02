@@ -12,6 +12,7 @@ import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -89,10 +90,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             executeSendShowMoreMessage(update, chatId);
 
         } else if (DateUtil.isDateSelected(update.getMessage().getText())) { // обработчик выбора даты
-            // Обработчик класс DateSelectedHandler
-            execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
-            executeSendMedia(chatId);
-
+            processDateSelected(update, chatId);
         } else { // обработчик непонятных сообщений
             // Обработчик класс MisUnderstandingMessageHandler
             execute(textMessageHandlers.get(TextMessageHandlerType.MIS_UNDERSTANDING_MESSAGE).handle(update));
@@ -107,6 +105,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     private void processCallbackQuery(final Update update) throws TelegramApiException {
         final String callbackData = update.getCallbackQuery().getData();
+        final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
         if (callbackData.contains(MyConstants.SHOW_MORE) || callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
             // Обработчик класс ShowMoreHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_MORE).handle(update));
@@ -116,11 +115,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         } else if (callbackData.contains("next_pagination")) {
             // Обработчик класс NextPaginationHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.NEXT_PAGINATION).handle(update));
-            updateMedia(update.getCallbackQuery().getMessage().getChatId());
+            updateMedia(callbackChatId);
         } else if (callbackData.contains("previous_pagination")) {
             // Обработчик класс PreviousPaginationHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.PREVIOUS_PAGINATION).handle(update));
-            updateMedia(update.getCallbackQuery().getMessage().getChatId());
+            updateMedia(callbackChatId);
         }
     }
 
@@ -131,10 +130,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void updateMedia(final Long chatId) throws TelegramApiException {
-        execute(DeleteMessages.builder()
-            .chatId(chatId)
-            .messageIds(userDataStorage.getUserData(chatId).getMediaIdList())
-            .build());
+        removeMediaMessage(chatId);
         executeSendMedia(chatId);
     }
 
@@ -161,9 +157,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotos(chatId);
             if (eventPhotos.size() == 1) {
                 execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
-            } else {
+            } else if (eventPhotos.size() > 1) {
                 final SendMediaGroup sendMediaGroup = mediaHandler.handleMultipleMedia(chatId, eventPhotos);
                 final List<Message> messageList = execute(sendMediaGroup);
+                //Сохраняем для дальнейшей очистки сообщений
                 userDataStorage.saveMediaIdList(messageList, chatId);
             }
         } catch (TelegramApiException e) {
@@ -171,5 +168,53 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Обработка выбора даты пользователем
+     *
+     * @param update - все возможные события от пользователя
+     * @param chatId - идентификатор чата
+     * @throws TelegramApiException - ошибка
+     */
+    private void processDateSelected(final Update update, final Long chatId) throws TelegramApiException {
+        removeLastDateSelectedMessageIfExist(chatId);
+        // Обработчик класс DateSelectedHandler
+        final Message message = execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
+        userDataStorage.saveLastDateSelectedMessageId(message.getMessageId(), chatId);
+
+        executeSendMedia(chatId);
+    }
+
+    /**
+     * Удаление последнего сообщения со списком ивентов на определенную дату , если оно существует
+     *
+     * @param chatId - идентификатор чата
+     * @throws TelegramApiException - ошибка
+     */
+    private void removeLastDateSelectedMessageIfExist(final Long chatId) throws TelegramApiException {
+        final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
+        if (!CollectionUtils.isEmpty(messageIds)) {
+            execute(DeleteMessages.builder()
+                .chatId(chatId)
+                .messageIds(messageIds)
+                .build());
+        }
+    }
+
+    /**
+     * Удаление последних отправленных медиафайлов в чате пользователя
+     *
+     * @param chatId - идентификатор чата
+     * @throws TelegramApiException - ошибка
+     */
+    private void removeMediaMessage(final Long chatId) throws TelegramApiException {
+        final List<Integer> mediaIdList = userDataStorage.getUserData(chatId).getMediaIdList();
+        if (!CollectionUtils.isEmpty(mediaIdList)) {
+            execute(DeleteMessages.builder()
+                .chatId(chatId)
+                .messageIds(mediaIdList)
+                .build());
+        }
+
+    }
 }
 
