@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,6 +86,33 @@ public class UserDataStorage {
         userData.setMediaIdList(idList);
         return userData;
 
+    }
+
+    public UserData saveLastDateSelectedMessageId(final Integer messageId, final Long chatId) {
+        final UserData userData = calendarStore.get(chatId);
+        userData.setLastDateSelectedMessageId(messageId);
+        return userData;
+    }
+
+    /**
+     * Возвращает список всех идентификаторов сообщений для удаления
+     *
+     * @param chatId - идентификатор чата
+     * @return - список идентификаторов сообщений
+     */
+    public List<Integer> getAllMessageIdsForDelete(final Long chatId) {
+        final UserData userData = getUserData(chatId);
+        final Integer messageId = userData.getLastDateSelectedMessageId();
+
+        final List<Integer> mediaIdList = userData.getMediaIdList();
+        final List<Integer> messageIds = new ArrayList<>();
+        if (mediaIdList != null) {
+            messageIds.addAll(mediaIdList);
+        }
+        if (messageId != null) {
+            messageIds.add(messageId);
+        }
+        return messageIds;
     }
 
 }

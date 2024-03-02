@@ -16,6 +16,8 @@ import java.util.Locale;
 @UtilityClass
 public class KeyboardUtil {
 
+    public static final int COLS_COUNT = 5; // количество дней в одной строке можно установить от 5 до 10
+
     public static ReplyKeyboardMarkup setCalendar(final int currentMonth, final int currentYear) {
         final int currentMonthNoZero = currentMonth == 0
                                        ? LocalDate.now().getMonthValue()
@@ -31,35 +33,31 @@ public class KeyboardUtil {
         final List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
 
-        int colsCount = 5; // количество дней в одной строке можно установить от 5 до 10
-
         for (int i = 1; i <= daysInMonth; i++) {
             final String buttonText = String.format("%02d %s", i, monthName);
             row.add(buttonText);
 
-            if (i % colsCount == 0 && i < 30) {
+            if (i % COLS_COUNT == 0 && i < 30) {
                 keyboard.add(row);
                 row = new KeyboardRow();
             }
         }
 
         keyboard.add(row);
-        row = new KeyboardRow();
 
+        final KeyboardRow monthChangeRow = new KeyboardRow();
         final String buttonPreviousMonthText = String.format("%s (%02d.%04d)",
             monthPrevious,
             (currentMonthNoZero + 10) % 12 + 1,
             currentMonthNoZero == 1 ? currentYear - 1 : currentYear);
-
-        row.add(buttonPreviousMonthText);
+        monthChangeRow.add(buttonPreviousMonthText);
 
         final String buttonNextMonthText = String.format("%s (%02d.%04d)",
             monthNext,
             currentMonthNoZero % 12 + 1,
             currentMonthNoZero == 12 ? currentYear + 1 : currentYear);
-        row.add(buttonNextMonthText);
-
-        keyboard.add(row);
+        monthChangeRow.add(buttonNextMonthText);
+        keyboard.add(monthChangeRow);
 
         return ReplyKeyboardMarkup.builder()
             .keyboard(keyboard)
@@ -67,40 +65,34 @@ public class KeyboardUtil {
             .build();
     }
 
-    public static InlineKeyboardMarkup setShowMoreButtonKeyboard(final Long nextMessageNumber, final String callbackName) {
-        final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        final List<InlineKeyboardButton> rowInline = new ArrayList<>();
+    public static InlineKeyboardMarkup setShowMoreButtonKeyboard(final Long nextMessageNumber,
+                                                                 final String callbackName) {
+        final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
+            .text(MyConstants.SHOW_MORE_TEXT)
+            // Устанавливаем номер сообщения для этого пользователя
+            .callbackData(callbackName + MyConstants.COLON_MARK + nextMessageNumber)
+            .build();
 
-        final InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText(MyConstants.SHOW_MORE_TEXT);
+        final List<InlineKeyboardButton> rowInline = List.of(inlineKeyboardButton);
+        final List<List<InlineKeyboardButton>> rowsInline = List.of(rowInline);
 
-        // Устанавливаем номер сообщения для этого пользователя
-        inlineKeyboardButton.setCallbackData(callbackName + MyConstants.COLON_MARK + nextMessageNumber);
-
-        rowInline.add(inlineKeyboardButton);
-        rowsInline.add(rowInline);
-
-        final InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        markupInline.setKeyboard(rowsInline);
-
-        return markupInline;
+        return InlineKeyboardMarkup.builder()
+            .keyboard(rowsInline)
+            .build();
     }
 
-    public InlineKeyboardMarkup setShowMoreButtonKeyboard(final String buttonText, final String buttonName) {
-        final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        final List<InlineKeyboardButton> rowInline = new ArrayList<>();
+    public InlineKeyboardMarkup setShowMoreButtonKeyboard(final String buttonText, final String callbackData) {
+        final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
+            .text(buttonText)
+            .callbackData(callbackData)
+            .build();
 
-        final InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText(buttonText);
-        inlineKeyboardButton.setCallbackData(buttonName);
+        final List<InlineKeyboardButton> rowInline = List.of(inlineKeyboardButton);
+        final List<List<InlineKeyboardButton>> rowsInline = List.of(rowInline);
 
-        rowInline.add(inlineKeyboardButton);
-        rowsInline.add(rowInline);
-
-        final InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        markupInline.setKeyboard(rowsInline);
-
-        return markupInline;
+        return InlineKeyboardMarkup.builder()
+            .keyboard(rowsInline)
+            .build();
     }
 
     public static InlineKeyboardMarkup getPaginationKeyboard() {
