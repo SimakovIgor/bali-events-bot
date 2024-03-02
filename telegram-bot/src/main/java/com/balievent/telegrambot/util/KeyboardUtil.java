@@ -16,6 +16,8 @@ import java.util.Locale;
 @UtilityClass
 public class KeyboardUtil {
 
+    public static final int COLS_COUNT = 5; // количество дней в одной строке можно установить от 5 до 10
+
     public static ReplyKeyboardMarkup setCalendar(final int currentMonth, final int currentYear) {
         final int currentMonthNoZero = currentMonth == 0
                                        ? LocalDate.now().getMonthValue()
@@ -31,13 +33,11 @@ public class KeyboardUtil {
         final List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
 
-        int colsCount = 5; // количество дней в одной строке можно установить от 5 до 10
-
         for (int i = 1; i <= daysInMonth; i++) {
             final String buttonText = String.format("%02d %s", i, monthName);
             row.add(buttonText);
 
-            if (i % colsCount == 0 && i < 30) {
+            if (i % COLS_COUNT == 0 && i < 30) {
                 keyboard.add(row);
                 row = new KeyboardRow();
             }
@@ -50,7 +50,6 @@ public class KeyboardUtil {
             monthPrevious,
             (currentMonthNoZero + 10) % 12 + 1,
             currentMonthNoZero == 1 ? currentYear - 1 : currentYear);
-
         row.add(buttonPreviousMonthText);
 
         final String buttonNextMonthText = String.format("%s (%02d.%04d)",
@@ -58,7 +57,6 @@ public class KeyboardUtil {
             currentMonthNoZero % 12 + 1,
             currentMonthNoZero == 12 ? currentYear + 1 : currentYear);
         row.add(buttonNextMonthText);
-
         keyboard.add(row);
 
         return ReplyKeyboardMarkup.builder()
