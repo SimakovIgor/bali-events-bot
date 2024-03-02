@@ -14,10 +14,10 @@ public class SchedulerService {
     private final TheBeatBaliScrapperService theBeatBaliScrapperService;
 
     /**
-     * Запускаем задачу каждые 30 секунд
+     * Запускаем задачу каждые 10 часов
      * Логика работы программы начинается отсюда
      */
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 36000000L)
     public void scheduleTask() {
 
         log.info("Scheduled task started!");

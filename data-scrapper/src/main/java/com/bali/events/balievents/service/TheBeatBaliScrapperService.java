@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,8 +24,8 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private static final By BY_EVENT_GROUP = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]");
     private static final By BY_BUTTON_WRAPPER = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[1]");
     private static final String BY_TOPICS = "./child::*";
-    private static final String BY_NEXT_BUTTON = "evcal_next";
     private final UpdateEventService updateEventService;
+    private final WebDriver webDriver;
 
     /**
      * Здесь указывается сайт который мы будем считывать
@@ -43,28 +42,27 @@ public class TheBeatBaliScrapperService implements ScrapperService {
      */
     @Override
     public void process() {
-        final WebDriver webDriver = new ChromeDriver();
         navigateToWebsite(webDriver);
 
         for (int i = 0; i < MAX_MONTH_COUNT_WITH_EVENTS; i++) {
             final List<WebElement> parsedEventList = getParsedEventList(webDriver);
+            log.info("Month proceeding [{} / {}]... Month events size: {} ", i, MAX_MONTH_COUNT_WITH_EVENTS, parsedEventList.size() - 1);
 
             // Если объектов менее 2, то это только объект рекламы у которого нет ID
-            if (parsedEventList.size() > 1) {
-                processEvents(parsedEventList);
-            } else {
-                break;
+            if (parsedEventList.size() <= 2) {
+                continue;
             }
 
-            navigateToNextPage(webDriver);
+            processEvents(parsedEventList);
+            navigateToNextMonth(webDriver);
         }
 
         webDriver.quit();
     }
 
     private void processEvents(final List<WebElement> parsedEventList) {
-        int ii = 1;
-        for (WebElement child : parsedEventList) {
+        for (int i = 0; i < parsedEventList.size(); i++) {
+            final WebElement child = parsedEventList.get(i);
 
             final String externalId = child.getAttribute("id");
             if (!StringUtils.hasText(externalId)) {
@@ -74,7 +72,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
             final EventDto eventDto = createEventDto(child);
             updateEventService.saveOrUpdate(eventDto);
-            log.info("processed {} / {}", ii++, parsedEventList.size());
+            log.info("Event processed [{} / {}]", i, parsedEventList.size() - 1);
         }
     }
 
@@ -126,9 +124,10 @@ public class TheBeatBaliScrapperService implements ScrapperService {
      *
      * @param webDriver - открытый браузер
      */
-    private void navigateToNextPage(final WebDriver webDriver) {
-        webDriver.findElement(BY_BUTTON_WRAPPER).findElement(By.id(BY_NEXT_BUTTON)).click();
-        delay(25000);
+    private void navigateToNextMonth(final WebDriver webDriver) {
+        log.info("Switching to the next month...");
+        webDriver.findElement(BY_BUTTON_WRAPPER).findElement(By.id("evcal_next")).click();
+        delay(20000);
     }
 
     /**
@@ -139,6 +138,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
      */
     private void navigateToWebsite(final WebDriver webDriver) {
         webDriver.get(rootName());
+        log.info("Web driver navigated to: " + rootName());
         delay(25000);
     }
 
