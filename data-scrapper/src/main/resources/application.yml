@@ -13,7 +13,8 @@ spring:
   application:
     name: bali-events
   datasource:
-    url: jdbc:postgresql://localhost:5433/bali-events
+    url: jdbc:postgresql://localhost:5433/postgres
+    #    url: jdbc:postgresql://db:5432/postgres
     username: postgres
     password: postgres
   jpa:
@@ -23,10 +24,10 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: 'true'
-  Liquibase:
-    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+webdriver:
+  local: true
 
 logging:
   level:
