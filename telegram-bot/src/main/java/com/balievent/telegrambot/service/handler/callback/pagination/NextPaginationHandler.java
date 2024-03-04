@@ -29,7 +29,7 @@ public class NextPaginationHandler extends AbstractPaginationHandler {
         return EditMessageText.builder()
             .chatId(callbackChatId)
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
-            .text(String.format("%s %s %n%n %s", MyConstants.LIST_OF_EVENTS_ON,
+            .text(String.format("%s %s %n%n%s", MyConstants.LIST_OF_EVENTS_ON,
                 userData.getCalendarDate().format(Settings.PRINT_DATE_TIME_FORMATTER), eventListToday))
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)

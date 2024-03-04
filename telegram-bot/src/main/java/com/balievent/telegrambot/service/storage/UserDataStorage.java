@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +21,7 @@ public class UserDataStorage {
         return UserData.builder()
             .calendarDate(LocalDate.now())
             .page(0)
+            .pageMax(0) // количество страниц установим позже
             .build();
     }
 
@@ -32,13 +34,19 @@ public class UserDataStorage {
      */
     private LocalDate updateDataStore(final Update update, final boolean isMonthChanged) {
         final Long chatId = update.getMessage().getChatId();
-        final String text = update.getMessage().getText();
+        final String text = update.getMessage().getText(); // получаем текст сообщения из чата
         final UserData userData = calendarStore.getOrDefault(chatId, getDefaultUserData());
         final LocalDate localDate = isMonthChanged
                                     ? DateUtil.convertToDateTimeCalendarMonthChanged(text, userData.getCalendarDate())
                                     : DateUtil.parseSelectedDate(text, userData.getCalendarDate());
 
-        calendarStore.get(chatId).setCalendarDate(localDate);
+        if (calendarStore.get(chatId) != null) {
+            calendarStore.get(chatId).setCalendarDate(localDate);
+        } else {
+            // если кликнули по "/17_02_2024" после старта программы, то попадем сюда
+            calendarStore.put(chatId, getDefaultUserData());
+            calendarStore.get(chatId).setCalendarDate(localDate);
+        }
 
         return localDate;
     }
@@ -66,15 +74,33 @@ public class UserDataStorage {
     }
 
     public UserData incrementPageAndGetUserData(final Long chatId) {
+
         final UserData userData = calendarStore.get(chatId);
-        userData.setPage(userData.getPage() + 1);
+
+        if (userData.getPage().equals(userData.getPageMax())) { // проверка на максимальную страницу
+            userData.setPage(0);                                // устанавливаем первую страницу
+        } else {
+            userData.setPage(userData.getPage() + 1);           // увеличение страницы
+        }
         return userData;
     }
 
     public UserData decrementPageAndGetUserData(final Long chatId) {
         final UserData userData = calendarStore.get(chatId);
+
+        if (userData.getPage().equals(0)) {                 // проверка на минимально возможную страницу == 0
+            userData.setPage(userData.getPageMax() + 1);    // устанавливаем на одну больше максимальной
+        }
         userData.setPage(userData.getPage() - 1);
         return userData;
+    }
+
+    public void setPageMax(final Long chatId, final int pageMax) {
+        UserData userData = calendarStore.get(chatId);
+        if (userData == null) {
+            userData = getDefaultUserData();
+        }
+        userData.setPageMax(pageMax);
     }
 
     public UserData saveMediaIdList(final List<Message> mediaIds, final Long chatId) {
@@ -102,6 +128,10 @@ public class UserDataStorage {
      */
     public List<Integer> getAllMessageIdsForDelete(final Long chatId) {
         final UserData userData = getUserData(chatId);
+        if (userData == null) {
+            // Обработка ситуации, когда нет данных для данного chatId
+            return Collections.emptyList(); // или возвращаем пустой список или бросаем исключение
+        }
         final Integer messageId = userData.getLastDateSelectedMessageId();
 
         final List<Integer> mediaIdList = userData.getMediaIdList();

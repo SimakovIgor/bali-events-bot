@@ -2,6 +2,7 @@ package com.balievent.telegrambot.service.support;
 
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.repository.EventRepository;
+import com.balievent.telegrambot.service.storage.UserDataStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,10 +51,12 @@ public class EventService {
      * @param dayFinish - последний дней запроса. Максимум может быть: localDate.lengthOfMonth()
      * @return String   - текст сообщеня
      */
-    public String getMessageWithEventsGroupedByDay(final LocalDate localDate,
-                                                   final int dayStart,
-                                                   final int dayFinish) {
+    public String getMessageWithEventsGroupedByDay(final Long chatId,
+                                                    final LocalDate localDate,
+                                                    final int dayStart,
+                                                    final int dayFinish) {
         final Map<LocalDate, List<Event>> eventsAndGroupByDay = getEventsAndGroupByDay(localDate, dayStart, dayFinish);
+
         final Map<LocalDate, List<Event>> eventMap = eventsAndGroupByDay
             .entrySet()
             .stream()
