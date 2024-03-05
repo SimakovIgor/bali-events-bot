@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,36 +31,43 @@ public class DateSelectedHandler implements TextMessageHandler {
     @Override
     public SendMessage handle(final Update update) {
         final LocalDate localDate = userDataStorage.updateWithSelectedDate(update);
-        final String eventListToday = getBriefEventsForToday(update.getMessage().getChatId(), localDate);
+        // сбрасываем страницу при первом выборе даты
 
-        if (eventListToday.contains(MyConstants.PAGES)) {
-            return SendMessage.builder()
-                .chatId(update.getMessage().getChatId())
-                .text(String.format("%s %s %n%n%s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(Settings.PRINT_DATE_TIME_FORMATTER), eventListToday))
-                .parseMode(ParseMode.HTML)
-                .replyMarkup(KeyboardUtil.getPaginationKeyboard())
-                .disableWebPagePreview(true)
-                .build();
-        }
+        userDataStorage.setPageAndGetUserData(update.getMessage().getChatId(), 0);
+        final String eventListToday = getBriefEventsBodyForToday(update.getMessage().getChatId(), localDate);
+
+        final ReplyKeyboard replyKeyboard = isOnlyOnePage(update.getMessage().getChatId())
+                                            ? KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear())
+                                            : KeyboardUtil.getPaginationKeyboard();
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
             .text(String.format("%s %s %n%n%s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(Settings.PRINT_DATE_TIME_FORMATTER), eventListToday))
             .parseMode(ParseMode.HTML)
+            .replyMarkup(replyKeyboard)
             .disableWebPagePreview(true)
             .build();
 
     }
 
-    private String getBriefEventsForToday(final Long chatId, final LocalDate localDate) {
+    /**
+     * Проверяем, что у нас только одна страница
+     *
+     * @param chatId - идентификатор чата
+     * @return - true, если только одна страница
+     */
+    private boolean isOnlyOnePage(final Long chatId) {
+        return userDataStorage.getUserData(chatId)
+            .getPageCount() == 0;
+    }
 
-        List<Event> eventListAll = eventService.findEvents(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+    private String getBriefEventsBodyForToday(final Long chatId, final LocalDate localDate) {
+        final int eventCount = eventService.countEvents(localDate);
+        final int pageCount = ((eventCount + Settings.PAGE_SIZE - 1) / Settings.PAGE_SIZE) - 1;
+        // сохраняем их для текущего пользователя
+        userDataStorage.setPageCount(chatId, pageCount);
 
-        final int pageMax = ((eventListAll.size() + Settings.PAGE_SIZE - 1) / Settings.PAGE_SIZE) - 1;  // получаем количество страниц
-
-        userDataStorage.setPageMax(chatId, pageMax);                                                // сохраняем их для текущего пользователя
-
-        List<Event> eventList = eventService.findEvents(localDate, 0, Settings.PAGE_SIZE);
+        final List<Event> eventList = eventService.findEvents(localDate, 0, Settings.PAGE_SIZE);
 
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
@@ -69,11 +77,11 @@ public class DateSelectedHandler implements TextMessageHandler {
                 .append("\n");
         }
 
-        if (pageMax > 0) {
+        if (pageCount > 0) {
             stringBuilder.append("\nAll ")
                 .append(1)
                 .append("\\")
-                .append(pageMax + 1)
+                .append(pageCount + 1)
                 .append(" ")
                 .append(MyConstants.PAGES + "\n");
         }

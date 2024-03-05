@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +20,7 @@ public class UserDataStorage {
         return UserData.builder()
             .calendarDate(LocalDate.now())
             .page(0)
-            .pageMax(0) // количество страниц установим позже
+            .pageCount(0) // количество страниц установим позже
             .build();
     }
 
@@ -74,13 +73,15 @@ public class UserDataStorage {
     }
 
     public UserData incrementPageAndGetUserData(final Long chatId) {
-
         final UserData userData = calendarStore.get(chatId);
 
-        if (userData.getPage().equals(userData.getPageMax())) { // проверка на максимальную страницу
-            userData.setPage(0);                                // устанавливаем первую страницу
+        // проверка на максимальную страницу
+        if (userData.getPage().equals(userData.getPageCount())) {
+            // устанавливаем первую страницу
+            userData.setPage(0);
         } else {
-            userData.setPage(userData.getPage() + 1);           // увеличение страницы
+            // увеличение страницы
+            userData.setPage(userData.getPage() + 1);
         }
         return userData;
     }
@@ -89,18 +90,24 @@ public class UserDataStorage {
         final UserData userData = calendarStore.get(chatId);
 
         if (userData.getPage().equals(0)) {                 // проверка на минимально возможную страницу == 0
-            userData.setPage(userData.getPageMax() + 1);    // устанавливаем на одну больше максимальной
+            userData.setPage(userData.getPageCount() + 1);    // устанавливаем на одну больше максимальной
         }
         userData.setPage(userData.getPage() - 1);
         return userData;
     }
 
-    public void setPageMax(final Long chatId, final int pageMax) {
+    public UserData setPageAndGetUserData(final Long chatId, final int page) {
+        final UserData userData = calendarStore.get(chatId);
+        userData.setPage(page);
+        return userData;
+    }
+
+    public void setPageCount(final Long chatId, final int pageMax) {
         UserData userData = calendarStore.get(chatId);
         if (userData == null) {
             userData = getDefaultUserData();
         }
-        userData.setPageMax(pageMax);
+        userData.setPageCount(pageMax);
     }
 
     public UserData saveMediaIdList(final List<Message> mediaIds, final Long chatId) {
@@ -130,7 +137,7 @@ public class UserDataStorage {
         final UserData userData = getUserData(chatId);
         if (userData == null) {
             // Обработка ситуации, когда нет данных для данного chatId
-            return Collections.emptyList(); // или возвращаем пустой список или бросаем исключение
+            return List.of(); // или возвращаем пустой список или бросаем исключение
         }
         final Integer messageId = userData.getLastDateSelectedMessageId();
 

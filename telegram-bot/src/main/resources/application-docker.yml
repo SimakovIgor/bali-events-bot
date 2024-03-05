@@ -2,23 +2,19 @@ server:
   port: 8083
   shutdown: graceful
 
-logging.level:
-  org.springframework.orm.jpa.JpaTransactionManager: DEBUG
-
 spring:
   main:
     banner-mode: off
   application:
     name: bali-events
   datasource:
-    url: jdbc:postgresql://localhost:5433/bali-events
+    url: jdbc:postgresql://db:5432/postgres
     username: postgres
     password: postgres
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: 'true'

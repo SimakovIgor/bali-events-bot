@@ -95,6 +95,12 @@ public class KeyboardUtil {
             .build();
     }
 
+    /**
+     * Получаем разметку клавиатуры для пагинации (переключения страниц)
+     * Это две кнопки влево и вправо
+     *
+     * @return - разметка клавиатуры
+     */
     public static InlineKeyboardMarkup getPaginationKeyboard() {
         final List<InlineKeyboardButton> row = List.of(
             InlineKeyboardButton.builder()

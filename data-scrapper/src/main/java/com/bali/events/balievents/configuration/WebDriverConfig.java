@@ -26,7 +26,7 @@ public class WebDriverConfig {
     @ConditionalOnProperty(name = "webdriver.local", havingValue = "false")
     public WebDriver prodWebDriver() throws Exception {
         final FirefoxOptions firefoxOptions = new FirefoxOptions();
-        final URL removeWebDriver = URI.create("http://localhost:4445/wd/hub").toURL();
+        final URL removeWebDriver = URI.create("http://firefox:4444/wd/hub").toURL();
         log.info("Connecting to remote Web Driver..." + removeWebDriver);
 
         final WebDriver webDriver = new RemoteWebDriver(removeWebDriver, firefoxOptions);

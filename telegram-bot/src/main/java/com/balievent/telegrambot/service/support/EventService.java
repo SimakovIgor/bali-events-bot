@@ -2,7 +2,6 @@ package com.balievent.telegrambot.service.support;
 
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.repository.EventRepository;
-import com.balievent.telegrambot.service.storage.UserDataStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,10 +50,9 @@ public class EventService {
      * @param dayFinish - последний дней запроса. Максимум может быть: localDate.lengthOfMonth()
      * @return String   - текст сообщеня
      */
-    public String getMessageWithEventsGroupedByDay(final Long chatId,
-                                                    final LocalDate localDate,
-                                                    final int dayStart,
-                                                    final int dayFinish) {
+    public String getMessageWithEventsGroupedByDay(final LocalDate localDate,
+                                                   final int dayStart,
+                                                   final int dayFinish) {
         final Map<LocalDate, List<Event>> eventsAndGroupByDay = getEventsAndGroupByDay(localDate, dayStart, dayFinish);
 
         final Map<LocalDate, List<Event>> eventMap = eventsAndGroupByDay
@@ -102,6 +100,16 @@ public class EventService {
         final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
         final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
         return eventRepository.findEventsByStartDateBetween(from, end);
+    }
+
+    public int countEvents(final LocalDate localDate) {
+        final int day = localDate.getDayOfMonth();
+        final int month = localDate.getMonthValue();
+        final int year = localDate.getYear();
+
+        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
+        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
+        return eventRepository.countEventsByStartDateBetween(from, end);
     }
 
     public List<Event> findEvents(final LocalDate localDate, final int page, final int pageSize) {

@@ -156,7 +156,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         try {
             final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotos(chatId);
             if (eventPhotos.size() == 1) {
-                execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
+                final Message message = execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
+                userDataStorage.saveMediaIdList(List.of(message), chatId);
+
             } else if (eventPhotos.size() > 1) {
                 final SendMediaGroup sendMediaGroup = mediaHandler.handleMultipleMedia(chatId, eventPhotos);
                 final List<Message> messageList = execute(sendMediaGroup);
@@ -192,15 +194,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void removeLastDateSelectedMessageIfExist(final Long chatId) throws TelegramApiException {
-        if (userDataStorage != null) { // Проверяем, что userDataStorage создан ранее
-            final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
-            if (!CollectionUtils.isEmpty(messageIds)) {
-                execute(DeleteMessages.builder()
-                    .chatId(chatId)
-                    .messageIds(messageIds)
-                    .build());
-            }
+        final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
+        if (!CollectionUtils.isEmpty(messageIds)) {
+            execute(DeleteMessages.builder()
+                .chatId(chatId)
+                .messageIds(messageIds)
+                .build());
         }
+
     }
 
     /**
