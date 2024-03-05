@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service.handler.callback.pagination;
 
+import com.balievent.telegrambot.contant.MyConstants;
 import com.balievent.telegrambot.contant.Settings;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.UserData;
@@ -21,6 +22,7 @@ public abstract class AbstractPaginationHandler implements CallbackHandler {
     protected String getBriefEventsForToday(final UserData userData) {
         final LocalDate calendarDate = userData.getCalendarDate();
         final int page = userData.getPage();
+        final int pageMax = userData.getPageMax();
         final List<Event> eventList = eventService.findEvents(calendarDate, page, Settings.PAGE_SIZE);
 
         final StringBuilder stringBuilder = new StringBuilder();
@@ -31,6 +33,16 @@ public abstract class AbstractPaginationHandler implements CallbackHandler {
                 .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
                 .append("\n");
         }
+
+        if (pageMax > 0) {
+            stringBuilder.append("\nAll ")
+                .append(page + 1)
+                .append("\\")
+                .append(pageMax + 1)
+                .append(" ")
+                .append( MyConstants.PAGES + "\n");
+        }
+
         return stringBuilder.toString();
     }
 }

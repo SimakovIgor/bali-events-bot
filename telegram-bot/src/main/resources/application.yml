@@ -12,7 +12,7 @@ spring:
   application:
     name: bali-events
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5433/bali-events
     # url: jdbc:postgresql://db:5432/postgres
     username: postgres
     password: postgres
@@ -34,5 +34,7 @@ logging:
 com:
   balievent:
     bot:
-      token: 6862871633:AAFQEI2mT7sjjiUjfSbgHHYZe7M9xPbjwlg
-      username: test_remove_me_sima_bot
+      # token: 6862871633:AAFQEI2mT7sjjiUjfSbgHHYZe7M9xPbjwlg
+      token: 6781420399:AAHi0vGFUPnh-7wBzC7si7hw1XRQmrNmPzA
+      # username: test_remove_me_sima_bot
+      username: BaliEventsCoordinatebot

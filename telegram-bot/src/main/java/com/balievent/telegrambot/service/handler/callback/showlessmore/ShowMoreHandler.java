@@ -60,8 +60,9 @@ public class ShowMoreHandler extends AbstractShowHandler {
     @Override
     protected String getText(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        final String callbackData = update.getCallbackQuery().getData();
+        final String callbackData = update.getCallbackQuery().getData(); // show_month_full:3
         final Long callbackMessageId = getCallbackMessageId(callbackData);
+        // Сохраненная дата запроса для этого сообщения, сообщение которое далее будет создано ниже
         final LocalDate localDate = messageDataStorage.getLocalDate(callbackChatId, callbackMessageId);
 
         if (callbackData.contains(MyConstants.SHOW_MORE)) {

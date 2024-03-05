@@ -19,4 +19,5 @@ public class MyConstants {
         Write the date in the format: 'dd.mm.yyyy' or choose from the calendar""";
     public static final String MIS_UNDERSTANDING_MESSAGE = "🚫 This word(s) is not reserved: %s List of reserved words /start";
 
+    public static final String PAGES = "pages";
 }

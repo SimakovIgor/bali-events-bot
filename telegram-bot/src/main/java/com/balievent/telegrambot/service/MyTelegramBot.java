@@ -84,12 +84,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             execute(textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update));
             executeSendShowMoreMessage(update, chatId);
 
-        } else if (DateUtil.isCalendarMonthChanged(update.getMessage().getText())) { // обработчик изменения месяца в календаре
-            // Обработчик класс CalendarMonthChangedHandler
+        } else if (DateUtil.isCalendarMonthChanged(update.getMessage().getText())) {
+            // Обработчик класс CalendarMonthChangedHandler (изменение месяца в календаре)
             execute(textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED).handle(update));
             executeSendShowMoreMessage(update, chatId);
 
-        } else if (DateUtil.isDateSelected(update.getMessage().getText())) { // обработчик выбора даты
+        } else if (DateUtil.isDateSelected(update.getMessage().getText())) { // обработчик выбора даты из календаря
             processDateSelected(update, chatId);
         } else { // обработчик непонятных сообщений
             // Обработчик класс MisUnderstandingMessageHandler
@@ -107,7 +107,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         final String callbackData = update.getCallbackQuery().getData();
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
         if (callbackData.contains(MyConstants.SHOW_MORE) || callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            // Обработчик класс ShowMoreHandler
+            // Обработчик класс ShowMoreHandler перейдет на public EditMessageText handle(final Update update) {
             execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_MORE).handle(update));
         } else if (callbackData.contains(MyConstants.SHOW_LESS) || callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
             // Обработчик класс ShowLessHandler
@@ -176,8 +176,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void processDateSelected(final Update update, final Long chatId) throws TelegramApiException {
+        // удаление все (8-мь) картинок в группе
         removeLastDateSelectedMessageIfExist(chatId);
-        // Обработчик класс DateSelectedHandler
+        // Обработчик класс DateSelectedHandler - создаем одно сообщение (не более 8-ми строк) в котором список событий на текущую дату
         final Message message = execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
         userDataStorage.saveLastDateSelectedMessageId(message.getMessageId(), chatId);
 
@@ -191,12 +192,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void removeLastDateSelectedMessageIfExist(final Long chatId) throws TelegramApiException {
-        final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
-        if (!CollectionUtils.isEmpty(messageIds)) {
-            execute(DeleteMessages.builder()
-                .chatId(chatId)
-                .messageIds(messageIds)
-                .build());
+        if (userDataStorage != null) { // Проверяем, что userDataStorage создан ранее
+            final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
+            if (!CollectionUtils.isEmpty(messageIds)) {
+                execute(DeleteMessages.builder()
+                    .chatId(chatId)
+                    .messageIds(messageIds)
+                    .build());
+            }
         }
     }
 
