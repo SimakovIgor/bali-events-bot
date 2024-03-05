@@ -61,9 +61,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(final Update update) {
         try {
             if (update.hasCallbackQuery()) {
-                processCallbackQuery(update);
+                processCallbackQuery(update); // обработка сообщений по нажатию на кнопку
             } else {
-                processTextMessage(update);
+                processTextMessage(update); // обработка  сообщения по указанной дате
             }
         } catch (TelegramApiException e) {
             log.info("Failed to process update", e);
@@ -156,7 +156,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         try {
             final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotos(chatId);
             if (eventPhotos.size() == 1) {
-                execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
+                final Message message = execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
+                userDataStorage.saveMediaIdList(List.of(message), chatId);
+
             } else if (eventPhotos.size() > 1) {
                 final SendMediaGroup sendMediaGroup = mediaHandler.handleMultipleMedia(chatId, eventPhotos);
                 final List<Message> messageList = execute(sendMediaGroup);
@@ -192,15 +194,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void removeLastDateSelectedMessageIfExist(final Long chatId) throws TelegramApiException {
-        if (userDataStorage != null) { // Проверяем, что userDataStorage создан ранее
-            final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
-            if (!CollectionUtils.isEmpty(messageIds)) {
-                execute(DeleteMessages.builder()
-                    .chatId(chatId)
-                    .messageIds(messageIds)
-                    .build());
-            }
+        final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
+        if (!CollectionUtils.isEmpty(messageIds)) {
+            execute(DeleteMessages.builder()
+                .chatId(chatId)
+                .messageIds(messageIds)
+                .build());
         }
+
     }
 
     /**

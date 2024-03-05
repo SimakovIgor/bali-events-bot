@@ -14,4 +14,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Page<Event> findEventsByStartDateBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
+    int countEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
+
 }
