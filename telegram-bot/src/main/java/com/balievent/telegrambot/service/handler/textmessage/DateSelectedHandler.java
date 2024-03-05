@@ -70,6 +70,7 @@ public class DateSelectedHandler implements TextMessageHandler {
         final StringBuilder stringBuilder = new StringBuilder();
         if (pageCount == -1) { // проверка на то что что записей нет совсем
             userDataStorage.setPageCount(chatId, 0);
+
             return MyConstants.NO_EVENTS;
         }
         // сохраняем их для текущего пользователя
