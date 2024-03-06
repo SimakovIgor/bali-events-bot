@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
-import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
 import com.balievent.telegrambot.service.storage.MessageDataStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public abstract class AbstractShowHandler implements CallbackHandler {
     protected MessageDataStorage messageDataStorage;
 
     protected static Long getCallbackMessageId(final String callbackData) {
-        final String[] parts = callbackData.split(MyConstants.COLON_MARK);
+        final String[] parts = callbackData.split(TgBotConstants.COLON_MARK);
         if (parts.length < 2 || parts[1].isEmpty()) {
             throw new NumberFormatException("Invalid callback data format");
         }

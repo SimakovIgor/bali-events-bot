@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.service;
 
 import com.balievent.telegrambot.configuration.TelegramBotProperties;
-import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.service.handler.common.MediaHandler;
@@ -106,19 +106,28 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private void processCallbackQuery(final Update update) throws TelegramApiException {
         final String callbackData = update.getCallbackQuery().getData();
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        if (callbackData.contains(MyConstants.SHOW_MORE) || callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
-            // Обработчик класс ShowMoreHandler перейдет на public EditMessageText handle(final Update update) {
+
+        if (callbackData.contains(TgBotConstants.SHOW_MORE) || callbackData.contains(TgBotConstants.SHOW_FULL_MONTH)) {
+            // Обработчик класс ShowMoreHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_MORE).handle(update));
-        } else if (callbackData.contains(MyConstants.SHOW_LESS) || callbackData.contains(MyConstants.SHOW_SHORT_MONTH)) {
+        } else if (callbackData.contains(TgBotConstants.SHOW_LESS) || callbackData.contains(TgBotConstants.SHOW_SHORT_MONTH)) {
             // Обработчик класс ShowLessHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_LESS).handle(update));
-        } else if (callbackData.contains("next_pagination")) {
+        } else if ("next_page".equals(callbackData)) {
             // Обработчик класс NextPaginationHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.NEXT_PAGINATION).handle(update));
             updateMedia(callbackChatId);
-        } else if (callbackData.contains("previous_pagination")) {
+        } else if ("previous_page".equals(callbackData)) {
             // Обработчик класс PreviousPaginationHandler
             execute(callbackHandlers.get(CallbackHandlerMessageType.PREVIOUS_PAGINATION).handle(update));
+            updateMedia(callbackChatId);
+        } else if ("last_page".equals(callbackData)) {
+            // Обработчик класс LastPaginationHandler
+            execute(callbackHandlers.get(CallbackHandlerMessageType.LAST_PAGINATION).handle(update));
+            updateMedia(callbackChatId);
+        } else if ("first_page".equals(callbackData)) {
+            // Обработчик класс FirstPaginationHandler
+            execute(callbackHandlers.get(CallbackHandlerMessageType.FIRST_PAGINATION).handle(update));
             updateMedia(callbackChatId);
         }
     }
@@ -156,10 +165,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         try {
             final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotos(chatId);
             if (eventPhotos.size() == 1) {
+                log.info("Sending eventPhotos to chatId: {} size {}", chatId, eventPhotos.size());
                 final Message message = execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
                 userDataStorage.saveMediaIdList(List.of(message), chatId);
 
             } else if (eventPhotos.size() > 1) {
+                log.info("Sending eventPhotos to chatId: {} size {}", chatId, eventPhotos.size());
                 final SendMediaGroup sendMediaGroup = mediaHandler.handleMultipleMedia(chatId, eventPhotos);
                 final List<Message> messageList = execute(sendMediaGroup);
                 //Сохраняем для дальнейшей очистки сообщений
@@ -178,9 +189,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void processDateSelected(final Update update, final Long chatId) throws TelegramApiException {
-        // удаление все (8-мь) картинок в группе
         removeLastDateSelectedMessageIfExist(chatId);
-        // Обработчик класс DateSelectedHandler - создаем одно сообщение (не более 8-ми строк) в котором список событий на текущую дату
+        // Обработчик класс DateSelectedHandler
         final Message message = execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
         userDataStorage.saveLastDateSelectedMessageId(message.getMessageId(), chatId);
 

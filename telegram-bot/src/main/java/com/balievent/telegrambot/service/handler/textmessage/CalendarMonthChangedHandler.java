@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
-import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.service.support.EventService;
 import com.balievent.telegrambot.util.KeyboardUtil;
@@ -31,7 +31,7 @@ public class CalendarMonthChangedHandler implements TextMessageHandler {
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(String.format("%s %s%n%s", MyConstants.LIST_OF_EVENTS_ON, text, messageWithEventsGroupedByDay))
+            .text(String.format("%s %s%n%s", TgBotConstants.LIST_OF_EVENTS_ON, text, messageWithEventsGroupedByDay))
             .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
             .build();
     }

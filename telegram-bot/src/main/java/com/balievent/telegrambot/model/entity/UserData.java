@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class UserData {
     private LocalDate calendarDate;
-    private Integer page;
+    private Integer currentPage;
     private Integer pageCount;
     private List<Integer> mediaIdList;
     private Integer lastDateSelectedMessageId;

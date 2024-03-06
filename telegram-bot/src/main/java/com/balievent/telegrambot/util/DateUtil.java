@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.util;
 
-import com.balievent.telegrambot.contant.Settings;
+import com.balievent.telegrambot.constant.Settings;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;

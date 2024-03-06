@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
-import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,7 +17,7 @@ public class MisUnderstandingMessageHandler implements TextMessageHandler {
     public SendMessage handle(final Update update) {
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(String.format(MyConstants.MIS_UNDERSTANDING_MESSAGE, update.getMessage().getText()))
+            .text(String.format(TgBotConstants.MIS_UNDERSTANDING_MESSAGE, update.getMessage().getText()))
             .build();
     }
 }

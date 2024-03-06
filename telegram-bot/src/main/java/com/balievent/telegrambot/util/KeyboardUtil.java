@@ -1,6 +1,5 @@
 package com.balievent.telegrambot.util;
 
-import com.balievent.telegrambot.contant.MyConstants;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -65,23 +64,8 @@ public class KeyboardUtil {
             .build();
     }
 
-    public static InlineKeyboardMarkup setShowMoreButtonKeyboard(final Long nextMessageNumber,
-                                                                 final String callbackName) {
-        final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
-            .text(MyConstants.SHOW_MORE_TEXT)
-            // Устанавливаем номер сообщения для этого пользователя
-            .callbackData(callbackName + MyConstants.COLON_MARK + nextMessageNumber)
-            .build();
-
-        final List<InlineKeyboardButton> rowInline = List.of(inlineKeyboardButton);
-        final List<List<InlineKeyboardButton>> rowsInline = List.of(rowInline);
-
-        return InlineKeyboardMarkup.builder()
-            .keyboard(rowsInline)
-            .build();
-    }
-
-    public InlineKeyboardMarkup setShowMoreButtonKeyboard(final String buttonText, final String callbackData) {
+    public InlineKeyboardMarkup setShowMoreButtonKeyboard(final String buttonText,
+                                                          final String callbackData) {
         final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
             .text(buttonText)
             .callbackData(callbackData)
@@ -101,29 +85,49 @@ public class KeyboardUtil {
      *
      * @return - разметка клавиатуры
      */
-    public static InlineKeyboardMarkup getPaginationKeyboard() {
-        final List<InlineKeyboardButton> row = List.of(
-            InlineKeyboardButton.builder()
-                .text("⬅️ Previous")
-                .callbackData("previous_pagination")
-                .build(),
-            InlineKeyboardButton.builder()
-                .text("Next ➡️")
-                .callbackData("next_pagination")
-                .build()
-        );
+    public static InlineKeyboardMarkup getPaginationKeyboard(final int currentPage, final int pageCount) {
+        if (pageCount == 0) {
+            return InlineKeyboardMarkup.builder().build();
+        }
+
+        final List<InlineKeyboardButton> row = new ArrayList<>();
+
+        if (currentPage > 2) {
+            row.add(InlineKeyboardButton.builder()
+                .text("<< 1")
+                .callbackData("first_page")
+                .build());
+        }
+
+        if (currentPage > 1) {
+            row.add(InlineKeyboardButton.builder()
+                .text("< " + (currentPage - 1))
+                .callbackData("previous_page")
+                .build());
+        }
+
+        row.add(InlineKeyboardButton.builder()
+            .text(currentPage + " / " + pageCount)
+            .callbackData("current_page")
+            .build());
+
+        if (currentPage < pageCount) {
+            row.add(InlineKeyboardButton.builder()
+                .text("> " + (currentPage + 1))
+                .callbackData("next_page")
+                .build());
+        }
+
+        if (currentPage < pageCount - 1) {
+            row.add(InlineKeyboardButton.builder()
+                .text(">> " + pageCount)
+                .callbackData("last_page")
+                .build());
+        }
 
         return InlineKeyboardMarkup.builder()
             .keyboard(List.of(row))
             .build();
     }
 
-    public InlineKeyboardMarkup updateButton(final String callbackData) {
-        // Получаем разметку кнопки с помощью нашего метода
-        return setShowMoreButtonKeyboard(MyConstants.SHOW_LESS_TEXT, callbackData);
-    }
-
-    public InlineKeyboardMarkup restoreButton(final String callbackData) {
-        return setShowMoreButtonKeyboard(MyConstants.SHOW_MORE_TEXT, callbackData);
-    }
 }

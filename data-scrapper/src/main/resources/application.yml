@@ -6,9 +6,9 @@ spring:
   main:
     banner-mode: off
   application:
-    name: bali-events
+    name: data-scrapper
   datasource:
-    url: jdbc:postgresql://localhost:5433/bali-events
+    url: jdbc:postgresql://localhost:5433/postgres
     username: postgres
     password: postgres
   jpa:

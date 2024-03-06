@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
-import com.balievent.telegrambot.contant.MyConstants;
-import com.balievent.telegrambot.contant.Settings;
+import com.balievent.telegrambot.constant.Settings;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.service.support.EventService;
@@ -22,10 +22,10 @@ public class ShowMoreHandler extends AbstractShowHandler {
     private final EventService eventService;
 
     private static String getShowWord(final String showWord) {
-        if (showWord.contains(MyConstants.SHOW_MORE)) {
-            return MyConstants.SHOW_LESS;
+        if (showWord.contains(TgBotConstants.SHOW_MORE)) {
+            return TgBotConstants.SHOW_LESS;
         } else {
-            return MyConstants.SHOW_SHORT_MONTH;
+            return TgBotConstants.SHOW_SHORT_MONTH;
         }
     }
 
@@ -65,11 +65,11 @@ public class ShowMoreHandler extends AbstractShowHandler {
         // Сохраненная дата запроса для этого сообщения, сообщение которое далее будет создано ниже
         final LocalDate localDate = messageDataStorage.getLocalDate(callbackChatId, callbackMessageId);
 
-        if (callbackData.contains(MyConstants.SHOW_MORE)) {
+        if (callbackData.contains(TgBotConstants.SHOW_MORE)) {
             final String detailedEventsForToday = getDetailedEventsForToday(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
-            return String.format("%s %s %n %s", MyConstants.LIST_OF_EVENTS_ON,
+            return String.format("%s %s %n %s", TgBotConstants.LIST_OF_EVENTS_ON,
                 localDate.format(Settings.PRINT_DATE_TIME_FORMATTER), detailedEventsForToday);
-        } else if (callbackData.contains(MyConstants.SHOW_FULL_MONTH)) {
+        } else if (callbackData.contains(TgBotConstants.SHOW_FULL_MONTH)) {
             return eventService.getMessageWithEventsGroupedByDayFull(localDate, 1, localDate.lengthOfMonth());
         }
         return "";
@@ -79,9 +79,9 @@ public class ShowMoreHandler extends AbstractShowHandler {
     protected InlineKeyboardMarkup replyMarkup(final Update update) {
         final String callbackData = update.getCallbackQuery().getData();
         final Long callbackMessageId = getCallbackMessageId(callbackData);
-        final String newCallbackData = getShowWord(callbackData) + MyConstants.COLON_MARK + callbackMessageId;
+        final String newCallbackData = getShowWord(callbackData) + TgBotConstants.COLON_MARK + callbackMessageId;
 
-        return KeyboardUtil.updateButton(newCallbackData);
+        return KeyboardUtil.setShowMoreButtonKeyboard(TgBotConstants.SHOW_LESS_TEXT, newCallbackData);
     }
 
 }

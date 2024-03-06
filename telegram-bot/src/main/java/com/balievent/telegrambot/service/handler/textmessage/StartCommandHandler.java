@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
-import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.service.support.EventService;
 import com.balievent.telegrambot.util.KeyboardUtil;
@@ -29,7 +29,7 @@ public class StartCommandHandler implements TextMessageHandler {
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(MyConstants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI + "\n\n" + messageWithEventsGroupedByDay)
+            .text(TgBotConstants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI + "\n\n" + messageWithEventsGroupedByDay)
             .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
             .build();
     }

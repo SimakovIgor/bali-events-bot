@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.common;
 
-import com.balievent.telegrambot.contant.Settings;
+import com.balievent.telegrambot.constant.Settings;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.service.support.EventService;
@@ -37,7 +37,8 @@ public class MediaHandler {
 
     public List<InputMediaPhoto> findEventPhotos(final Long chatId) {
         final UserData userData = userDataStorage.getUserData(chatId);
-        return eventService.findEvents(userData.getCalendarDate(), userData.getPage(), Settings.PAGE_SIZE)
+        final int currentPageIndex = userData.getCurrentPage() - 1;
+        return eventService.findEvents(userData.getCalendarDate(), currentPageIndex, Settings.PAGE_SIZE)
             .stream()
             .map(event -> {
                 final InputMediaPhoto inputMediaPhoto = new InputMediaPhoto();

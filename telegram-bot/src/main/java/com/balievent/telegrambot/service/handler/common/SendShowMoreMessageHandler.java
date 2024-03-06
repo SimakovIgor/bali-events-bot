@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.common;
 
-import com.balievent.telegrambot.contant.MyConstants;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandlerType;
 import com.balievent.telegrambot.service.storage.MessageDataStorage;
@@ -31,10 +31,13 @@ public class SendShowMoreMessageHandler implements TextMessageHandler {
     public SendMessage handle(final Update update) {
         final Long chatId = update.getMessage().getChatId();
         final Long nextMessageNumber = messageDataStorage.calculateNextMessageId(chatId);
-        final InlineKeyboardMarkup replyMarkup = KeyboardUtil.setShowMoreButtonKeyboard(nextMessageNumber, MyConstants.SHOW_FULL_MONTH);
+        final String newCallbackData = TgBotConstants.SHOW_FULL_MONTH + TgBotConstants.COLON_MARK + nextMessageNumber;
+
+        final InlineKeyboardMarkup replyMarkup = KeyboardUtil.setShowMoreButtonKeyboard(TgBotConstants.SHOW_MORE_TEXT, newCallbackData);
+
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(MyConstants.LIST_OF_MORE)
+            .text(TgBotConstants.LIST_OF_MORE)
             .replyMarkup(replyMarkup)
             .build();
     }

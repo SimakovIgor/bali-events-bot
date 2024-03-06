@@ -19,8 +19,8 @@ public class UserDataStorage {
     private static UserData getDefaultUserData() {
         return UserData.builder()
             .calendarDate(LocalDate.now())
-            .page(0)
-            .pageCount(0) // количество страниц установим позже
+            .currentPage(1)
+            .pageCount(1)
             .build();
     }
 
@@ -74,31 +74,19 @@ public class UserDataStorage {
 
     public UserData incrementPageAndGetUserData(final Long chatId) {
         final UserData userData = calendarStore.get(chatId);
-
-        // проверка на максимальную страницу
-        if (userData.getPage().equals(userData.getPageCount())) {
-            // устанавливаем первую страницу
-            userData.setPage(0);
-        } else {
-            // увеличение страницы
-            userData.setPage(userData.getPage() + 1);
-        }
+        userData.setCurrentPage(userData.getCurrentPage() + 1);
         return userData;
     }
 
     public UserData decrementPageAndGetUserData(final Long chatId) {
         final UserData userData = calendarStore.get(chatId);
-
-        if (userData.getPage().equals(0)) {                 // проверка на минимально возможную страницу == 0
-            userData.setPage(userData.getPageCount() + 1);    // устанавливаем на одну больше максимальной
-        }
-        userData.setPage(userData.getPage() - 1);
+        userData.setCurrentPage(userData.getCurrentPage() - 1);
         return userData;
     }
 
-    public UserData setPageAndGetUserData(final Long chatId, final int page) {
+    public UserData setCurrentPage(final Long chatId, final int page) {
         final UserData userData = calendarStore.get(chatId);
-        userData.setPage(page);
+        userData.setCurrentPage(page);
         return userData;
     }
 

@@ -1,9 +1,9 @@
-package com.balievent.telegrambot.contant;
+package com.balievent.telegrambot.constant;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class MyConstants {
+public class TgBotConstants {
     public static final String LIST_OF_EVENTS_ON = "📅 List of events on:";
     public static final String LIST_OF_MORE = "🔍 Show more information ";
     public static final String SHOW_FULL_MONTH = "show_month_full";
@@ -19,5 +19,4 @@ public class MyConstants {
         Write the date in the format: 'dd.mm.yyyy' or choose from the calendar""";
     public static final String MIS_UNDERSTANDING_MESSAGE = "🚫 This word(s) is not reserved: %s List of reserved words /start";
 
-    public static final String PAGES = "pages";
 }

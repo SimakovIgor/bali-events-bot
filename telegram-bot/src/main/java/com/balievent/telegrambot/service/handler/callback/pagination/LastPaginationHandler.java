@@ -8,16 +8,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
 @RequiredArgsConstructor
-public class PreviousPaginationHandler extends AbstractPaginationHandler {
+public class LastPaginationHandler extends AbstractPaginationHandler {
 
     @Override
     public CallbackHandlerMessageType getHandlerType() {
-        return CallbackHandlerMessageType.PREVIOUS_PAGINATION;
+        return CallbackHandlerMessageType.LAST_PAGINATION;
     }
 
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        return userDataStorage.decrementPageAndGetUserData(callbackChatId);
+        final int pageCount = userDataStorage.getUserData(callbackChatId).getPageCount();
+        return userDataStorage.setCurrentPage(callbackChatId, pageCount);
     }
+
 }

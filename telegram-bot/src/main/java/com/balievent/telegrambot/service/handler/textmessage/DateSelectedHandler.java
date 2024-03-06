@@ -1,11 +1,11 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
-import com.balievent.telegrambot.contant.MyConstants;
-import com.balievent.telegrambot.contant.Settings;
+import com.balievent.telegrambot.constant.Settings;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.service.storage.UserDataStorage;
 import com.balievent.telegrambot.service.support.EventService;
-import com.balievent.telegrambot.util.CommonUtil;
+import com.balievent.telegrambot.service.support.MessageBuilder;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,19 +30,26 @@ public class DateSelectedHandler implements TextMessageHandler {
 
     @Override
     public SendMessage handle(final Update update) {
-        final LocalDate localDate = userDataStorage.updateWithSelectedDate(update);
-        // сбрасываем страницу при первом выборе даты
+        final LocalDate eventsDateFor = userDataStorage.updateWithSelectedDate(update);
+        final Long chatId = update.getMessage().getChatId();
 
-        userDataStorage.setPageAndGetUserData(update.getMessage().getChatId(), 0);
-        final String eventListToday = getBriefEventsBodyForToday(update.getMessage().getChatId(), localDate);
+        final int currentPage = 1;
+        userDataStorage.setCurrentPage(chatId, currentPage);
 
-        final ReplyKeyboard replyKeyboard = isOnlyOnePage(update.getMessage().getChatId())
-                                            ? KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear())
-                                            : KeyboardUtil.getPaginationKeyboard();
+        final List<Event> eventList = eventService.findEvents(eventsDateFor, currentPage - 1, Settings.PAGE_SIZE);
+        final String eventsBriefMessage = MessageBuilder.buildBriefEventsMessage(currentPage, eventList);
+        final int eventCount = eventService.countEvents(eventsDateFor);
+        final int pageCount = (eventCount + Settings.PAGE_SIZE - 1) / Settings.PAGE_SIZE;
+
+        userDataStorage.setPageCount(chatId, pageCount);
+
+        final ReplyKeyboard replyKeyboard = pageCount == 1
+                                            ? KeyboardUtil.setCalendar(eventsDateFor.getMonthValue(), eventsDateFor.getYear())
+                                            : KeyboardUtil.getPaginationKeyboard(currentPage, pageCount);
 
         return SendMessage.builder()
-            .chatId(update.getMessage().getChatId())
-            .text(String.format("%s %s %n%n%s", MyConstants.LIST_OF_EVENTS_ON, localDate.format(Settings.PRINT_DATE_TIME_FORMATTER), eventListToday))
+            .chatId(chatId)
+            .text(String.format("%s %s %n%n%s", TgBotConstants.LIST_OF_EVENTS_ON, eventsDateFor.format(Settings.PRINT_DATE_TIME_FORMATTER), eventsBriefMessage))
             .parseMode(ParseMode.HTML)
             .replyMarkup(replyKeyboard)
             .disableWebPagePreview(true)
@@ -50,42 +57,4 @@ public class DateSelectedHandler implements TextMessageHandler {
 
     }
 
-    /**
-     * Проверяем, что у нас только одна страница
-     *
-     * @param chatId - идентификатор чата
-     * @return - true, если только одна страница
-     */
-    private boolean isOnlyOnePage(final Long chatId) {
-        return userDataStorage.getUserData(chatId)
-            .getPageCount() == 0;
-    }
-
-    private String getBriefEventsBodyForToday(final Long chatId, final LocalDate localDate) {
-        final int eventCount = eventService.countEvents(localDate);
-        final int pageCount = ((eventCount + Settings.PAGE_SIZE - 1) / Settings.PAGE_SIZE) - 1;
-        // сохраняем их для текущего пользователя
-        userDataStorage.setPageCount(chatId, pageCount);
-
-        final List<Event> eventList = eventService.findEvents(localDate, 0, Settings.PAGE_SIZE);
-
-        final StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < eventList.size(); i++) {
-            final Event event = eventList.get(i);
-            stringBuilder.append(i + 1).append(". ")
-                .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
-                .append("\n");
-        }
-
-        if (pageCount > 0) {
-            stringBuilder.append("\nAll ")
-                .append(1)
-                .append("\\")
-                .append(pageCount + 1)
-                .append(" ")
-                .append(MyConstants.PAGES + "\n");
-        }
-
-        return stringBuilder.toString();
-    }
 }

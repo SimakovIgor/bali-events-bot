@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.contant;
+package com.balievent.telegrambot.constant;
 
 import lombok.experimental.UtilityClass;
 
