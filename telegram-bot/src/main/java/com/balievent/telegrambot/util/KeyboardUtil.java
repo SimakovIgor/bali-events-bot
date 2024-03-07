@@ -60,7 +60,6 @@ public class KeyboardUtil {
 
         return ReplyKeyboardMarkup.builder()
             .keyboard(keyboard)
-            .isPersistent(true)
             .build();
     }
 

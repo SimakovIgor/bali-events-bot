@@ -4,8 +4,12 @@
 
 package com.balievent.telegrambot.service.storage;
 
+import com.balievent.telegrambot.exceptions.ErrorCode;
+import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.model.entity.MessageData;
 import com.balievent.telegrambot.model.entity.MessagePrimaryKey;
+import com.balievent.telegrambot.model.entity.UserData;
+import com.balievent.telegrambot.repository.UserDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -18,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class MessageDataStorage {
     private final Map<MessagePrimaryKey, MessageData> messageDataMap = new ConcurrentHashMap<>();
-    private final UserDataStorage userDataStorage;
+    private final UserDataRepository userDataRepository;
 
     private static MessagePrimaryKey getMessagePrimaryKey(final Long chatId, final Long messageNumber) {
         return MessagePrimaryKey.builder()
@@ -29,12 +33,13 @@ public class MessageDataStorage {
 
     public void addUserMessageData(final Message sentMessage,
                                    final Long chatId) {
-        final LocalDate timestamp = userDataStorage.getCalendarDate(chatId);
+        final UserData userData = userDataRepository.findById(chatId)
+            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_001));
 
         final Long nextMessageNumber = calculateNextMessageId(chatId);
         final String messageId = sentMessage.getMessageId().toString();
 
-        addMessage(chatId, nextMessageNumber, messageId, timestamp);
+        addMessage(chatId, nextMessageNumber, messageId, userData.getCalendarDate());
     }
 
     /**

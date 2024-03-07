@@ -18,7 +18,7 @@ public class FirstPaginationHandler extends AbstractPaginationHandler {
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        return userDataStorage.setCurrentPage(callbackChatId, 1);
+        return userDataService.setCurrentPage(callbackChatId, 1);
     }
 
 }

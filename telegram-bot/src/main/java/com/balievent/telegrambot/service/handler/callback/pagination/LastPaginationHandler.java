@@ -18,8 +18,8 @@ public class LastPaginationHandler extends AbstractPaginationHandler {
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        final int pageCount = userDataStorage.getUserData(callbackChatId).getPageCount();
-        return userDataStorage.setCurrentPage(callbackChatId, pageCount);
+        final int pageCount = userDataService.getUserData(callbackChatId).getPageCount();
+        return userDataService.setCurrentPage(callbackChatId, pageCount);
     }
 
 }

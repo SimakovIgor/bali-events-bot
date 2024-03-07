@@ -2,14 +2,16 @@ package com.balievent.telegrambot.service;
 
 import com.balievent.telegrambot.configuration.TelegramBotProperties;
 import com.balievent.telegrambot.constant.TgBotConstants;
+import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.service.handler.common.MediaHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandlerType;
 import com.balievent.telegrambot.service.storage.MessageDataStorage;
-import com.balievent.telegrambot.service.storage.UserDataStorage;
+import com.balievent.telegrambot.service.storage.UserDataService;
 import com.balievent.telegrambot.util.DateUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -32,7 +34,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private final Map<CallbackHandlerMessageType, CallbackHandler> callbackHandlers;
     private final TelegramBotProperties telegramBotProperties;
     private final MessageDataStorage messageDataStorage;
-    private final UserDataStorage userDataStorage;
+    private final UserDataService userDataService;
     private final MediaHandler mediaHandler;
 
     public MyTelegramBot(
@@ -41,14 +43,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers,
         final Map<CallbackHandlerMessageType, CallbackHandler> callbackHandlers,
         final TelegramBotProperties telegramBotProperties,
-        final UserDataStorage userDataStorage
+        final UserDataService userDataService
     ) {
         super(telegramBotProperties.getToken());
         this.mediaHandler = mediaHandler;
         this.messageDataStorage = messageDataStorage;
         this.textMessageHandlers = textMessageHandlers;
         this.telegramBotProperties = telegramBotProperties;
-        this.userDataStorage = userDataStorage;
+        this.userDataService = userDataService;
         this.callbackHandlers = callbackHandlers;
     }
 
@@ -57,6 +59,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         return telegramBotProperties.getUsername();
     }
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(final Update update) {
         try {
@@ -65,9 +68,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             } else {
                 processTextMessage(update);
             }
-        } catch (TelegramApiException e) {
-            log.info("Failed to process update", e);
-            throw new IllegalStateException(e.getMessage(), e);
+        } catch (ServiceException e) {
+            log.error("ServiceException {}", e.getMessage(), e);
+            execute(SendMessage.builder()
+                .chatId(update.getMessage().getChatId())
+                .text(e.getMessage())
+                .build());
         }
     }
 
@@ -79,7 +85,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     private void processTextMessage(final Update update) throws TelegramApiException {
         final Long chatId = update.getMessage().getChatId();
-        if (update.getMessage().getText().contains("/start")) { // обработчик команды /start
+        if (update.getMessage().getText().contains("/start")) {
             // Обработчик класс StartCommandHandler
             execute(textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update));
             executeSendShowMoreMessage(update, chatId);
@@ -167,14 +173,14 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             if (eventPhotos.size() == 1) {
                 log.info("Sending eventPhotos to chatId: {} size {}", chatId, eventPhotos.size());
                 final Message message = execute(mediaHandler.handleSingleMedia(chatId, eventPhotos));
-                userDataStorage.saveMediaIdList(List.of(message), chatId);
+                userDataService.saveMediaIdList(List.of(message), chatId);
 
             } else if (eventPhotos.size() > 1) {
                 log.info("Sending eventPhotos to chatId: {} size {}", chatId, eventPhotos.size());
                 final SendMediaGroup sendMediaGroup = mediaHandler.handleMultipleMedia(chatId, eventPhotos);
                 final List<Message> messageList = execute(sendMediaGroup);
                 //Сохраняем для дальнейшей очистки сообщений
-                userDataStorage.saveMediaIdList(messageList, chatId);
+                userDataService.saveMediaIdList(messageList, chatId);
             }
         } catch (TelegramApiException e) {
             log.error("Failed to send media", e);
@@ -192,7 +198,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         removeLastDateSelectedMessageIfExist(chatId);
         // Обработчик класс DateSelectedHandler
         final Message message = execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
-        userDataStorage.saveLastDateSelectedMessageId(message.getMessageId(), chatId);
+        userDataService.saveLastDateSelectedMessageId(message.getMessageId(), chatId);
 
         executeSendMedia(chatId);
     }
@@ -204,7 +210,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void removeLastDateSelectedMessageIfExist(final Long chatId) throws TelegramApiException {
-        final List<Integer> messageIds = userDataStorage.getAllMessageIdsForDelete(chatId);
+        final List<Integer> messageIds = userDataService.getAllMessageIdsForDelete(chatId);
         if (!CollectionUtils.isEmpty(messageIds)) {
             execute(DeleteMessages.builder()
                 .chatId(chatId)
@@ -221,7 +227,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      * @throws TelegramApiException - ошибка
      */
     private void removeMediaMessage(final Long chatId) throws TelegramApiException {
-        final List<Integer> mediaIdList = userDataStorage.getUserData(chatId).getMediaIdList();
+        final List<Integer> mediaIdList = userDataService.getUserData(chatId).getSentMessageIdList();
         if (!CollectionUtils.isEmpty(mediaIdList)) {
             execute(DeleteMessages.builder()
                 .chatId(chatId)

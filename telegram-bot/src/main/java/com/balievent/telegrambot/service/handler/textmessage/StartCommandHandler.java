@@ -1,11 +1,12 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
-import com.balievent.telegrambot.constant.TgBotConstants;
-import com.balievent.telegrambot.service.storage.UserDataStorage;
+import com.balievent.telegrambot.model.entity.UserData;
+import com.balievent.telegrambot.repository.UserDataRepository;
 import com.balievent.telegrambot.service.support.EventService;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -14,8 +15,24 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 public class StartCommandHandler implements TextMessageHandler {
-    private final UserDataStorage userDataStorage;
+    private static final String HELLO_MESSAGE = """
+        👋 Hello!
+        I'm a bot that will help you find events in Bali. 🌴
+        Write the date in the format: 'dd.mm.yyyy' or choose from the calendar
+
+        %s""";
+
+    private final UserDataRepository userDataRepository;
     private final EventService eventService;
+
+    private static UserData getDefaultUserData(final Long chatId) {
+        return UserData.builder()
+            .id(chatId)
+            .calendarDate(LocalDate.now())
+            .currentPage(1)
+            .pageCount(1)
+            .build();
+    }
 
     @Override
     public TextMessageHandlerType getHandlerType() {
@@ -23,14 +40,24 @@ public class StartCommandHandler implements TextMessageHandler {
     }
 
     @Override
+    @Transactional
     public SendMessage handle(final Update update) {
-        final LocalDate localDate = userDataStorage.reset(update);
-        final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 1, localDate.lengthOfMonth());
+        final Long chatId = update.getMessage().getChatId();
+        final UserData userData = getDefaultUserData(chatId);
+
+        userDataRepository.save(userData);
+
+        final LocalDate calendarDate = userData.getCalendarDate();
+        final String monthEventsMessage = eventService.getMessageWithEventsGroupedByDay(
+            calendarDate,
+            1,
+            calendarDate.lengthOfMonth()
+        );
 
         return SendMessage.builder()
-            .chatId(update.getMessage().getChatId())
-            .text(TgBotConstants.HELLO_I_AM_A_BOT_THAT_WILL_HELP_YOU_FIND_EVENTS_IN_BALI + "\n\n" + messageWithEventsGroupedByDay)
-            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
+            .chatId(chatId)
+            .text(HELLO_MESSAGE.formatted(monthEventsMessage))
+            .replyMarkup(KeyboardUtil.setCalendar(calendarDate.getMonthValue(), calendarDate.getYear()))
             .build();
     }
 }

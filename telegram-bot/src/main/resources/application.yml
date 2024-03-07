@@ -2,9 +2,6 @@ server:
   port: 8083
   shutdown: graceful
 
-logging.level:
-  org.springframework.orm.jpa.JpaTransactionManager: DEBUG
-
 spring:
   main:
     banner-mode: off
@@ -17,7 +14,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -32,5 +29,5 @@ logging:
 com:
   balievent:
     bot:
-      token: 6862871633:AAFQEI2mT7sjjiUjfSbgHHYZe7M9xPbjwlg
-      username: test_remove_me_sima_bot
+      token:
+      username:

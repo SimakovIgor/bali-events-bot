@@ -2,7 +2,7 @@ package com.balievent.telegrambot.service.handler.common;
 
 import com.balievent.telegrambot.constant.Settings;
 import com.balievent.telegrambot.model.entity.UserData;
-import com.balievent.telegrambot.service.storage.UserDataStorage;
+import com.balievent.telegrambot.service.storage.UserDataService;
 import com.balievent.telegrambot.service.support.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 public class MediaHandler {
 
     private final EventService eventService;
-    private final UserDataStorage userDataStorage;
+    private final UserDataService userDataService;
 
     public SendMediaGroup handleMultipleMedia(final Long chatId, final List<InputMediaPhoto> eventPhotos) {
         return SendMediaGroup.builder()
@@ -36,7 +36,7 @@ public class MediaHandler {
     }
 
     public List<InputMediaPhoto> findEventPhotos(final Long chatId) {
-        final UserData userData = userDataStorage.getUserData(chatId);
+        final UserData userData = userDataService.getUserData(chatId);
         final int currentPageIndex = userData.getCurrentPage() - 1;
         return eventService.findEvents(userData.getCalendarDate(), currentPageIndex, Settings.PAGE_SIZE)
             .stream()

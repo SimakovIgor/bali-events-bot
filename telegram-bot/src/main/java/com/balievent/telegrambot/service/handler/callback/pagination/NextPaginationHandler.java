@@ -18,7 +18,7 @@ public class NextPaginationHandler extends AbstractPaginationHandler {
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        return userDataStorage.incrementPageAndGetUserData(callbackChatId);
+        return userDataService.incrementPageAndGetUserData(callbackChatId);
     }
 
 }

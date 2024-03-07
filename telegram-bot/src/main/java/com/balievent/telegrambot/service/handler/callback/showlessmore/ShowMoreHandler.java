@@ -34,7 +34,10 @@ public class ShowMoreHandler extends AbstractShowHandler {
         return CallbackHandlerMessageType.SHOW_MORE;
     }
 
-    private String getDetailedEventsForToday(final int day, final int month, final int year) {
+    private String getDetailedEventsForToday(final LocalDate localDate) {
+        final int day = localDate.getDayOfMonth();
+        final int month = localDate.getMonthValue();
+        final int year = localDate.getYear();
         final List<Event> eventList = eventService.findEvents(day, month, year);
 
         final StringBuilder stringBuilder = new StringBuilder();
@@ -62,13 +65,13 @@ public class ShowMoreHandler extends AbstractShowHandler {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
         final String callbackData = update.getCallbackQuery().getData(); // show_month_full:3
         final Long callbackMessageId = getCallbackMessageId(callbackData);
-        // Сохраненная дата запроса для этого сообщения, сообщение которое далее будет создано ниже
+
         final LocalDate localDate = messageDataStorage.getLocalDate(callbackChatId, callbackMessageId);
 
         if (callbackData.contains(TgBotConstants.SHOW_MORE)) {
-            final String detailedEventsForToday = getDetailedEventsForToday(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
-            return String.format("%s %s %n %s", TgBotConstants.LIST_OF_EVENTS_ON,
-                localDate.format(Settings.PRINT_DATE_TIME_FORMATTER), detailedEventsForToday);
+            final String detailedEventsForToday = getDetailedEventsForToday(localDate);
+            final String displayDate = localDate.format(Settings.PRINT_DATE_TIME_FORMATTER);
+            return TgBotConstants.LIST_OF_EVENTS_ON.formatted(displayDate, detailedEventsForToday);
         } else if (callbackData.contains(TgBotConstants.SHOW_FULL_MONTH)) {
             return eventService.getMessageWithEventsGroupedByDayFull(localDate, 1, localDate.lengthOfMonth());
         }

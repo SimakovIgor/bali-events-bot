@@ -18,6 +18,6 @@ public class PreviousPaginationHandler extends AbstractPaginationHandler {
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        return userDataStorage.decrementPageAndGetUserData(callbackChatId);
+        return userDataService.decrementPageAndGetUserData(callbackChatId);
     }
 }
