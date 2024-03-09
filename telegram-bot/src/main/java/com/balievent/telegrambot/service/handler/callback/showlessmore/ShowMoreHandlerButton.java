@@ -15,27 +15,25 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class ShowLessHandler extends AbstractShowHandler {
+public class ShowMoreHandlerButton extends AbstractShowHandlerButton {
 
     @Override
     public TelegramButton getTelegramButton() {
-        return TelegramButton.SHOW_MONTH_LESS;
+        return TelegramButton.SHOW_MONTH_FULL;
     }
 
     @Override
     protected String getText(final Update update) {
         final UserData userData = userDataService.getUserData(update.getCallbackQuery().getMessage().getChatId());
-        final LocalDate calendarDate = userData.getCalendarDate();
+        final LocalDate calendarDate = userData.getSearchEventDate();
         final String displayDate = calendarDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " (" + calendarDate.getMonthValue() + "." + calendarDate.getYear() + ")";
-        final String monthEventsMessage = eventService.getMessageWithEventsGroupedByDay(
-            calendarDate, 1, calendarDate.lengthOfMonth());
-        return TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, monthEventsMessage);
-
+        final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDayFull(calendarDate, 1, calendarDate.lengthOfMonth());
+        return TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, detailedEventsForMonth);
     }
 
     @Override
     protected InlineKeyboardMarkup replyMarkup(final Update update) {
-        return KeyboardUtil.createInlineKeyboard(TelegramButton.SHOW_MONTH_FULL);
+        return KeyboardUtil.createInlineKeyboard(TelegramButton.SHOW_MONTH_LESS);
     }
 
 }

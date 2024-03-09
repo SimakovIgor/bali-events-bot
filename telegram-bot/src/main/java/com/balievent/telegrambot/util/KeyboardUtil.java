@@ -108,8 +108,8 @@ public class KeyboardUtil {
     public static InlineKeyboardMarkup getDayEventsKeyboard(final int currentPage, final int pageCount) {
         final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
         monthBackButtons.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.BACK_TO_MONTH_EVENT_PAGE.getText())
-            .callbackData(TelegramButton.BACK_TO_MONTH_EVENT_PAGE.getCallbackData())
+            .text(TelegramButton.MONTH_EVENTS_PAGE.getText())
+            .callbackData(TelegramButton.MONTH_EVENTS_PAGE.getCallbackData())
             .build());
 
         if (pageCount == 0) {

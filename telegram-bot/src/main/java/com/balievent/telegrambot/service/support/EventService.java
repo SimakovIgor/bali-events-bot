@@ -42,13 +42,13 @@ public class EventService {
         return stringBuilder.toString();
     }
 
-    /***
-     * Получим строку в которой будет Список событий по дням на указанный месяц
+    /**
+     * This method retrieves a message containing a list of events grouped by day for a given date range.
      *
-     * @param localDate - дата для запроса пользователя получается из "FEBRUARY (02.2024)"
-     * @param dayStart  - начальный день запроса. Минимум может быть: 1
-     * @param dayFinish - последний дней запроса. Максимум может быть: localDate.lengthOfMonth()
-     * @return String   - текст сообщеня
+     * @param localDate the date for the user query
+     * @param dayStart  the starting day of the query range. Minimum value: 1
+     * @param dayFinish the ending day of the query range. Maximum value: length of the month for the given date
+     * @return a message string with the list of events grouped by day
      */
     public String getMessageWithEventsGroupedByDay(final LocalDate localDate,
                                                    final int dayStart,
@@ -65,13 +65,13 @@ public class EventService {
         return formatMessageForEventsGroupedByDay(eventMap);
     }
 
-    /***
-     * Получим строку в которой будет Список событий по дням на указанный месяц
+    /**
+     * This method retrieves a message containing a list of events grouped by day for a given date range.
      *
-     * @param localDate - дата для запроса пользователя получается из "FEBRUARY (02.2024)"
-     * @param dayStart  - начальный день запроса. Минимум может быть: 1
-     * @param dayFinish - последний дней запроса. Максимум может быть: localDate.lengthOfMonth()
-     * @return String   - текст сообщеня
+     * @param localDate the date for the user query
+     * @param dayStart  the starting day of the query range. Minimum value: 1
+     * @param dayFinish the ending day of the query range. Maximum value: length of the month for the given date
+     * @return a message string with the list of events grouped by day
      */
     public String getMessageWithEventsGroupedByDayFull(final LocalDate localDate,
                                                        final int dayStart,
@@ -82,22 +82,6 @@ public class EventService {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return formatMessageForEventsGroupedByDay(eventMap);
-    }
-
-    private Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDate localDate,
-                                                               final int dayStart,
-                                                               final int dayFinish) {
-        final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayStart, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayFinish, 23, 59);
-        return eventRepository.findEventsByStartDateBetween(start, end)
-            .stream()
-            .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
-    }
-
-    public List<Event> findEvents(final int day, final int month, final int year) {
-        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
-        return eventRepository.findEventsByStartDateBetween(from, end);
     }
 
     public int countEvents(final LocalDate localDate) {
@@ -121,6 +105,16 @@ public class EventService {
         final Pageable pageable = PageRequest.of(page, pageSize);
         return eventRepository.findEventsByStartDateBetween(from, end, pageable)
             .getContent();
+    }
+
+    private Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDate localDate,
+                                                               final int dayStart,
+                                                               final int dayFinish) {
+        final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayStart, 0, 0);
+        final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayFinish, 23, 59);
+        return eventRepository.findEventsByStartDateBetween(start, end)
+            .stream()
+            .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
     }
 
 }

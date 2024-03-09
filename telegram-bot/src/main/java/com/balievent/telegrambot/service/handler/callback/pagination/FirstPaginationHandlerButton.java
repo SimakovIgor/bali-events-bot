@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
 @RequiredArgsConstructor
-public class FirstPaginationHandler extends AbstractPaginationHandler {
+public class FirstPaginationHandlerButton extends AbstractPaginationHandlerButton {
 
     @Override
     public TelegramButton getTelegramButton() {
@@ -18,7 +18,7 @@ public class FirstPaginationHandler extends AbstractPaginationHandler {
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        return userDataService.setCurrentPage(callbackChatId, 1);
+        return userDataService.updateCurrentPage(callbackChatId, 1);
     }
 
 }

@@ -2,22 +2,20 @@ package com.balievent.telegrambot.service.handler.textmessage;
 
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
-import com.balievent.telegrambot.service.storage.UserDataService;
-import com.balievent.telegrambot.service.support.EventService;
+import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class CalendarMonthChangedHandler implements TextMessageHandler {
-
-    private final EventService eventService;
-    private final UserDataService userDataService;
+public class CalendarMonthChangedHandler extends TextMessageHandler {
 
     @Override
     public TextMessageHandlerType getHandlerType() {
@@ -25,16 +23,24 @@ public class CalendarMonthChangedHandler implements TextMessageHandler {
     }
 
     @Override
-    public SendMessage handle(final Update update) {
-        final LocalDate localDate = userDataService.updateDataStore(update, true).getCalendarDate();
+    public void handle(final Update update) throws TelegramApiException {
+        final Long chatId = update.getMessage().getChatId();
+        final UserData userData = userDataService.updateCalendarDate(update, true);
+        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
+
+        clearChat(chatId, userData);
+
+        final LocalDate localDate = userData.getSearchEventDate();
         final String messageWithEventsGroupedByDay = eventService.getMessageWithEventsGroupedByDay(localDate, 1, localDate.lengthOfMonth());
         final String displayDate = update.getMessage().getText();
 
-        return SendMessage.builder()
-            .chatId(update.getMessage().getChatId())
+        final SendMessage sendMessage = SendMessage.builder()
+            .chatId(chatId)
             .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, messageWithEventsGroupedByDay))
-            // .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
             .replyMarkup(KeyboardUtil.createInlineKeyboard(TelegramButton.SHOW_MONTH_FULL))
             .build();
+
+        final Message message = myTelegramBot.execute(sendMessage);
+        userDataService.updateLastBotMessageId(message.getMessageId(), chatId);
     }
 }

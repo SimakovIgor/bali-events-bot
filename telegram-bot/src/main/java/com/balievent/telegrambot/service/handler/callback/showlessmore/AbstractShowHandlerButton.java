@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
-import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
+import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.storage.UserDataService;
 import com.balievent.telegrambot.service.support.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,22 +10,23 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
-public abstract class AbstractShowHandler implements CallbackHandler {
+public abstract class AbstractShowHandlerButton extends ButtonCallbackHandler {
     @Autowired
     protected EventService eventService;
     @Autowired
     protected UserDataService userDataService;
 
     @Override
-    public EditMessageText handle(final Update update) {
+    public void handle(final Update update) throws TelegramApiException {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
 
         final String text = getText(update);
         final InlineKeyboardMarkup replyMarkup = replyMarkup(update);
 
-        return EditMessageText.builder()
+        final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(update.getCallbackQuery().getMessage().getChatId())
             .messageId(callbackQuery.getMessage().getMessageId())
             .text(text)
@@ -33,6 +34,8 @@ public abstract class AbstractShowHandler implements CallbackHandler {
             .disableWebPagePreview(true)
             .replyMarkup(replyMarkup)
             .build();
+
+        myTelegramBot.execute(editMessageText);
     }
 
     protected abstract String getText(Update update);

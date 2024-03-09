@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -17,7 +18,7 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
-public class NextMonthCallbackHandler implements CallbackHandler {
+public class NextMonthButtonCallbackHandler extends ButtonCallbackHandler {
     private final UserDataService userDataService;
     private final EventService eventService;
 
@@ -27,19 +28,21 @@ public class NextMonthCallbackHandler implements CallbackHandler {
     }
 
     @Override
-    public EditMessageText handle(final Update update) {
+    public void handle(final Update update) throws TelegramApiException {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
         final UserData userData = userDataService.addMonthAndGetUserData(callbackChatId);
-        final LocalDate calendarDate = userData.getCalendarDate();
+        final LocalDate calendarDate = userData.getSearchEventDate();
         final String displayDate = calendarDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " (" + calendarDate.getMonthValue() + "." + calendarDate.getYear() + ")";
         final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDayFull(calendarDate, 1, calendarDate.lengthOfMonth());
         final String eventListMessage = TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, detailedEventsForMonth);
 
-        return EditMessageText.builder()
+        final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(update.getCallbackQuery().getMessage().getChatId().toString())
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
             .text(eventListMessage)
             .replyMarkup(KeyboardUtil.createMonthInlineKeyboard(calendarDate))
             .build();
+
+        myTelegramBot.execute(editMessageText);
     }
 }

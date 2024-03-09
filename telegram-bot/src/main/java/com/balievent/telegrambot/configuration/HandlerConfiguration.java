@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.configuration;
 
 import com.balievent.telegrambot.constant.TelegramButton;
-import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
+import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandlerType;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +20,9 @@ public class HandlerConfiguration {
     }
 
     @Bean(name = "callbackHandlers")
-    public Map<TelegramButton, CallbackHandler> callbackHandlers(final List<CallbackHandler> callbackHandlerList) {
-        return callbackHandlerList.stream()
-            .collect(Collectors.toMap(CallbackHandler::getTelegramButton, handler -> handler));
+    public Map<TelegramButton, ButtonCallbackHandler> callbackHandlers(final List<ButtonCallbackHandler> buttonCallbackHandlerList) {
+        return buttonCallbackHandlerList.stream()
+            .collect(Collectors.toMap(ButtonCallbackHandler::getTelegramButton, handler -> handler));
     }
 
 }

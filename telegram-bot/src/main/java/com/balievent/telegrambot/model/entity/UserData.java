@@ -32,28 +32,20 @@ public class UserData {
     @Id
     private Long id;
 
-    @Column(name = "calendar_date")
-    private LocalDate calendarDate;
+    @Column(name = "search_event_date")
+    private LocalDate searchEventDate;
 
-    @Column(name = "current_page")
-    private Integer currentPage;
+    @Column(name = "current_event_page")
+    private Integer currentEventPage;
 
-    @Column(name = "page_count")
-    private Integer pageCount;
+    @Column(name = "total_event_pages")
+    private Integer totalEventPages;
 
-    @Column(name = "last_date_selected_message_id")
-    private Integer lastDateSelectedMessageId;
+    @Column(name = "last_bot_message_id")
+    private Integer lastBotMessageId;
 
-    @Column(name = "start_message_id")
-    private Integer startMessageId;
-
-    @Column(name = "user_message_id")
-    private Integer userMessageId;
-
-    @Column(name = "calendar_changed_message_ids")
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Builder.Default
-    private List<Integer> calendarChangedMessageIds = new ArrayList<>();
+    @Column(name = "last_user_message_id")
+    private Integer lastUserMessageId;
 
     @Column(name = "media_message_id_list")
     @JdbcTypeCode(SqlTypes.JSON)
