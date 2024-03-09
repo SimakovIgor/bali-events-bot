@@ -79,8 +79,6 @@ public class EventService {
         final Map<LocalDate, List<Event>> eventMap = getEventsAndGroupByDay(localDate, dayStart, dayFinish)
             .entrySet()
             .stream()
-            .sorted(COMPARING_BY_LOCAL_DATE)
-            .skip(SHOW_ROW_COUNT)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return formatMessageForEventsGroupedByDay(eventMap);

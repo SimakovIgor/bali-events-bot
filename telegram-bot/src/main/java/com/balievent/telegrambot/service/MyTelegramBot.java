@@ -1,14 +1,13 @@
 package com.balievent.telegrambot.service;
 
 import com.balievent.telegrambot.configuration.TelegramBotProperties;
-import com.balievent.telegrambot.constant.TgBotConstants;
+import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.exceptions.ServiceException;
+import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
-import com.balievent.telegrambot.service.handler.callback.CallbackHandlerMessageType;
 import com.balievent.telegrambot.service.handler.common.MediaHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandlerType;
-import com.balievent.telegrambot.service.storage.MessageDataStorage;
 import com.balievent.telegrambot.service.storage.UserDataService;
 import com.balievent.telegrambot.util.DateUtil;
 import lombok.SneakyThrows;
@@ -18,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessages;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -25,29 +25,27 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
 @Slf4j
 public class MyTelegramBot extends TelegramLongPollingBot {
     private final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers;
-    private final Map<CallbackHandlerMessageType, CallbackHandler> callbackHandlers;
+    private final Map<TelegramButton, CallbackHandler> callbackHandlers;
     private final TelegramBotProperties telegramBotProperties;
-    private final MessageDataStorage messageDataStorage;
     private final UserDataService userDataService;
     private final MediaHandler mediaHandler;
 
     public MyTelegramBot(
         final MediaHandler mediaHandler,
-        final MessageDataStorage messageDataStorage,
         final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers,
-        final Map<CallbackHandlerMessageType, CallbackHandler> callbackHandlers,
+        final Map<TelegramButton, CallbackHandler> callbackHandlers,
         final TelegramBotProperties telegramBotProperties,
         final UserDataService userDataService
     ) {
         super(telegramBotProperties.getToken());
         this.mediaHandler = mediaHandler;
-        this.messageDataStorage = messageDataStorage;
         this.textMessageHandlers = textMessageHandlers;
         this.telegramBotProperties = telegramBotProperties;
         this.userDataService = userDataService;
@@ -85,22 +83,34 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     private void processTextMessage(final Update update) throws TelegramApiException {
         final Long chatId = update.getMessage().getChatId();
+
         if (update.getMessage().getText().contains("/start")) {
-            // Обработчик класс StartCommandHandler
-            execute(textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update));
-            executeSendShowMoreMessage(update, chatId);
-
-        } else if (DateUtil.isCalendarMonthChanged(update.getMessage().getText())) {
-            // Обработчик класс CalendarMonthChangedHandler (изменение месяца в календаре)
-            execute(textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED).handle(update));
-            executeSendShowMoreMessage(update, chatId);
-
-        } else if (DateUtil.isDateSelected(update.getMessage().getText())) { // обработчик выбора даты из календаря
-            processDateSelected(update, chatId);
-        } else { // обработчик непонятных сообщений
-            // Обработчик класс MisUnderstandingMessageHandler
-            execute(textMessageHandlers.get(TextMessageHandlerType.MIS_UNDERSTANDING_MESSAGE).handle(update));
+            final UserData userData = userDataService.createOrUpdateUserData(chatId);
+            removeUserMessageList(chatId, userData);
+            processStartCommand(update, userData);
+        } else {
+            final UserData userData = userDataService.getUserData(chatId);
+            removeUserMessageList(chatId, userData);
+            if (DateUtil.isCalendarMonthChanged(update.getMessage().getText())) {
+                processCalendarMonthChanged(update, chatId, userData);
+            } else if (DateUtil.isDateSelected(update.getMessage().getText())) {
+                processDateSelected(update, chatId, userData);
+            }
         }
+        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
+
+    }
+
+    private void processStartCommand(final Update update,
+                                     final UserData userData) throws TelegramApiException {
+        final Long chatId = update.getMessage().getChatId();
+        // Обработчик класс StartCommandHandler
+        removeLastStartMessage(chatId, userData);
+        removeLastDateSelectedMessageIfExist(chatId, userData);
+        removeMediaMessage(chatId, userData);
+
+        final Message message = execute(textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update));
+        userDataService.saveStartMessageId(message.getMessageId(), chatId);
     }
 
     /**
@@ -111,62 +121,24 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     private void processCallbackQuery(final Update update) throws TelegramApiException {
         final String callbackData = update.getCallbackQuery().getData();
-        final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
+        final Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        final TelegramButton clickedButton = TelegramButton.valueOf(callbackData.toUpperCase(Locale.ROOT));
 
-        if (callbackData.contains(TgBotConstants.SHOW_MORE) || callbackData.contains(TgBotConstants.SHOW_FULL_MONTH)) {
-            // Обработчик класс ShowMoreHandler
-            execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_MORE).handle(update));
-        } else if (callbackData.contains(TgBotConstants.SHOW_LESS) || callbackData.contains(TgBotConstants.SHOW_SHORT_MONTH)) {
-            // Обработчик класс ShowLessHandler
-            execute(callbackHandlers.get(CallbackHandlerMessageType.SHOW_LESS).handle(update));
-        } else if ("next_page".equals(callbackData)) {
-            // Обработчик класс NextPaginationHandler
-            execute(callbackHandlers.get(CallbackHandlerMessageType.NEXT_PAGINATION).handle(update));
-            updateMedia(callbackChatId);
-        } else if ("previous_page".equals(callbackData)) {
-            // Обработчик класс PreviousPaginationHandler
-            execute(callbackHandlers.get(CallbackHandlerMessageType.PREVIOUS_PAGINATION).handle(update));
-            updateMedia(callbackChatId);
-        } else if ("last_page".equals(callbackData)) {
-            // Обработчик класс LastPaginationHandler
-            execute(callbackHandlers.get(CallbackHandlerMessageType.LAST_PAGINATION).handle(update));
-            updateMedia(callbackChatId);
-        } else if ("first_page".equals(callbackData)) {
-            // Обработчик класс FirstPaginationHandler
-            execute(callbackHandlers.get(CallbackHandlerMessageType.FIRST_PAGINATION).handle(update));
-            updateMedia(callbackChatId);
+        execute(callbackHandlers.get(clickedButton).handle(update));
+
+        final UserData userData = userDataService.getUserData(chatId);
+        removeMediaMessage(chatId, userData);
+
+        if (clickedButton.isIncludeMedia()) {
+            updateMedia(chatId);
         }
+
     }
 
-    /**
-     * Обновление медиафайлов в чате пользователя (Удаление и создание новых)
-     *
-     * @param chatId - идентификатор чата
-     * @throws TelegramApiException - ошибка
-     */
-    private void updateMedia(final Long chatId) throws TelegramApiException {
-        removeMediaMessage(chatId);
+    private void updateMedia(final Long chatId) {
         executeSendMedia(chatId);
     }
 
-    /**
-     * Отправка сообщения "Показать еще" пользователю
-     *
-     * @param update - все возможные события от пользователя
-     * @param chatId - идентификатор чата
-     * @throws TelegramApiException - ошибка
-     */
-    private void executeSendShowMoreMessage(final Update update, final Long chatId) throws TelegramApiException {
-        final SendMessage sendMessage = textMessageHandlers.get(TextMessageHandlerType.SEND_SHOW_MORE_MESSAGE).handle(update);
-        final Message messageExecute = execute(sendMessage);
-        messageDataStorage.addUserMessageData(messageExecute, chatId);
-    }
-
-    /**
-     * Отправка медиафайлов пользователю в зависимости от количества найденных фотографий
-     *
-     * @param chatId - идентификатор чата
-     */
     private void executeSendMedia(final Long chatId) {
         try {
             final List<InputMediaPhoto> eventPhotos = mediaHandler.findEventPhotos(chatId);
@@ -187,52 +159,102 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Обработка выбора даты пользователем
-     *
-     * @param update - все возможные события от пользователя
-     * @param chatId - идентификатор чата
-     * @throws TelegramApiException - ошибка
-     */
-    private void processDateSelected(final Update update, final Long chatId) throws TelegramApiException {
-        removeLastDateSelectedMessageIfExist(chatId);
+    private void processDateSelected(final Update update,
+                                     final Long chatId,
+                                     final UserData userData) throws TelegramApiException {
+        removeLastStartMessage(chatId, userData);
+        removeLastDateSelectedMessageIfExist(chatId, userData);
+        removeLastCalendarMonthChangedMessageIfExist(chatId, userData);
         // Обработчик класс DateSelectedHandler
         final Message message = execute(textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update));
         userDataService.saveLastDateSelectedMessageId(message.getMessageId(), chatId);
 
-        executeSendMedia(chatId);
+        updateMedia(chatId);
     }
 
-    /**
-     * Удаление последнего сообщения со списком ивентов на определенную дату , если оно существует
-     *
-     * @param chatId - идентификатор чата
-     * @throws TelegramApiException - ошибка
-     */
-    private void removeLastDateSelectedMessageIfExist(final Long chatId) throws TelegramApiException {
-        final List<Integer> messageIds = userDataService.getAllMessageIdsForDelete(chatId);
-        if (!CollectionUtils.isEmpty(messageIds)) {
+    private void processCalendarMonthChanged(final Update update,
+                                             final Long chatId,
+                                             final UserData userData) throws TelegramApiException {
+        removeLastStartMessage(chatId, userData);
+        removeLastCalendarMonthChangedMessageIfExist(chatId, userData);
+        removeLastDateSelectedMessageIfExist(chatId, userData);
+        removeMediaMessage(chatId, userData);
+
+        // Обработчик класс CalendarMonthChangedHandler
+        final Message lastCalendarChangedMessageId = execute(textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED)
+            .handle(update));
+        final List<Integer> messageIds = List.of(lastCalendarChangedMessageId.getMessageId());
+        userDataService.saveLastCalendarChangedMessageId(messageIds, chatId);
+    }
+
+    private void removeLastCalendarMonthChangedMessageIfExist(final Long chatId, final UserData userData) {
+        try {
+            execute(DeleteMessages.builder()
+                .chatId(chatId)
+                .messageIds(userData.getCalendarChangedMessageIds())
+                .build());
+        } catch (TelegramApiException e) {
+            log.warn("Calendar month changed message not found", e);
+        }
+    }
+
+    private void removeLastDateSelectedMessageIfExist(final Long chatId, final UserData userData) {
+        final List<Integer> messageIds = userDataService.getAllMessageIdsForDelete(userData);
+        if (CollectionUtils.isEmpty(messageIds)) {
+            return;
+        }
+        try {
             execute(DeleteMessages.builder()
                 .chatId(chatId)
                 .messageIds(messageIds)
                 .build());
+        } catch (TelegramApiException e) {
+            log.warn("Date selected message not found", e);
+        }
+    }
+
+    private void removeMediaMessage(final Long chatId, final UserData userData) {
+        if (CollectionUtils.isEmpty(userData.getMediaMessageIdList())) {
+            return;
+        }
+        try {
+            execute(DeleteMessages.builder()
+                .chatId(chatId)
+                .messageIds(userData.getMediaMessageIdList())
+                .build());
+
+        } catch (TelegramApiException e) {
+            log.warn("Media message not found", e);
+        }
+    }
+
+    private void removeLastStartMessage(final Long chatId,
+                                        final UserData userData) {
+        if (userData.getStartMessageId() == null) {
+            return;
+        }
+        try {
+            execute(DeleteMessage.builder()
+                .chatId(chatId)
+                .messageId(userData.getStartMessageId())
+                .build());
+        } catch (TelegramApiException e) {
+            log.warn("User message not found", e);
         }
 
     }
 
-    /**
-     * Удаление последних отправленных медиафайлов в чате пользователя
-     *
-     * @param chatId - идентификатор чата
-     * @throws TelegramApiException - ошибка
-     */
-    private void removeMediaMessage(final Long chatId) throws TelegramApiException {
-        final List<Integer> mediaIdList = userDataService.getUserData(chatId).getSentMessageIdList();
-        if (!CollectionUtils.isEmpty(mediaIdList)) {
-            execute(DeleteMessages.builder()
+    private void removeUserMessageList(final Long chatId, final UserData userData) {
+        if (userData.getUserMessageId() == null) {
+            return;
+        }
+        try {
+            execute(DeleteMessage.builder()
                 .chatId(chatId)
-                .messageIds(mediaIdList)
+                .messageId(userData.getUserMessageId())
                 .build());
+        } catch (TelegramApiException e) {
+            log.warn("User message not found", e);
         }
 
     }

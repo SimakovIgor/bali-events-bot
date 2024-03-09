@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -21,7 +20,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Accessors(chain = true)
 @Getter
 @Setter
@@ -32,17 +31,33 @@ import java.util.List;
 public class UserData {
     @Id
     private Long id;
+
     @Column(name = "calendar_date")
     private LocalDate calendarDate;
+
     @Column(name = "current_page")
     private Integer currentPage;
+
     @Column(name = "page_count")
     private Integer pageCount;
-    @Column(name = "sent_message_id_list")
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Builder.Default
-    private List<Integer> sentMessageIdList = new ArrayList<>();
+
     @Column(name = "last_date_selected_message_id")
     private Integer lastDateSelectedMessageId;
+
+    @Column(name = "start_message_id")
+    private Integer startMessageId;
+
+    @Column(name = "user_message_id")
+    private Integer userMessageId;
+
+    @Column(name = "calendar_changed_message_ids")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Builder.Default
+    private List<Integer> calendarChangedMessageIds = new ArrayList<>();
+
+    @Column(name = "media_message_id_list")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Builder.Default
+    private List<Integer> mediaMessageIdList = new ArrayList<>();
 
 }

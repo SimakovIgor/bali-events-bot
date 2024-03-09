@@ -43,14 +43,12 @@ public class DateSelectedHandler implements TextMessageHandler {
 
         userDataService.setPageCount(chatId, pageCount);
 
-        final ReplyKeyboard replyKeyboard = pageCount == 1
-                                            ? KeyboardUtil.setCalendar(eventsDateFor.getMonthValue(), eventsDateFor.getYear())
-                                            : KeyboardUtil.getPaginationKeyboard(currentPage, pageCount);
+        final ReplyKeyboard replyKeyboard = KeyboardUtil.getDayEventsKeyboard(currentPage, pageCount);
 
         final String displayDate = eventsDateFor.format(Settings.PRINT_DATE_TIME_FORMATTER);
         return SendMessage.builder()
             .chatId(chatId)
-            .text(TgBotConstants.LIST_OF_EVENTS_ON.formatted(displayDate, eventsBriefMessage))
+            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, eventsBriefMessage))
             .parseMode(ParseMode.HTML)
             .replyMarkup(replyKeyboard)
             .disableWebPagePreview(true)

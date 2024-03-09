@@ -38,10 +38,10 @@ public abstract class AbstractPaginationHandler implements CallbackHandler {
         return EditMessageText.builder()
             .chatId(update.getCallbackQuery().getMessage().getChatId())
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
-            .text(TgBotConstants.LIST_OF_EVENTS_ON.formatted(formattedDate, eventsBriefMessage))
+            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedDate, eventsBriefMessage))
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
-            .replyMarkup(KeyboardUtil.getPaginationKeyboard(userData.getCurrentPage(), userData.getPageCount()))
+            .replyMarkup(KeyboardUtil.getDayEventsKeyboard(userData.getCurrentPage(), userData.getPageCount()))
             .build();
     }
 }

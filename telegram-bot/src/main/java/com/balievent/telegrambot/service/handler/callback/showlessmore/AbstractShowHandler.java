@@ -1,8 +1,8 @@
 package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
-import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.handler.callback.CallbackHandler;
-import com.balievent.telegrambot.service.storage.MessageDataStorage;
+import com.balievent.telegrambot.service.storage.UserDataService;
+import com.balievent.telegrambot.service.support.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -14,31 +14,20 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 @Service
 public abstract class AbstractShowHandler implements CallbackHandler {
     @Autowired
-    protected MessageDataStorage messageDataStorage;
-
-    protected static Long getCallbackMessageId(final String callbackData) {
-        final String[] parts = callbackData.split(TgBotConstants.COLON_MARK);
-        if (parts.length < 2 || parts[1].isEmpty()) {
-            throw new NumberFormatException("Invalid callback data format");
-        }
-        return Long.parseLong(parts[1]);
-    }
+    protected EventService eventService;
+    @Autowired
+    protected UserDataService userDataService;
 
     @Override
     public EditMessageText handle(final Update update) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
-        final String callbackData = callbackQuery.getData();
-
-        final Long callbackMessageId = getCallbackMessageId(callbackData);
-        final Long callbackChatId = callbackQuery.getMessage().getChatId();
-        final Integer messageId = Integer.parseInt(messageDataStorage.getMessageTimestamp(callbackChatId, callbackMessageId));
 
         final String text = getText(update);
         final InlineKeyboardMarkup replyMarkup = replyMarkup(update);
 
         return EditMessageText.builder()
             .chatId(update.getCallbackQuery().getMessage().getChatId())
-            .messageId(messageId)
+            .messageId(callbackQuery.getMessage().getMessageId())
             .text(text)
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)

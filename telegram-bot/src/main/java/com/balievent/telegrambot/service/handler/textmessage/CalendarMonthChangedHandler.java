@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
+import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.storage.UserDataService;
 import com.balievent.telegrambot.service.support.EventService;
@@ -31,8 +32,9 @@ public class CalendarMonthChangedHandler implements TextMessageHandler {
 
         return SendMessage.builder()
             .chatId(update.getMessage().getChatId())
-            .text(TgBotConstants.LIST_OF_EVENTS_ON.formatted(displayDate, messageWithEventsGroupedByDay))
-            .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
+            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, messageWithEventsGroupedByDay))
+            // .replyMarkup(KeyboardUtil.setCalendar(localDate.getMonthValue(), localDate.getYear()))
+            .replyMarkup(KeyboardUtil.createInlineKeyboard(TelegramButton.SHOW_MONTH_FULL))
             .build();
     }
 }

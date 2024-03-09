@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.util;
 
+import com.balievent.telegrambot.constant.TelegramButton;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -15,16 +16,10 @@ import java.util.Locale;
 @UtilityClass
 public class KeyboardUtil {
 
-    public static final int COLS_COUNT = 5; // количество дней в одной строке можно установить от 5 до 10
+    public static final int COLS_COUNT = 5;
 
-    public static ReplyKeyboardMarkup setCalendar(final int currentMonth, final int currentYear) {
-        final int currentMonthNoZero = currentMonth == 0
-                                       ? LocalDate.now().getMonthValue()
-                                       : currentMonth;
-
-        final Month month = Month.of(currentMonthNoZero);
-        final Month monthNext = Month.of(currentMonthNoZero % 12 + 1);
-        final Month monthPrevious = Month.of((currentMonthNoZero + 10) % 12 + 1);
+    public static ReplyKeyboardMarkup setCalendar(final int currentMonth) {
+        final Month month = Month.of(currentMonth);
 
         final int daysInMonth = month.length(LocalDate.now().isLeapYear());
         final String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
@@ -44,18 +39,13 @@ public class KeyboardUtil {
 
         keyboard.add(row);
 
-        final KeyboardRow monthChangeRow = new KeyboardRow();
-        final String buttonPreviousMonthText = String.format("%s (%02d.%04d)",
-            monthPrevious,
-            (currentMonthNoZero + 10) % 12 + 1,
-            currentMonthNoZero == 1 ? currentYear - 1 : currentYear);
-        monthChangeRow.add(buttonPreviousMonthText);
+        final String buttonPreviousMonthText = getPreviousMonthButtonText(currentMonth);
+        final String buttonNextMonthText = getNextMonthButtonText(currentMonth);
 
-        final String buttonNextMonthText = String.format("%s (%02d.%04d)",
-            monthNext,
-            currentMonthNoZero % 12 + 1,
-            currentMonthNoZero == 12 ? currentYear + 1 : currentYear);
+        final KeyboardRow monthChangeRow = new KeyboardRow();
+        monthChangeRow.add(buttonPreviousMonthText);
         monthChangeRow.add(buttonNextMonthText);
+
         keyboard.add(monthChangeRow);
 
         return ReplyKeyboardMarkup.builder()
@@ -63,11 +53,10 @@ public class KeyboardUtil {
             .build();
     }
 
-    public InlineKeyboardMarkup setShowMoreButtonKeyboard(final String buttonText,
-                                                          final String callbackData) {
+    public InlineKeyboardMarkup createInlineKeyboard(final TelegramButton telegramButton) {
         final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
-            .text(buttonText)
-            .callbackData(callbackData)
+            .text(telegramButton.getText())
+            .callbackData(telegramButton.getCallbackData())
             .build();
 
         final List<InlineKeyboardButton> rowInline = List.of(inlineKeyboardButton);
@@ -78,54 +67,92 @@ public class KeyboardUtil {
             .build();
     }
 
+    public InlineKeyboardMarkup createMonthInlineKeyboard(final LocalDate calendarDate) {
+        final int monthValue = calendarDate.getMonthValue();
+
+        final InlineKeyboardButton previousMonthButton = InlineKeyboardButton.builder()
+            .text(getPreviousMonthButtonText(monthValue))
+            .callbackData(TelegramButton.PREVIOUS_MONTH_PAGE.getCallbackData())
+            .build();
+        final InlineKeyboardButton nextMonthButton = InlineKeyboardButton.builder()
+            .text(getNextMonthButtonText(monthValue))
+            .callbackData(TelegramButton.NEXT_MONTH_PAGE.getCallbackData())
+            .build();
+
+        return InlineKeyboardMarkup.builder()
+            .keyboard(List.of(
+                List.of(previousMonthButton, nextMonthButton)
+            ))
+            .build();
+    }
+
+    private static String getNextMonthButtonText(final int currentMonth) {
+        final Month monthNext = Month.of(currentMonth % 12 + 1);
+        return String.format(TelegramButton.NEXT_MONTH_PAGE.getText().formatted(monthNext));
+    }
+
+    private static String getPreviousMonthButtonText(final int currentMonth) {
+        final Month monthPrevious = Month.of((currentMonth + 10) % 12 + 1);
+        return String.format(TelegramButton.PREVIOUS_MONTH_PAGE.getText().formatted(monthPrevious));
+    }
+
     /**
-     * Получаем разметку клавиатуры для пагинации (переключения страниц)
-     * Это две кнопки влево и вправо
+     * Generates an inline keyboard markup for navigating between pages of day events.
+     * Can include buttons for the first, previous, next, and last pages (if pageCount > 0)
+     * Also includes a button to return to the month view
      *
-     * @return - разметка клавиатуры
+     * @param currentPage The current page number.
+     * @param pageCount   The total number of pages.
+     * @return The generated InlineKeyboardMarkup.
      */
-    public static InlineKeyboardMarkup getPaginationKeyboard(final int currentPage, final int pageCount) {
+    public static InlineKeyboardMarkup getDayEventsKeyboard(final int currentPage, final int pageCount) {
+        final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
+        monthBackButtons.add(InlineKeyboardButton.builder()
+            .text(TelegramButton.BACK_TO_MONTH_EVENT_PAGE.getText())
+            .callbackData(TelegramButton.BACK_TO_MONTH_EVENT_PAGE.getCallbackData())
+            .build());
+
         if (pageCount == 0) {
-            return InlineKeyboardMarkup.builder().build();
+            return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(monthBackButtons))
+                .build();
         }
 
-        final List<InlineKeyboardButton> row = new ArrayList<>();
-
+        final List<InlineKeyboardButton> paginationButtons = new ArrayList<>();
         if (currentPage > 2) {
-            row.add(InlineKeyboardButton.builder()
-                .text("<< 1")
-                .callbackData("first_page")
+            final TelegramButton firstEventsPageButton = TelegramButton.FIRST_EVENTS_PAGE;
+            paginationButtons.add(InlineKeyboardButton.builder()
+                .text(firstEventsPageButton.getText().formatted(pageCount))
+                .callbackData(firstEventsPageButton.getCallbackData())
                 .build());
         }
 
         if (currentPage > 1) {
-            row.add(InlineKeyboardButton.builder()
-                .text("< " + (currentPage - 1))
-                .callbackData("previous_page")
+            final TelegramButton previousEventsPageButton = TelegramButton.PREVIOUS_EVENTS_PAGE;
+            paginationButtons.add(InlineKeyboardButton.builder()
+                .text(previousEventsPageButton.getText().formatted(currentPage - 1, pageCount))
+                .callbackData(previousEventsPageButton.getCallbackData())
                 .build());
         }
 
-        row.add(InlineKeyboardButton.builder()
-            .text(currentPage + " / " + pageCount)
-            .callbackData("current_page")
-            .build());
-
         if (currentPage < pageCount) {
-            row.add(InlineKeyboardButton.builder()
-                .text("> " + (currentPage + 1))
-                .callbackData("next_page")
+            final TelegramButton nextEventsPageButton = TelegramButton.NEXT_EVENTS_PAGE;
+            paginationButtons.add(InlineKeyboardButton.builder()
+                .text(nextEventsPageButton.getText().formatted(currentPage + 1, pageCount))
+                .callbackData(nextEventsPageButton.getCallbackData())
                 .build());
         }
 
         if (currentPage < pageCount - 1) {
-            row.add(InlineKeyboardButton.builder()
-                .text(">> " + pageCount)
-                .callbackData("last_page")
+            final TelegramButton lastEventsPageButton = TelegramButton.LAST_EVENTS_PAGE;
+            paginationButtons.add(InlineKeyboardButton.builder()
+                .text(lastEventsPageButton.getText().formatted(pageCount, pageCount))
+                .callbackData(lastEventsPageButton.getCallbackData())
                 .build());
         }
 
         return InlineKeyboardMarkup.builder()
-            .keyboard(List.of(row))
+            .keyboard(List.of(paginationButtons, monthBackButtons))
             .build();
     }
 
