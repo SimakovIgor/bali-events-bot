@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.service.storage;
+package com.balievent.telegrambot.service.service;
 
 import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;

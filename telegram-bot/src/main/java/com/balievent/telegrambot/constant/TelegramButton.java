@@ -12,12 +12,12 @@ public enum TelegramButton {
     PREVIOUS_EVENTS_PAGE("previous_events_page", "< [%s/%s]"),
     NEXT_EVENTS_PAGE("next_events_page", "> [%s/%s]"),
     LAST_EVENTS_PAGE("last_events_page", ">> [%s/%s]"),
-    PREVIOUS_MONTH_PAGE("previous_month_page", "%s <️"),
+    PREVIOUS_MONTH_PAGE("previous_month_page", "%s"),
     MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅"),
-    NEXT_MONTH_PAGE("next_month_page", ">️ %s"),
+    NEXT_MONTH_PAGE("next_month_page", "%s"),
     LETS_GO("month_events_page", "Let's go! 🚀");
 
     private final String callbackData;
-    private final String text;
+    private final String buttonText;
 
 }

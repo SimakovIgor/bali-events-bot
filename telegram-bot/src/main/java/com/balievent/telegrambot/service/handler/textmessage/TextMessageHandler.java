@@ -2,8 +2,8 @@ package com.balievent.telegrambot.service.handler.textmessage;
 
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.MyTelegramBot;
-import com.balievent.telegrambot.service.storage.UserDataService;
-import com.balievent.telegrambot.service.support.EventService;
+import com.balievent.telegrambot.service.service.EventService;
+import com.balievent.telegrambot.service.service.UserDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

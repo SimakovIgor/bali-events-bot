@@ -7,7 +7,7 @@ package com.balievent.telegrambot.util;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class GetGoogleMapLink {
+public class GetGoogleMapLinkUtil {
 
     public static String getGoogleMap(final String text, final String coordinates) {
         return "<a href=\"" + getGoogleMap(coordinates) + "\">" + text + "</a>";

@@ -1,24 +1,21 @@
-package com.balievent.telegrambot.service.handler.callback.pagination;
+package com.balievent.telegrambot.service.handler.callback.eventspagination;
 
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.model.entity.UserData;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
-@RequiredArgsConstructor
-public class NextPaginationHandlerButton extends AbstractPaginationHandlerButton {
+public class PreviousPageEventsPaginationHandler extends AbstractEventsPaginationHandler {
 
     @Override
     public TelegramButton getTelegramButton() {
-        return TelegramButton.NEXT_EVENTS_PAGE;
+        return TelegramButton.PREVIOUS_EVENTS_PAGE;
     }
 
     @Override
     protected UserData updateUserData(final Update update) {
         final Long callbackChatId = update.getCallbackQuery().getMessage().getChatId();
-        return userDataService.incrementCurrentPage(callbackChatId);
+        return userDataService.decrementCurrentPage(callbackChatId);
     }
-
 }

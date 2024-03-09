@@ -1,7 +1,8 @@
-package com.balievent.telegrambot.service.support;
+package com.balievent.telegrambot.service.service;
 
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.repository.EventRepository;
+import com.balievent.telegrambot.util.MessageBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,38 +10,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd_MM_yyyy");
+
     public static final int SHOW_ROW_COUNT = 5;
     public static final Comparator<Map.Entry<LocalDate, List<Event>>> COMPARING_BY_LOCAL_DATE = Map.Entry.comparingByKey();
     private final EventRepository eventRepository;
-
-    private static String formatMessageForEventsGroupedByDay(final Map<LocalDate, List<Event>> eventMap) {
-        final Map<LocalDate, List<Event>> reverseSortedMap = new TreeMap<>(eventMap);
-
-        final StringBuilder stringBuilder = new StringBuilder();
-        reverseSortedMap.forEach((key, value) ->
-            stringBuilder.append("/").append(key.format(DATE_TIME_FORMATTER))
-                .append(" : ")
-                .append(value.size())
-                .append(" events")
-                .append("\n"));
-
-        if (stringBuilder.isEmpty()) {
-            stringBuilder.append("No events");
-        }
-
-        return stringBuilder.toString();
-    }
 
     /**
      * This method retrieves a message containing a list of events grouped by day for a given date range.
@@ -62,7 +43,7 @@ public class EventService {
             .limit(SHOW_ROW_COUNT)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        return formatMessageForEventsGroupedByDay(eventMap);
+        return MessageBuilderUtil.formatMessageForEventsGroupedByDay(eventMap);
     }
 
     /**
@@ -81,7 +62,7 @@ public class EventService {
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        return formatMessageForEventsGroupedByDay(eventMap);
+        return MessageBuilderUtil.formatMessageForEventsGroupedByDay(eventMap);
     }
 
     public int countEvents(final LocalDate localDate) {

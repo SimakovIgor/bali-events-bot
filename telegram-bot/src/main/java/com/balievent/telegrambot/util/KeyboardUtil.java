@@ -55,7 +55,7 @@ public class KeyboardUtil {
 
     public InlineKeyboardMarkup createInlineKeyboard(final TelegramButton telegramButton) {
         final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
-            .text(telegramButton.getText())
+            .text(telegramButton.getButtonText())
             .callbackData(telegramButton.getCallbackData())
             .build();
 
@@ -88,12 +88,12 @@ public class KeyboardUtil {
 
     private static String getNextMonthButtonText(final int currentMonth) {
         final Month monthNext = Month.of(currentMonth % 12 + 1);
-        return String.format(TelegramButton.NEXT_MONTH_PAGE.getText().formatted(monthNext));
+        return String.format(TelegramButton.NEXT_MONTH_PAGE.getButtonText().formatted(monthNext));
     }
 
     private static String getPreviousMonthButtonText(final int currentMonth) {
         final Month monthPrevious = Month.of((currentMonth + 10) % 12 + 1);
-        return String.format(TelegramButton.PREVIOUS_MONTH_PAGE.getText().formatted(monthPrevious));
+        return String.format(TelegramButton.PREVIOUS_MONTH_PAGE.getButtonText().formatted(monthPrevious));
     }
 
     /**
@@ -108,7 +108,7 @@ public class KeyboardUtil {
     public static InlineKeyboardMarkup getDayEventsKeyboard(final int currentPage, final int pageCount) {
         final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
         monthBackButtons.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.MONTH_EVENTS_PAGE.getText())
+            .text(TelegramButton.MONTH_EVENTS_PAGE.getButtonText())
             .callbackData(TelegramButton.MONTH_EVENTS_PAGE.getCallbackData())
             .build());
 
@@ -122,7 +122,7 @@ public class KeyboardUtil {
         if (currentPage > 2) {
             final TelegramButton firstEventsPageButton = TelegramButton.FIRST_EVENTS_PAGE;
             paginationButtons.add(InlineKeyboardButton.builder()
-                .text(firstEventsPageButton.getText().formatted(pageCount))
+                .text(firstEventsPageButton.getButtonText().formatted(pageCount))
                 .callbackData(firstEventsPageButton.getCallbackData())
                 .build());
         }
@@ -130,7 +130,7 @@ public class KeyboardUtil {
         if (currentPage > 1) {
             final TelegramButton previousEventsPageButton = TelegramButton.PREVIOUS_EVENTS_PAGE;
             paginationButtons.add(InlineKeyboardButton.builder()
-                .text(previousEventsPageButton.getText().formatted(currentPage - 1, pageCount))
+                .text(previousEventsPageButton.getButtonText().formatted(currentPage - 1, pageCount))
                 .callbackData(previousEventsPageButton.getCallbackData())
                 .build());
         }
@@ -138,7 +138,7 @@ public class KeyboardUtil {
         if (currentPage < pageCount) {
             final TelegramButton nextEventsPageButton = TelegramButton.NEXT_EVENTS_PAGE;
             paginationButtons.add(InlineKeyboardButton.builder()
-                .text(nextEventsPageButton.getText().formatted(currentPage + 1, pageCount))
+                .text(nextEventsPageButton.getButtonText().formatted(currentPage + 1, pageCount))
                 .callbackData(nextEventsPageButton.getCallbackData())
                 .build());
         }
@@ -146,7 +146,7 @@ public class KeyboardUtil {
         if (currentPage < pageCount - 1) {
             final TelegramButton lastEventsPageButton = TelegramButton.LAST_EVENTS_PAGE;
             paginationButtons.add(InlineKeyboardButton.builder()
-                .text(lastEventsPageButton.getText().formatted(pageCount, pageCount))
+                .text(lastEventsPageButton.getButtonText().formatted(pageCount, pageCount))
                 .callbackData(lastEventsPageButton.getCallbackData())
                 .build());
         }

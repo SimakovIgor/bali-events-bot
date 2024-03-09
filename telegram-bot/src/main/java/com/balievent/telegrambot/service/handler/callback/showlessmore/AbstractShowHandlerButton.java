@@ -1,8 +1,8 @@
 package com.balievent.telegrambot.service.handler.callback.showlessmore;
 
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
-import com.balievent.telegrambot.service.storage.UserDataService;
-import com.balievent.telegrambot.service.support.EventService;
+import com.balievent.telegrambot.service.service.EventService;
+import com.balievent.telegrambot.service.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;

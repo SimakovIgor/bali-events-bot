@@ -1,10 +1,12 @@
-package com.balievent.telegrambot.service.handler.callback;
+package com.balievent.telegrambot.service.handler.callback.common;
 
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.UserData;
-import com.balievent.telegrambot.service.storage.UserDataService;
-import com.balievent.telegrambot.service.support.EventService;
+import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
+import com.balievent.telegrambot.service.service.EventService;
+import com.balievent.telegrambot.service.service.UserDataService;
+import com.balievent.telegrambot.util.DateUtil;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
@@ -36,9 +36,9 @@ public class MonthEventsButtonCallbackHandler extends ButtonCallbackHandler {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
         final UserData userData = userDataService.getUserData(chatId);
         final LocalDate calendarDate = userData.getSearchEventDate();
-        final String displayDate = calendarDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " (" + calendarDate.getMonthValue() + "." + calendarDate.getYear() + ")";
+        final String formattedMonth = DateUtil.getFormattedMonth(calendarDate);
         final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDayFull(calendarDate, 1, calendarDate.lengthOfMonth());
-        final String eventListMessage = TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, detailedEventsForMonth);
+        final String eventListMessage = TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedMonth, detailedEventsForMonth);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)

@@ -5,8 +5,8 @@ import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.handler.common.MediaHandler;
-import com.balievent.telegrambot.service.support.MessageBuilder;
 import com.balievent.telegrambot.util.KeyboardUtil;
+import com.balievent.telegrambot.util.MessageBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -48,7 +48,7 @@ public class DateSelectedHandler extends TextMessageHandler {
 
         final ReplyKeyboard replyKeyboard = KeyboardUtil.getDayEventsKeyboard(currentPage, pageCount);
         final String displayDate = eventsDateFor.format(Settings.PRINT_DATE_TIME_FORMATTER);
-        final String eventsBriefMessage = MessageBuilder.buildBriefEventsMessage(currentPage, eventList);
+        final String eventsBriefMessage = MessageBuilderUtil.buildBriefEventsMessage(currentPage, eventList);
 
         final SendMessage sendMessage = SendMessage.builder()
             .chatId(chatId)

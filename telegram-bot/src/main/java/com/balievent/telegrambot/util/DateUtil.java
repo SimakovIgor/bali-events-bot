@@ -4,6 +4,7 @@ import com.balievent.telegrambot.constant.Settings;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -127,5 +128,16 @@ public class DateUtil {
     private static int getDayFromText(final String text) {
         final int firstTwoDigits = Integer.parseInt(text.substring(0, 2));
         return (firstTwoDigits > 0 && firstTwoDigits < 32) ? firstTwoDigits : 0;
+    }
+
+    /**
+     * Returns a string representation of the month in the given calendar date.
+     *
+     * @param calendarDate the calendar date
+     * @return the formatted month string, e.g. "January (1.2022)"
+     */
+    public static String getFormattedMonth(final LocalDate calendarDate) {
+        final String formattedMonth = calendarDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " (" + calendarDate.getMonthValue() + "." + calendarDate.getYear() + ")";
+        return formattedMonth.toUpperCase(Locale.ENGLISH);
     }
 }
