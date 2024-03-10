@@ -66,7 +66,6 @@ public abstract class AbstractEventsPaginationHandler extends ButtonCallbackHand
             return;
         }
         try {
-            log.info("Removing media message {}", chatId);
             myTelegramBot.execute(DeleteMessages.builder()
                 .chatId(chatId)
                 .messageIds(userData.getMediaMessageIdList())

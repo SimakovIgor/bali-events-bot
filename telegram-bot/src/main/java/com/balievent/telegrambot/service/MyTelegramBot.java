@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -71,6 +72,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED).handle(update);
         } else if (DateUtil.isDateSelected(messageText)) {
             textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update);
+        } else {
+            execute(DeleteMessage.builder()
+                .chatId(update.getMessage().getChatId())
+                .messageId(update.getMessage().getMessageId())
+                .build());
         }
     }
 

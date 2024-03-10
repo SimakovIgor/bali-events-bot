@@ -33,6 +33,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
+        <datasource-proxy-spring-boot-starter.version>1.9.1</datasource-proxy-spring-boot-starter.version>
     </properties>
 
     <dependencies>
@@ -81,7 +82,7 @@
         <dependency>
             <groupId>com.github.gavlyukovskiy</groupId>
             <artifactId>datasource-proxy-spring-boot-starter</artifactId>
-            <version>1.9.1</version>
+            <version>${datasource-proxy-spring-boot-starter.version}</version>
         </dependency>
     </dependencies>
 

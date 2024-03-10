@@ -34,7 +34,6 @@ public class MediaHandler {
                 return;
             }
 
-            log.info("Sending eventPhotos to chatId: {} size {}", chatId, eventPhotos.size());
             final List<Message> messageList = eventPhotos.size() == 1
                                               ? sendSinglePhoto(chatId, eventPhotos)
                                               : sendMultiplePhotos(chatId, eventPhotos);

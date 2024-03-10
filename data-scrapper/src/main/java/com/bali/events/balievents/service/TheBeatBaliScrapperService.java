@@ -85,7 +85,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private EventDto createEventDto(final WebElement child) {
         final String externalId = child.getAttribute("id");
         final String eventName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
-        final String locationName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
+        final String locationName = getAttributeByClass(child, "event_location_attrs", "data-location_name");
         final String locationAddress = getAttributeByClass(child, "event_location_attrs", "data-location_address");
         final String startDate = getAttributeByXpath(child, "div/meta[2]", "content");
         final String endDate = getAttributeByXpath(child, "div/meta[3]", "content");

@@ -56,7 +56,6 @@ public class MonthEventsButtonCallbackHandler extends ButtonCallbackHandler {
             return;
         }
         try {
-            log.info("Removing media message {}", chatId);
             myTelegramBot.execute(DeleteMessages.builder()
                 .chatId(chatId)
                 .messageIds(userData.getMediaMessageIdList())

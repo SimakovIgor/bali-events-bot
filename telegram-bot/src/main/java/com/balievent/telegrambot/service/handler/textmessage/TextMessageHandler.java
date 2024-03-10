@@ -34,7 +34,6 @@ public abstract class TextMessageHandler {
             return;
         }
         try {
-            log.info("Removing last date selected message {}", chatId);
             myTelegramBot.execute(DeleteMessages.builder()
                 .chatId(chatId)
                 .messageIds(messageIds)
