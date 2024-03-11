@@ -33,7 +33,7 @@ import java.util.Objects;
 public class Location {
 
     @Id
-    @Column(name = "name", unique = true)
+    @Column(name = "id", unique = true)
     private String id;
 
     @Column(name = "address", unique = true)

@@ -157,62 +157,62 @@ public class KeyboardUtil {
             .build();
     }
 
-    public static ReplyKeyboardMarkup getMainMenuKeyboard() {
-        final List<KeyboardRow> keyboard = new ArrayList<>();
-
-        final KeyboardRow row = new KeyboardRow();
-        row.add(TelegramButton.CHANGE_SEARCH_PARAMETERS.getButtonText());
-        keyboard.add(row);
-
-        final KeyboardRow settingsAndHelp = new KeyboardRow();
-        settingsAndHelp.add(TelegramButton.SETTINGS_AND_HELP.getButtonText());
-        keyboard.add(settingsAndHelp);
-
-        final KeyboardRow contactAndFavorite = new KeyboardRow();
-        contactAndFavorite.add(TelegramButton.CONTACT_US.getButtonText());
-        contactAndFavorite.add(TelegramButton.FAVORITE_EVENTS.getButtonText());
-        keyboard.add(contactAndFavorite);
-
-        return ReplyKeyboardMarkup.builder()
-            .keyboard(keyboard)
-            .build();
-    }
+    //    public static ReplyKeyboardMarkup getMainMenuKeyboard() {
+    //        final List<KeyboardRow> keyboard = new ArrayList<>();
+    //
+    //        final KeyboardRow row = new KeyboardRow();
+    //        row.add(TelegramButton.CHANGE_SEARCH_PARAMETERS.getButtonText());
+    //        keyboard.add(row);
+    //
+    //        final KeyboardRow settingsAndHelp = new KeyboardRow();
+    //        settingsAndHelp.add(TelegramButton.SETTINGS_AND_HELP.getButtonText());
+    //        keyboard.add(settingsAndHelp);
+    //
+    //        final KeyboardRow contactAndFavorite = new KeyboardRow();
+    //        contactAndFavorite.add(TelegramButton.CONTACT_US.getButtonText());
+    //        contactAndFavorite.add(TelegramButton.FAVORITE_EVENTS.getButtonText());
+    //        keyboard.add(contactAndFavorite);
+    //
+    //        return ReplyKeyboardMarkup.builder()
+    //            .keyboard(keyboard)
+    //            .build();
+    //    }
 
     public static InlineKeyboardMarkup createEventDateSelectionKeyboard() {
         final List<InlineKeyboardButton> firstRow = new ArrayList<>();
         firstRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.TODAY_EVENTS.getButtonText())
-            .callbackData(TelegramButton.TODAY_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_TODAY_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_TODAY_EVENTS.getCallbackData())
             .build());
         firstRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.TOMORROW_EVENTS.getButtonText())
-            .callbackData(TelegramButton.TOMORROW_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_TOMORROW_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_TOMORROW_EVENTS.getCallbackData())
             .build());
 
         final List<InlineKeyboardButton> secondRow = new ArrayList<>();
         secondRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.THIS_WEEK_EVENTS.getButtonText())
-            .callbackData(TelegramButton.THIS_WEEK_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_THIS_WEEK_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_THIS_WEEK_EVENTS.getCallbackData())
             .build());
         secondRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.NEXT_WEEK_EVENTS.getButtonText())
-            .callbackData(TelegramButton.NEXT_WEEK_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_NEXT_WEEK_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_NEXT_WEEK_EVENTS.getCallbackData())
             .build());
 
         final List<InlineKeyboardButton> thirdRow = new ArrayList<>();
         thirdRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.ON_THIS_WEEKEND_EVENTS.getButtonText())
-            .callbackData(TelegramButton.ON_THIS_WEEKEND_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getCallbackData())
             .build());
         thirdRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.SHOW_ALL_EVENTS.getButtonText())
-            .callbackData(TelegramButton.SHOW_ALL_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getCallbackData())
             .build());
 
         final List<InlineKeyboardButton> fourthRow = new ArrayList<>();
         fourthRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.PICK_DATE_EVENTS.getButtonText())
-            .callbackData(TelegramButton.PICK_DATE_EVENTS.getCallbackData())
+            .text(TelegramButton.SEARCH_PICK_DATE_EVENTS.getButtonText())
+            .callbackData(TelegramButton.SEARCH_PICK_DATE_EVENTS.getCallbackData())
             .build());
 
         return InlineKeyboardMarkup.builder()

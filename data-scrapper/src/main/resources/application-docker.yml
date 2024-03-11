@@ -1,30 +1,11 @@
-server:
-  port: 8082
-  shutdown: graceful
-
 spring:
-  main:
-    banner-mode: off
-  application:
-    name: bali-events
   datasource:
     url: jdbc:postgresql://db:5432/postgres
     username: postgres
     password: postgres
   jpa:
-    open-in-view: false
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-        format_sql: 'true'
 
 webdriver:
   local: false
-
-logging:
-  level:
-    org.zalando.logbook: TRACE
-  pattern:
-    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
-

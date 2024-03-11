@@ -6,44 +6,45 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum TelegramButton {
-    LETS_GO("month_events_page", "Let's go! 🚀"),
+    LETS_GO("month_events_page", "Let's go! 🚀", CallbackHandlerType.MONTH_EVENTS_PAGE),
 
-    SHOW_MONTH_FULL("show_month_full", "Show more ➕"),
-    SHOW_MONTH_LESS("show_month_less", "Show less ➖"),
+    SHOW_MONTH_FULL("show_month_full", "Show more ➕", CallbackHandlerType.SHOW_MORE_OR_LESS_EVENTS),
+    SHOW_MONTH_LESS("show_month_less", "Show less ➖", CallbackHandlerType.SHOW_MORE_OR_LESS_EVENTS),
 
     //Events page buttons
-    FIRST_EVENTS_PAGE("first_events_page", "<< [1/%s]"),
-    PREVIOUS_EVENTS_PAGE("previous_events_page", "< [%s/%s]"),
-    NEXT_EVENTS_PAGE("next_events_page", "> [%s/%s]"),
-    LAST_EVENTS_PAGE("last_events_page", ">> [%s/%s]"),
+    FIRST_EVENTS_PAGE("first_events_page", "<< [1/%s]", CallbackHandlerType.EVENTS_PAGINATION),
+    PREVIOUS_EVENTS_PAGE("previous_events_page", "< [%s/%s]", CallbackHandlerType.EVENTS_PAGINATION),
+    NEXT_EVENTS_PAGE("next_events_page", "> [%s/%s]", CallbackHandlerType.EVENTS_PAGINATION),
+    LAST_EVENTS_PAGE("last_events_page", ">> [%s/%s]", CallbackHandlerType.EVENTS_PAGINATION),
 
     //Month page buttons
-    MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅"),
-    PREVIOUS_MONTH_PAGE("previous_month_page", "%s"),
-    NEXT_MONTH_PAGE("next_month_page", "%s"),
+    MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅", CallbackHandlerType.MONTH_EVENTS_PAGE),
+    PREVIOUS_MONTH_PAGE("previous_month_page", "%s", CallbackHandlerType.MONTH_PAGINATION),
+    NEXT_MONTH_PAGE("next_month_page", "%s", CallbackHandlerType.MONTH_PAGINATION),
 
     //Main menu buttons
-    CHANGE_SEARCH_PARAMETERS("change_search_parameters", "Change search parameters 🔍"),
-    SETTINGS_AND_HELP("settings_and_help", "Settings and help ⚙️"),
-    CONTACT_US("contact_us", "Contact us 📧"),
-    FAVORITE_EVENTS("favorite_events", "Favorites ❤️"),
+    //    CHANGE_SEARCH_PARAMETERS("change_search_parameters", "Change search parameters 🔍"),
+    //    SETTINGS_AND_HELP("settings_and_help", "Settings and help ⚙️"),
+    //    CONTACT_US("contact_us", "Contact us 📧"),
+    //    FAVORITE_EVENTS("favorite_events", "Favorites ❤️"),
 
     //change search parameters buttons
-    EVENT_DATE_SELECTION("events_date_selection", "Select dates 📅"),
-    SELECT_EVENT_LOCATIONS("event_locations_selection", "Select locations 🌍"),
-    BACK_TO_MAIN_MENU("back_to_main_menu", "Back to main menu ⬅️"),
-    SAVE_SEARCH_PARAMETERS("save_search_parameters", "Save search parameters ✅"),
+    // EVENT_DATE_SELECTION("events_date_selection", "Select dates 📅"),
+    //    SELECT_EVENT_LOCATIONS("event_locations_selection", "Select locations 🌍"),
+    //    BACK_TO_MAIN_MENU("back_to_main_menu", "Back to main menu ⬅️"),
+    //    SAVE_SEARCH_PARAMETERS("save_search_parameters", "Save search parameters ✅"),
 
     //choose event date buttons
-    TODAY_EVENTS("today_events", "Today"),
-    TOMORROW_EVENTS("tomorrow_events", "Tomorrow"),
-    THIS_WEEK_EVENTS("this_week_events", "This week"),
-    NEXT_WEEK_EVENTS("next_week_events", "Next week"),
-    ON_THIS_WEEKEND_EVENTS("on_this_weekend_events", "On this weekend"),
-    SHOW_ALL_EVENTS("show_all_events", "Show all event"),
-    PICK_DATE_EVENTS("pick_date_events", "Pick date");
+    SEARCH_TODAY_EVENTS("search_today_events", "Today", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_TOMORROW_EVENTS("search_tomorrow_events", "Tomorrow", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_THIS_WEEK_EVENTS("search_this_week_events", "This week", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_NEXT_WEEK_EVENTS("search_next_week_events", "Next week", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_ON_THIS_WEEKEND_EVENTS("search_on_this_weekend_events", "On this weekend", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_SHOW_ALL_EVENTS("search_show_all_events", "Show all event", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_PICK_DATE_EVENTS("search_pick_date_events", "Pick date", CallbackHandlerType.EVENT_DATE_SELECTION);
 
     private final String callbackData;
     private final String buttonText;
+    private final CallbackHandlerType callbackHandlerType;
 
 }

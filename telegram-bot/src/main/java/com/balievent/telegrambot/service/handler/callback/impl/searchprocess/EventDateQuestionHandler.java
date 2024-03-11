@@ -1,6 +1,6 @@
-package com.balievent.telegrambot.service.handler.callback.searchprocess;
+package com.balievent.telegrambot.service.handler.callback.impl.searchprocess;
 
-import com.balievent.telegrambot.constant.TelegramButton;
+import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.util.KeyboardUtil;
@@ -17,8 +17,8 @@ import java.util.List;
 public class EventDateQuestionHandler extends ButtonCallbackHandler {
 
     @Override
-    public TelegramButton getTelegramButton() {
-        return TelegramButton.EVENT_DATE_SELECTION;
+    public CallbackHandlerType getCallbackHandlerType() {
+        return CallbackHandlerType.EVENT_DATE_SELECTION;
     }
 
     @Override

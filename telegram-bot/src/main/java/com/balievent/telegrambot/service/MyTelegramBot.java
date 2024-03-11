@@ -1,6 +1,7 @@
 package com.balievent.telegrambot.service;
 
 import com.balievent.telegrambot.configuration.TelegramBotProperties;
+import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
@@ -24,12 +25,12 @@ import java.util.Map;
 @Slf4j
 public class MyTelegramBot extends TelegramLongPollingBot {
     private final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers;
-    private final Map<TelegramButton, ButtonCallbackHandler> callbackHandlers;
+    private final Map<CallbackHandlerType, ButtonCallbackHandler> callbackHandlers;
     private final TelegramBotProperties telegramBotProperties;
 
     public MyTelegramBot(
         final @Lazy Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers,
-        final @Lazy Map<TelegramButton, ButtonCallbackHandler> callbackHandlers,
+        final @Lazy Map<CallbackHandlerType, ButtonCallbackHandler> callbackHandlers,
         final TelegramBotProperties telegramBotProperties
     ) {
         super(telegramBotProperties.getToken());
@@ -82,8 +83,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     private void processCallbackQuery(final Update update) throws TelegramApiException {
         final String clickedButtonName = update.getCallbackQuery().getData().toUpperCase(Locale.ROOT);
-        final TelegramButton clickedButton = TelegramButton.valueOf(clickedButtonName);
-        callbackHandlers.get(clickedButton).handle(update);
+
+        final CallbackHandlerType callbackHandlerType = TelegramButton.valueOf(clickedButtonName).getCallbackHandlerType();
+        callbackHandlers.get(callbackHandlerType).handle(update);
     }
 
 }

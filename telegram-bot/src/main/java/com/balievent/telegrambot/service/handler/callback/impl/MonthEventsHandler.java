@@ -1,64 +1,54 @@
-package com.balievent.telegrambot.service.handler.callback.eventspagination;
+package com.balievent.telegrambot.service.handler.callback.impl;
 
-import com.balievent.telegrambot.constant.Settings;
+import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
-import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
-import com.balievent.telegrambot.service.handler.common.MediaHandler;
 import com.balievent.telegrambot.service.service.EventService;
 import com.balievent.telegrambot.service.service.UserDataService;
+import com.balievent.telegrambot.util.DateUtil;
 import com.balievent.telegrambot.util.KeyboardUtil;
-import com.balievent.telegrambot.util.MessageBuilderUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessages;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.List;
+import java.time.LocalDate;
 
-@Slf4j
+@RequiredArgsConstructor
 @Service
-public abstract class AbstractEventsPaginationHandler extends ButtonCallbackHandler {
-    @Autowired
-    protected EventService eventService;
-    @Autowired
-    protected UserDataService userDataService;
-    @Autowired
-    protected MediaHandler mediaHandler;
-
-    protected abstract UserData updateUserData(Update update);
+@Slf4j
+public class MonthEventsHandler extends ButtonCallbackHandler {
+    private final UserDataService userDataService;
+    private final EventService eventService;
 
     @Override
-    @Transactional
+    public CallbackHandlerType getCallbackHandlerType() {
+        return CallbackHandlerType.MONTH_EVENTS_PAGE;
+    }
+
+    @Override
     public void handle(final Update update) throws TelegramApiException {
-        final UserData userData = updateUserData(update);
-
-        final List<Event> eventList = eventService.findEvents(userData.getSearchEventDate(), userData.getCurrentEventPage() - 1, Settings.PAGE_SIZE);
-        final String eventsBriefMessage = MessageBuilderUtil.buildBriefEventsMessage(userData.getCurrentEventPage(), eventList);
-
-        final String formattedDate = userData.getSearchEventDate().format(Settings.PRINT_DATE_TIME_FORMATTER);
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        final UserData userData = userDataService.getUserData(chatId);
+        final LocalDate calendarDate = userData.getSearchEventDate();
+        final String formattedMonth = DateUtil.getFormattedMonth(calendarDate);
+        final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDayFull(calendarDate, 1, calendarDate.lengthOfMonth());
+        final String eventListMessage = TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedMonth, detailedEventsForMonth);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
-            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedDate, eventsBriefMessage))
-            .parseMode(ParseMode.HTML)
-            .disableWebPagePreview(true)
-            .replyMarkup(KeyboardUtil.getDayEventsKeyboard(userData.getCurrentEventPage(), userData.getTotalEventPages()))
+            .text(eventListMessage)
+            .replyMarkup(KeyboardUtil.createMonthInlineKeyboard(calendarDate))
             .build();
 
-        myTelegramBot.execute(editMessageText);
-
         removeMediaMessage(chatId, userData);
-        mediaHandler.handle(chatId, userData);
+        myTelegramBot.execute(editMessageText);
     }
 
     private void removeMediaMessage(final Long chatId, final UserData userData) {
