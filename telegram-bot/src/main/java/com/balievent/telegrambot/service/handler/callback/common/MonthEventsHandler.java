@@ -22,7 +22,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class MonthEventsButtonCallbackHandler extends ButtonCallbackHandler {
+public class MonthEventsHandler extends ButtonCallbackHandler {
     private final UserDataService userDataService;
     private final EventService eventService;
 
