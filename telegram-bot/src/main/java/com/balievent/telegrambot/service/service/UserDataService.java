@@ -68,10 +68,8 @@ public class UserDataService {
             userData.setCurrentEventPage(1);
             userData.setTotalEventPages(1);
             return userData;
-        } else {
-            return userDataRepository.save(getDefaultUserData(chatId));
         }
-
+        return userDataRepository.save(getDefaultUserData(chatId));
     }
 
     public UserData incrementCurrentPage(final Long chatId) {

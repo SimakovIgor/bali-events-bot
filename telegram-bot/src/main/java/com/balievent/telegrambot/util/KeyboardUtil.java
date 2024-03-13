@@ -209,21 +209,21 @@ public class KeyboardUtil {
             .callbackData(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getCallbackData())
             .build());
 
-        final List<InlineKeyboardButton> fourthRow = new ArrayList<>();
-        fourthRow.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.SEARCH_PICK_DATE_EVENTS.getButtonText())
-            .callbackData(TelegramButton.SEARCH_PICK_DATE_EVENTS.getCallbackData())
-            .build());
+        //        final List<InlineKeyboardButton> fourthRow = new ArrayList<>();
+        //        fourthRow.add(InlineKeyboardButton.builder()
+        //            .text(TelegramButton.SEARCH_PICK_DATE_EVENTS.getButtonText())
+        //            .callbackData(TelegramButton.SEARCH_PICK_DATE_EVENTS.getCallbackData())
+        //            .build());
 
         return InlineKeyboardMarkup.builder()
-            .keyboard(List.of(firstRow, secondRow, thirdRow, fourthRow))
+            .keyboard(List.of(firstRow, secondRow, thirdRow))
             .build();
 
     }
 
     public static InlineKeyboardMarkup createEventLocationsSelectionKeyboard(final List<String> locations) {
         final List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        final List<InlineKeyboardButton> row = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
 
         for (String location : locations) {
             row.add(InlineKeyboardButton.builder()
@@ -233,7 +233,7 @@ public class KeyboardUtil {
 
             if (row.size() == EVENT_LOCATIONS_SELECTION_COLS_COUNT) {
                 keyboard.add(row);
-                row.clear();
+                row = new ArrayList<>();
             }
         }
 

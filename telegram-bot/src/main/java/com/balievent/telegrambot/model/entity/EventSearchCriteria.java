@@ -31,12 +31,13 @@ import java.util.List;
 @Entity
 @Table(name = "event_search_criteria")
 public class EventSearchCriteria {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "chat_id", unique = true, nullable = false)
+    private Long chatId;
 
     @Column(name = "location_name_list")
     @JdbcTypeCode(SqlTypes.JSON)

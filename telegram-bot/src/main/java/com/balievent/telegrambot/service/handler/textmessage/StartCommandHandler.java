@@ -1,8 +1,8 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
-import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.UserData;
+import com.balievent.telegrambot.service.service.EventSearchCriteriaService;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @RequiredArgsConstructor
 public class StartCommandHandler extends TextMessageHandler {
 
+    private final EventSearchCriteriaService eventSearchCriteriaService;
+
     @Override
     public TextMessageHandlerType getHandlerType() {
         return TextMessageHandlerType.START_COMMAND;
@@ -26,12 +28,14 @@ public class StartCommandHandler extends TextMessageHandler {
         final UserData userData = userDataService.saveOrUpdateUserData(chatId);
         userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
 
+        eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId);
+
         clearChat(chatId, userData);
 
         final SendMessage sendMessage = SendMessage.builder()
             .chatId(chatId)
-            .text(TgBotConstants.GREETING_MESSAGE_TEMPLATE.formatted())
-            .replyMarkup(KeyboardUtil.createInlineKeyboard(TelegramButton.LETS_GO))
+            .text(TgBotConstants.EVENT_DATE_QUESTION.formatted())
+            .replyMarkup(KeyboardUtil.createEventDateSelectionKeyboard())
             .build();
 
         final Message message = myTelegramBot.execute(sendMessage);
