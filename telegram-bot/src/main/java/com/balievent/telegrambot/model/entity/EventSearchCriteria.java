@@ -46,4 +46,12 @@ public class EventSearchCriteria {
 
     @Column(name = "date")
     private String date;
+
+    public void toggleLocationName(final String locationName) {
+        if (locationNameList.contains(locationName)) {
+            locationNameList.remove(locationName);
+        } else {
+            locationNameList.add(locationName);
+        }
+    }
 }

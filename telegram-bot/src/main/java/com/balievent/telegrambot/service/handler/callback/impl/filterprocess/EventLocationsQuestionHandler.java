@@ -1,7 +1,8 @@
-package com.balievent.telegrambot.service.handler.callback.impl.searchprocess;
+package com.balievent.telegrambot.service.handler.callback.impl.filterprocess;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
+import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.repository.LocationRepository;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
@@ -17,13 +18,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EventDateQuestionHandler extends ButtonCallbackHandler {
+public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
     private final EventSearchCriteriaService eventSearchCriteriaService;
     private final LocationRepository locationRepository;
 
     @Override
     public CallbackHandlerType getCallbackHandlerType() {
-        return CallbackHandlerType.EVENT_DATE_SELECTION;
+        return CallbackHandlerType.EVENT_LOCATIONS_SELECTION;
     }
 
     @Override
@@ -31,8 +32,7 @@ public class EventDateQuestionHandler extends ButtonCallbackHandler {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
         final String selectedDate = update.getCallbackQuery().getData();
 
-        eventSearchCriteriaService.updateSearchCriteria(chatId, selectedDate);
-
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedDate);
         final List<String> locationIds = locationRepository.findAll()
             .stream()
             .map(Location::getId)
@@ -41,8 +41,8 @@ public class EventDateQuestionHandler extends ButtonCallbackHandler {
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
-            .text(TgBotConstants.EVENT_TYPE_QUESTION)
-            .replyMarkup(KeyboardUtil.createEventLocationsSelectionKeyboard(locationIds))
+            .text(TgBotConstants.EVENT_LOCATIONS_QUESTION)
+            .replyMarkup(KeyboardUtil.createEventLocationsSelectionKeyboard(locationIds, eventSearchCriteria.getLocationNameList()))
             .build();
 
         myTelegramBot.execute(editMessageText);

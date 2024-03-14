@@ -13,10 +13,7 @@ public class TgBotConstants {
         When do you want to go to the event? 📅
         """;
 
-    public static final String EVENT_TYPE_QUESTION = """
-        Great! Now choose the establishments where you'd like to spend your time. 🏢
-        You can select multiple options.
-        """;
+    public static final String EVENT_LOCATIONS_QUESTION = "Great! Now choose the establishments where you'd like to spend your time.";
 
     public static final String GREETING_MESSAGE_TEMPLATE = """
         👋 Hello!

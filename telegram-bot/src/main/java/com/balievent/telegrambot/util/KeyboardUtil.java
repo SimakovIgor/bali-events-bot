@@ -221,14 +221,18 @@ public class KeyboardUtil {
 
     }
 
-    public static InlineKeyboardMarkup createEventLocationsSelectionKeyboard(final List<String> locations) {
+    public static InlineKeyboardMarkup createEventLocationsSelectionKeyboard(final List<String> allLocations,
+                                                                             final List<String> selectedLocations) {
         final List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
 
-        for (String location : locations) {
+        for (String locationId : allLocations) {
+            final String selectedIcon = selectedLocations.contains(locationId)
+                                        ? "✅ "
+                                        : "👉 ";
             row.add(InlineKeyboardButton.builder()
-                .text("👉" + location)
-                .callbackData(location)
+                .text(selectedIcon + locationId)
+                .callbackData(locationId)
                 .build());
 
             if (row.size() == EVENT_LOCATIONS_SELECTION_COLS_COUNT) {
@@ -240,6 +244,14 @@ public class KeyboardUtil {
         if (!row.isEmpty()) {
             keyboard.add(row);
         }
+
+        final List<InlineKeyboardButton> nextButton = new ArrayList<>();
+        nextButton.add(InlineKeyboardButton.builder()
+            .text(TelegramButton.EVENT_LOCATIONS_NEXT.getButtonText())
+            .callbackData(TelegramButton.EVENT_LOCATIONS_NEXT.getCallbackData())
+            .build());
+
+        keyboard.add(nextButton);
 
         return InlineKeyboardMarkup.builder()
             .keyboard(keyboard)
