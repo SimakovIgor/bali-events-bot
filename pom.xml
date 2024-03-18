@@ -26,7 +26,7 @@
         <postgresql.version>42.7.2</postgresql.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <spotbugs-annotations.version>4.8.3</spotbugs-annotations.version>
-        <plugins.checkstyle.puppycrawl.version>10.14.0</plugins.checkstyle.puppycrawl.version>
+        <plugins.checkstyle.puppycrawl.version>10.14.2</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
 
         <sonar.organization>simakovigor</sonar.organization>
