@@ -36,7 +36,7 @@ public class Location {
     @Column(name = "id", unique = true)
     private String id;
 
-    @Column(name = "address", unique = true)
+    @Column(name = "address")
     private String address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "location")
