@@ -18,6 +18,8 @@
 - **SonarQube** [https://sonarcloud.io/project/overview?id=SimakovIgor_bali-events-bot]
 - **Git Hub Actions** CI/CD [https://github.com/SimakovIgor/bali-events-bot/actions]
 - **Docker Hub** Используется для хранения образов https://hub.docker.com/repositories/simakoff
+- **Miro** Испольщуется для визуализации
+  процессов https://miro.com/welcomeonboard/M1BqZVhRWDNLRlV0ZTVmZDRzMm45Ym1pN1pQbzk5bmRMeXlwYm9UQm1Da0E5WjhQNGtQSGhXdm1SRG9aWER0VXwzMDc0NDU3MzQ2NTY5NjM3NDEwfDI=?share_link_id=148011364776
 
 ### Модули
 
