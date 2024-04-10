@@ -27,7 +27,7 @@ public class EventSearchCriteriaService {
     @Transactional
     public EventSearchCriteria toggleLocationName(final Long chatId,
                                                   final String locationName,
-                                                  List<String> locationIds) {
+                                                  final List<String> locationIds) {
         final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
         eventSearchCriteria.toggleLocationName(locationName, locationIds);
@@ -39,7 +39,6 @@ public class EventSearchCriteriaService {
         final Optional<EventSearchCriteria> userDataOptional = eventSearchCriteriaRepository.findByChatId(chatId);
         if (userDataOptional.isPresent()) {
             final EventSearchCriteria userData = userDataOptional.get();
-            userData.setLocationNameList(List.of());
             userData.setLocationNameList(locationNameList); // сохраняем все локации и кнопки в event_search_criteria.location_name_list
             userData.setDate("");
             return userData;

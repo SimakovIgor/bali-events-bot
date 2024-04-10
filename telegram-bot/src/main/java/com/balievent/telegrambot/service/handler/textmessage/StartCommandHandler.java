@@ -1,7 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
 import com.balievent.telegrambot.constant.TgBotConstants;
-import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.repository.LocationRepository;
@@ -23,7 +22,6 @@ public class StartCommandHandler extends TextMessageHandler {
 
     private final EventSearchCriteriaService eventSearchCriteriaService;
     private final LocationRepository locationRepository;
-
 
     @Override
     public TextMessageHandlerType getHandlerType() {

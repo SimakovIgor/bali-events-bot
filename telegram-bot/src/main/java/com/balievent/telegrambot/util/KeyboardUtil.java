@@ -265,7 +265,7 @@ public class KeyboardUtil {
             .build();
     }
 
-    private static void addNewButton(List<List<InlineKeyboardButton>> keyboard, String testString, String callbackData) {
+    private static void addNewButton(final List<List<InlineKeyboardButton>> keyboard, final String testString, final String callbackData) {
         final List<InlineKeyboardButton> nextButton = new ArrayList<>();
         nextButton.add(InlineKeyboardButton.builder()
             .text(testString)

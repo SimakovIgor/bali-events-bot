@@ -49,13 +49,13 @@ public class EventSearchCriteria {
     private String date;
 
     public void toggleLocationName(final String locationName,
-                                   List<String> locationIds) {
+                                   final List<String> locationIds) {
         // если нужно удалить все локации
         if (locationName.equals(TgBotConstants.DESELECT_ALL)) {
             // удалить все локации кроме последней
             if (!locationNameList.isEmpty()) {
                 // Получаем последний элемент, где лежит выбранный пользователем фильтр
-                String lastElement = locationNameList.get(locationNameList.size() - 1);
+                final String lastElement = locationNameList.get(locationNameList.size() - 1);
                 // удаляем все элементы списка
                 locationNameList.clear();
                 // Добавляем кнопку Select All
@@ -70,7 +70,7 @@ public class EventSearchCriteria {
             // удалить все локации кроме последней
             if (!locationNameList.isEmpty()) {
                 // Получаем последний элемент, где лежит выбранный пользователем фильтр
-                String lastElement = locationNameList.get(locationNameList.size() - 1);
+                final String lastElement = locationNameList.get(locationNameList.size() - 1);
                 // удаляем все элементы списка
                 locationNameList.clear();
                 // добавить все существующие в базе
