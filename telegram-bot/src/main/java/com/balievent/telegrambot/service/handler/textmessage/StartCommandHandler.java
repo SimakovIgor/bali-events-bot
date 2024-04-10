@@ -1,7 +1,10 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
 import com.balievent.telegrambot.constant.TgBotConstants;
+import com.balievent.telegrambot.model.entity.EventSearchCriteria;
+import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.model.entity.UserData;
+import com.balievent.telegrambot.repository.LocationRepository;
 import com.balievent.telegrambot.service.service.EventSearchCriteriaService;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +14,16 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StartCommandHandler extends TextMessageHandler {
 
     private final EventSearchCriteriaService eventSearchCriteriaService;
+    private final LocationRepository locationRepository;
+
 
     @Override
     public TextMessageHandlerType getHandlerType() {
@@ -24,11 +32,19 @@ public class StartCommandHandler extends TextMessageHandler {
 
     @Override
     public void handle(final Update update) throws TelegramApiException {
-        final Long chatId = update.getMessage().getChatId();
-        final UserData userData = userDataService.saveOrUpdateUserData(chatId);
-        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
+        final Long chatId = update.getMessage().getChatId();                            // идентификатор пользователя
+        final UserData userData = userDataService.saveOrUpdateUserData(chatId);         // сохраняем в user_data.id
+        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);  // идентификатор сообщения сохраняем в user_data.last_user_message_id
 
-        eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId);
+        final List<String> locationNameList = new ArrayList<>(locationRepository.findAll() // получаем список всех локаций
+            .stream()
+            .map(Location::getId)
+            .toList());
+
+        locationNameList.add(TgBotConstants.DESELECT_ALL); // добавляем кнопку "Deselect all" в список выделяемых объектов
+
+        // сохраняем все локации и кнопку "Deselect all" в event_search_criteria.location_name_list
+        eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId, locationNameList);
 
         clearChat(chatId, userData);
 
