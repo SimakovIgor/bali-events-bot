@@ -32,11 +32,13 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
         final String selectedDate = update.getCallbackQuery().getData();
 
-        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedDate);
-        final List<String> locationIds = locationRepository.findAll()
+        final List<String> locationIds = locationRepository.findAll()// метод полностью дублирует class EventDateQuestionHandler()
             .stream()
             .map(Location::getId)
             .toList();
+
+        // здесь удаляются / добавляются локации
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedDate, locationIds);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)

@@ -1,6 +1,7 @@
 package com.balievent.telegrambot.util;
 
 import com.balievent.telegrambot.constant.TelegramButton;
+import com.balievent.telegrambot.constant.TgBotConstants;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -229,7 +230,8 @@ public class KeyboardUtil {
         for (String locationId : allLocations) {
             final String selectedIcon = selectedLocations.contains(locationId)
                                         ? "✅ "
-                                        : "👉 ";
+                                        : "❌ ";
+
             row.add(InlineKeyboardButton.builder()
                 .text(selectedIcon + locationId)
                 .callbackData(locationId)
@@ -245,17 +247,33 @@ public class KeyboardUtil {
             keyboard.add(row);
         }
 
-        final List<InlineKeyboardButton> nextButton = new ArrayList<>();
-        nextButton.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.EVENT_LOCATIONS_NEXT.getButtonText())
-            .callbackData(TelegramButton.EVENT_LOCATIONS_NEXT.getCallbackData())
-            .build());
+        // Добавляем кнопки "DESELECT_ALL"
+        if (selectedLocations.contains(TgBotConstants.DESELECT_ALL)) {
+            addNewButton(keyboard, TgBotConstants.DESELECT_ALL, TgBotConstants.DESELECT_ALL);
+        }
 
-        keyboard.add(nextButton);
+        // Добавляем кнопки "SELECT_ALL"
+        if (selectedLocations.contains(TgBotConstants.SELECT_ALL)) {
+            addNewButton(keyboard, TgBotConstants.SELECT_ALL, TgBotConstants.SELECT_ALL);
+        }
+
+        // Добавляем кнопки "Next"
+        addNewButton(keyboard, TelegramButton.EVENT_LOCATIONS_NEXT.getButtonText(), TelegramButton.EVENT_LOCATIONS_NEXT.getCallbackData());
 
         return InlineKeyboardMarkup.builder()
             .keyboard(keyboard)
             .build();
     }
 
+    private static void addNewButton(final List<List<InlineKeyboardButton>> keyboard, final String testString, final String callbackData) {
+        final List<InlineKeyboardButton> nextButton = new ArrayList<>();
+        nextButton.add(InlineKeyboardButton.builder()
+            .text(testString)
+            .callbackData(callbackData)
+            .build());
+
+        keyboard.add(nextButton);
+    }
+
 }
+

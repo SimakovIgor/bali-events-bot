@@ -51,9 +51,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(final Update update) {
         try {
             if (update.hasCallbackQuery()) {
-                processCallbackQuery(update);
+                processCallbackQuery(update);   // ВХОД ПО НАЖАТИЮ НА КНОПКУ
             } else {
-                processTextMessage(update);
+                processTextMessage(update);     // ВХОД ДЛЯ НОВОЫХ ОБЪЕКТОВ
             }
         } catch (ServiceException e) {
             log.error("ServiceException {}", e.getMessage(), e);
@@ -65,9 +65,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     private void processTextMessage(final Update update) throws TelegramApiException {
-        final String messageText = update.getMessage().getText();
+        final String messageText = update.getMessage().getText(); // ТЕКСТ СООБЩЕНИЯ
         if (messageText.contains("/start")) {
-            textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update);
+            textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update); // СОЗДАНИЕ ФИЛЬТРА ИЗ (6-И) КНОПОК ЭТО public class StartCommandHandler()
             return;
         }
 
@@ -87,7 +87,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         if (eventFilterProcess(update)) {
             return;
         }
-
+        // получаем имя нажатой кнопки
         final String clickedButtonName = update.getCallbackQuery().getData().toUpperCase(Locale.ROOT);
 
         final CallbackHandlerType callbackHandlerType = TelegramButton.valueOf(clickedButtonName).getCallbackHandlerType();

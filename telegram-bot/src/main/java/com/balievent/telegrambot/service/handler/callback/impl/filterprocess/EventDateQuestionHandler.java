@@ -2,6 +2,7 @@ package com.balievent.telegrambot.service.handler.callback.impl.filterprocess;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
+import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.repository.LocationRepository;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
@@ -31,18 +32,21 @@ public class EventDateQuestionHandler extends ButtonCallbackHandler {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
         final String selectedDate = update.getCallbackQuery().getData();
 
-        eventSearchCriteriaService.updateSearchCriteria(chatId, selectedDate);
-
-        final List<String> locationIds = locationRepository.findAll()
+        // список всех локаций
+        final List<String> locationIds = locationRepository.findAll()    // метод полностью дублирует class EventLocationsQuestionHandler()
             .stream()
             .map(Location::getId)
             .toList();
+
+        // в переменной selectedDate сейчас лежит фильтр по датам из первого окна
+        // этот метод добавляет / удаляет локации
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedDate, locationIds);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
             .text(TgBotConstants.EVENT_LOCATIONS_QUESTION)
-            .replyMarkup(KeyboardUtil.createEventLocationsSelectionKeyboard(locationIds, List.of()))
+            .replyMarkup(KeyboardUtil.createEventLocationsSelectionKeyboard(locationIds, eventSearchCriteria.getLocationNameList()))
             .build();
 
         myTelegramBot.execute(editMessageText);

@@ -40,7 +40,7 @@ public enum TelegramButton {
     SEARCH_THIS_WEEK_EVENTS("search_this_week_events", "This week", CallbackHandlerType.EVENT_DATE_SELECTION),
     SEARCH_NEXT_WEEK_EVENTS("search_next_week_events", "Next week", CallbackHandlerType.EVENT_DATE_SELECTION),
     SEARCH_ON_THIS_WEEKEND_EVENTS("search_on_this_weekend_events", "On this weekend", CallbackHandlerType.EVENT_DATE_SELECTION),
-    SEARCH_SHOW_ALL_EVENTS("search_show_all_events", "Show all event", CallbackHandlerType.EVENT_DATE_SELECTION),
+    SEARCH_SHOW_ALL_EVENTS("search_show_all_events", "Show all this month", CallbackHandlerType.EVENT_DATE_SELECTION),
     //    SEARCH_PICK_DATE_EVENTS("search_pick_date_events", "Pick date", CallbackHandlerType.EVENT_DATE_SELECTION);
 
     EVENT_LOCATIONS_NEXT("month_events_page", "Next ➡️", CallbackHandlerType.MONTH_EVENTS_PAGE);
