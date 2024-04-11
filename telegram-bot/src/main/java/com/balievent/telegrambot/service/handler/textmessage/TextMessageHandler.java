@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
+import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.MyTelegramBot;
 import com.balievent.telegrambot.service.service.EventService;
@@ -33,11 +34,13 @@ public abstract class TextMessageHandler {
         if (CollectionUtils.isEmpty(messageIds)) {
             return;
         }
+
         try {
             myTelegramBot.execute(DeleteMessages.builder()
                 .chatId(chatId)
                 .messageIds(messageIds)
                 .build());
+
         } catch (TelegramApiException e) {
             log.error("Date selected message not found {}", e.getMessage());
         }

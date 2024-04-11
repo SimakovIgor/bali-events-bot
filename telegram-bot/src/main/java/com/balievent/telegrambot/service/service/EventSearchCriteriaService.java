@@ -24,13 +24,24 @@ public class EventSearchCriteriaService {
         eventSearchCriteria.setDate(searchCriteria);
     }
 
+    public String getSearchThisEvents(final Long chatId) {
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
+            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
+        return eventSearchCriteria.getSearchThisEvents();
+    }
+
     @Transactional
     public EventSearchCriteria toggleLocationName(final Long chatId,
                                                   final String locationName,
                                                   final List<String> locationIds) {
         final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
-        eventSearchCriteria.toggleLocationName(locationName, locationIds);
+
+        eventSearchCriteria.toggleLocationName(locationName, locationIds); // сохраняем список локаций
+        if (locationName.contains("search") && locationName.contains("events")) {
+            eventSearchCriteria.setSearchThisEvents(locationName); // сохраняем запрос из первого окна
+        }
+
         return eventSearchCriteria;
     }
 

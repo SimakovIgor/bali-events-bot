@@ -3,11 +3,11 @@ package com.balievent.telegrambot.service;
 import com.balievent.telegrambot.configuration.TelegramBotProperties;
 import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TelegramButton;
+import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
-import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandlerType;
 import com.balievent.telegrambot.util.DateUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -98,8 +98,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         //Проверку на MONTH_EVENTS_PAGE делаем отдельно раньше для сценария с выбором локации и нажатии на кнопку Next
         //(чтобы не попадать снова в хендлер с выбором локации)
         if (update.getCallbackQuery().getData().equals(TelegramButton.MONTH_EVENTS_PAGE.getCallbackData())) {
+            // Попадаем сюда если пользователь выбрал кнопку Next -> MONTH_EVENTS_PAGE
             callbackHandlers.get(CallbackHandlerType.MONTH_EVENTS_PAGE).handle(update);
             return true;
+
             //Проверка по содержанию сообщения из-за того, что callback с локациями динамический и нельзя на него завязываться
         } else if (update.getCallbackQuery().getMessage() instanceof Message message
             && TgBotConstants.EVENT_LOCATIONS_QUESTION.equals(message.getText())) {

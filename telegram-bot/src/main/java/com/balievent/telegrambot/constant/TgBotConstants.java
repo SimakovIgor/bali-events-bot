@@ -23,4 +23,5 @@ public class TgBotConstants {
 
     public static final String DESELECT_ALL = "Deselect all";
     public static final String SELECT_ALL = "Select all";
+    public static final String GOTO_FILTER = "FILTER";
 }

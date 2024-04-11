@@ -45,6 +45,9 @@ public class EventSearchCriteria {
     @Builder.Default
     private List<String> locationNameList = new ArrayList<>();
 
+    @Column(name = "search_this_events")
+    private String searchThisEvents;
+
     @Column(name = "date")
     private String date;
 
@@ -54,14 +57,10 @@ public class EventSearchCriteria {
         if (locationName.equals(TgBotConstants.DESELECT_ALL)) {
             // удалить все локации кроме последней
             if (!locationNameList.isEmpty()) {
-                // Получаем последний элемент, где лежит выбранный пользователем фильтр
-                final String lastElement = locationNameList.get(locationNameList.size() - 1);
                 // удаляем все элементы списка
                 locationNameList.clear();
                 // Добавляем кнопку Select All
                 locationNameList.add(TgBotConstants.SELECT_ALL);
-                // Добавляем в список переменную lastElement которая содержит пользователем фильтр
-                locationNameList.add(lastElement);
                 return;
             }
         }
@@ -69,16 +68,12 @@ public class EventSearchCriteria {
         if (locationName.equals(TgBotConstants.SELECT_ALL)) {
             // удалить все локации кроме последней
             if (!locationNameList.isEmpty()) {
-                // Получаем последний элемент, где лежит выбранный пользователем фильтр
-                final String lastElement = locationNameList.get(locationNameList.size() - 1);
                 // удаляем все элементы списка
                 locationNameList.clear();
                 // добавить все существующие в базе
                 locationNameList.addAll(locationIds);
                 // Добавляем кнопку Select All
                 locationNameList.add(TgBotConstants.DESELECT_ALL);
-                // Добавляем в список переменную lastElement которая содержит пользователем фильтр
-                locationNameList.add(lastElement);
                 return;
             }
         }

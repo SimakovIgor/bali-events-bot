@@ -1,5 +1,5 @@
 version: '3.5'
-# start DOCKER  C:\Java\account-service> docker-compose up -d
+# docker-compose up -d
 
 services:
   db:
@@ -35,29 +35,29 @@ services:
       - db
     restart: unless-stopped
 
-  firefox:
-    image: selenium/standalone-firefox
-    hostname: firefox
-    privileged: true
-    shm_size: 2gb
-    container_name: selenium-firefox
-    ports:
-      - "4445:4444"
-      - "7900:7900"
-    networks:
-      - postgres
-
-  data-scrapper:
-    image: simakoff/data-scrapper:latest
-    container_name: data-scrapper
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
-    ports:
-      - "8082:8082"
-    depends_on:
-      - firefox
-    networks:
-      - postgres
+#  firefox:
+#    image: selenium/standalone-firefox
+#    hostname: firefox
+#    privileged: true
+#    shm_size: 2gb
+#    container_name: selenium-firefox
+#    ports:
+#      - "4445:4444"
+#      - "7900:7900"
+#    networks:
+#      - postgres
+#
+#  data-scrapper:
+#    image: simakoff/data-scrapper:latest
+#    container_name: data-scrapper
+#    environment:
+#      - "SPRING_PROFILES_ACTIVE=docker"
+#    ports:
+#      - "8082:8082"
+#    depends_on:
+#      - firefox
+#    networks:
+#      - postgres
 
 #  telegram-bot:
 #    image: simakoff/telegram-bot:latest

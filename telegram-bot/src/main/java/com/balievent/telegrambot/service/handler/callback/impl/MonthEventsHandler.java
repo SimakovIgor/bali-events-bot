@@ -34,10 +34,12 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
     @Override
     public void handle(final Update update) throws TelegramApiException {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        final UserData userData = userDataService.getUserData(chatId);
-        final LocalDate calendarDate = userData.getSearchEventDate();
-        final String formattedMonth = DateUtil.getFormattedMonth(calendarDate);
+        final UserData userData = userDataService.getUserData(chatId);          // Данные о пользователе
+        final LocalDate calendarDate = userData.getSearchEventDate();           // Текущая дата
+        final String formattedMonth = DateUtil.getFormattedMonth(calendarDate); // Возвращает строковое представление месяца в заданной календарной дате.
         final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDayFull(calendarDate, 1, calendarDate.lengthOfMonth());
+
+        // здесь формируется строки /01_04_2024 : 8 events -> в какую дату сколько сообщений добавляем перевод строки
         final String eventListMessage = TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedMonth, detailedEventsForMonth);
 
         final EditMessageText editMessageText = EditMessageText.builder()

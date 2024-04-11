@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
+import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.model.entity.UserData;
@@ -39,20 +40,23 @@ public class StartCommandHandler extends TextMessageHandler {
             .map(Location::getId)
             .toList());
 
-        locationNameList.add(TgBotConstants.DESELECT_ALL); // добавляем кнопку "Deselect all" в список выделяемых объектов
+        locationNameList.add(TgBotConstants.DESELECT_ALL); // добавляем кнопку "Deselect all" в список выделяемых объектов следующего окна
 
         // сохраняем все локации и кнопку "Deselect all" в event_search_criteria.location_name_list
         eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId, locationNameList);
 
         clearChat(chatId, userData);
 
+        final String searchThisEvents = eventSearchCriteriaService.getSearchThisEvents(chatId); // получаем критерий поиска
+
         final SendMessage sendMessage = SendMessage.builder()
             .chatId(chatId)
             .text(TgBotConstants.EVENT_DATE_QUESTION.formatted())
-            .replyMarkup(KeyboardUtil.createEventDateSelectionKeyboard())
+            .replyMarkup(KeyboardUtil.createEventDateSelectionKeyboard(searchThisEvents))
             .build();
 
         final Message message = myTelegramBot.execute(sendMessage);
+        // сохраняем идентификатор сообщения, чтобы все последующие окна перезаписывали это сообщение
         userDataService.updateLastBotMessageId(message.getMessageId(), chatId);
     }
 

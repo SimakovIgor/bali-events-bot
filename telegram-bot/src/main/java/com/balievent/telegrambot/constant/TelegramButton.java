@@ -43,7 +43,8 @@ public enum TelegramButton {
     SEARCH_SHOW_ALL_EVENTS("search_show_all_events", "Show all this month", CallbackHandlerType.EVENT_DATE_SELECTION),
     //    SEARCH_PICK_DATE_EVENTS("search_pick_date_events", "Pick date", CallbackHandlerType.EVENT_DATE_SELECTION);
 
-    EVENT_LOCATIONS_NEXT("month_events_page", "Next ➡️", CallbackHandlerType.MONTH_EVENTS_PAGE);
+    EVENT_LOCATIONS_NEXT("month_events_page", "Next ➡️", CallbackHandlerType.MONTH_EVENTS_PAGE),
+    EVENT_START_FILTER("event_start_filter", "Filter", CallbackHandlerType.EVENT_START_FILTER);
 
     private final String callbackData;
     private final String buttonText;
