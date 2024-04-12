@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service.service;
 
+import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.model.entity.EventSearchCriteria;
@@ -21,27 +22,38 @@ public class EventSearchCriteriaService {
                                      final String searchCriteria) {
         final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
-        eventSearchCriteria.setDate(searchCriteria);
-    }
-
-    public String getSearchThisEvents(final Long chatId) {
-        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
-            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
-        return eventSearchCriteria.getSearchThisEvents();
+        eventSearchCriteria.setDateFilter(searchCriteria);
     }
 
     @Transactional
     public EventSearchCriteria toggleLocationName(final Long chatId,
-                                                  final String locationName,
-                                                  final List<String> locationIds) {
+                                                  final String locationName) {
         final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
 
-        eventSearchCriteria.toggleLocationName(locationName, locationIds); // сохраняем список локаций
-        if (locationName.contains("search") && locationName.contains("events")) {
-            eventSearchCriteria.setSearchThisEvents(locationName); // сохраняем запрос из первого окна
-        }
+        eventSearchCriteria.toggleLocationName(locationName); // сохраняем список локаций
+        return eventSearchCriteria;
+    }
 
+    @Transactional
+    public EventSearchCriteria selectAll(final Long chatId,
+                                         final List<String> locationNameList) {
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
+            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
+
+        eventSearchCriteria.setLocationNameList(locationNameList); // сохраняем все локации
+        eventSearchCriteria.getLocationNameList().add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
+
+        return eventSearchCriteria;
+    }
+
+    @Transactional
+    public EventSearchCriteria deselectAll(final Long chatId) {
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
+            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
+
+        eventSearchCriteria.getLocationNameList().clear();
+        eventSearchCriteria.getLocationNameList().add(TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData());
         return eventSearchCriteria;
     }
 
@@ -51,11 +63,16 @@ public class EventSearchCriteriaService {
         if (userDataOptional.isPresent()) {
             final EventSearchCriteria userData = userDataOptional.get();
             userData.setLocationNameList(locationNameList); // сохраняем все локации и кнопки в event_search_criteria.location_name_list
-            userData.setDate("");
+            userData.setDateFilter("");
             return userData;
         }
         return eventSearchCriteriaRepository.save(EventSearchCriteria.builder()
             .chatId(chatId)
             .build());
+    }
+
+    public EventSearchCriteria getEventSearchCriteria(final Long chatId) {
+        return eventSearchCriteriaRepository.findByChatId(chatId)
+            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
     }
 }

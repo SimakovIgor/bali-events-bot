@@ -184,54 +184,44 @@ public class KeyboardUtil {
     //            .build();
     //    }
 
-    public static InlineKeyboardMarkup createEventDateSelectionKeyboard(final String eventSearchCriteriaService) {
+    public static InlineKeyboardMarkup createEventDateSelectionKeyboard() {
 
         final List<InlineKeyboardButton> firstRow = new ArrayList<>();
 
         firstRow.add(InlineKeyboardButton.builder()
-            .text(textData(eventSearchCriteriaService, TelegramButton.SEARCH_TODAY_EVENTS.getCallbackData(), TelegramButton.SEARCH_TODAY_EVENTS.getButtonText()))
+            .text(TelegramButton.SEARCH_TODAY_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_TODAY_EVENTS.getCallbackData())
             .build());
 
         firstRow.add(InlineKeyboardButton.builder()
-            .text(textData(eventSearchCriteriaService, TelegramButton.SEARCH_TOMORROW_EVENTS.getCallbackData(), TelegramButton.SEARCH_TOMORROW_EVENTS.getButtonText()))
+            .text(TelegramButton.SEARCH_TOMORROW_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_TOMORROW_EVENTS.getCallbackData())
             .build());
 
         final List<InlineKeyboardButton> secondRow = new ArrayList<>();
         secondRow.add(InlineKeyboardButton.builder()
-            .text(textData(eventSearchCriteriaService, TelegramButton.SEARCH_THIS_WEEK_EVENTS.getCallbackData(), TelegramButton.SEARCH_THIS_WEEK_EVENTS.getButtonText()))
+            .text(TelegramButton.SEARCH_THIS_WEEK_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_THIS_WEEK_EVENTS.getCallbackData())
             .build());
         secondRow.add(InlineKeyboardButton.builder()
-            .text(textData(eventSearchCriteriaService, TelegramButton.SEARCH_NEXT_WEEK_EVENTS.getCallbackData(), TelegramButton.SEARCH_NEXT_WEEK_EVENTS.getButtonText()))
+            .text(TelegramButton.SEARCH_NEXT_WEEK_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_NEXT_WEEK_EVENTS.getCallbackData())
             .build());
 
         final List<InlineKeyboardButton> thirdRow = new ArrayList<>();
         thirdRow.add(InlineKeyboardButton.builder()
-            .text(textData(eventSearchCriteriaService, TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getCallbackData(), TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getButtonText()))
+            .text(TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getCallbackData())
             .build());
 
         thirdRow.add(InlineKeyboardButton.builder()
-            .text(textData(eventSearchCriteriaService, TelegramButton.SEARCH_SHOW_ALL_EVENTS.getCallbackData(), TelegramButton.SEARCH_SHOW_ALL_EVENTS.getButtonText()))
+            .text(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getCallbackData())
             .build());
-
-        //        final List<InlineKeyboardButton> fourthRow = new ArrayList<>();
-        //        fourthRow.add(InlineKeyboardButton.builder()
-        //            .text(TelegramButton.SEARCH_PICK_DATE_EVENTS.getButtonText())
-        //            .callbackData(TelegramButton.SEARCH_PICK_DATE_EVENTS.getCallbackData())
-        //            .build());
 
         return InlineKeyboardMarkup.builder()
             .keyboard(List.of(firstRow, secondRow, thirdRow))
             .build();
-    }
-
-    private static String textData(final String eventSearchCriteriaService, final String callbackData, final String buttonText) {
-        return eventSearchCriteriaService.contains(callbackData) ? "✅ " + buttonText : buttonText;
     }
 
     public static InlineKeyboardMarkup createEventLocationsSelectionKeyboard(final List<String> allLocations,
@@ -259,37 +249,32 @@ public class KeyboardUtil {
             keyboard.add(row);
         }
 
-        final boolean addRow = true;
         // Добавляем кнопки "DESELECT_ALL"
-        if (selectedLocations.contains(TgBotConstants.DESELECT_ALL)) {
-            addNewButton(keyboard, TgBotConstants.DESELECT_ALL, TgBotConstants.DESELECT_ALL, addRow);
-        }
-
-        // Добавляем кнопки "SELECT_ALL"
-        if (selectedLocations.contains(TgBotConstants.SELECT_ALL)) {
-            addNewButton(keyboard, TgBotConstants.SELECT_ALL, TgBotConstants.SELECT_ALL, addRow);
+        if (selectedLocations.contains(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData())) {
+            addNewButton(keyboard, TelegramButton.DESELECT_ALL_LOCATIONS.getButtonText(), TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
+            // Добавляем кнопки "SELECT_ALL"
+        } else if (selectedLocations.contains(TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData())) {
+            addNewButton(keyboard, TelegramButton.SELECT_ALL_LOCATIONS.getButtonText(), TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData());
         }
 
         // Добавляем кнопки "Next"
-        addNewButton(keyboard, TelegramButton.EVENT_LOCATIONS_NEXT.getButtonText(), TelegramButton.EVENT_LOCATIONS_NEXT.getCallbackData(), addRow);
-
-        row.clear();
+        addNewButton(keyboard, TelegramButton.EVENT_LOCATIONS_NEXT.getButtonText(), TelegramButton.EVENT_LOCATIONS_NEXT.getCallbackData());
 
         return InlineKeyboardMarkup.builder()
             .keyboard(keyboard)
             .build();
     }
 
-    private static void addNewButton(final List<List<InlineKeyboardButton>> keyboard, final String testString, final String callbackData, final boolean addRow) {
+    private static void addNewButton(final List<List<InlineKeyboardButton>> keyboard,
+                                     final String testString,
+                                     final String callbackData) {
         final List<InlineKeyboardButton> nextButton = new ArrayList<>();
         nextButton.add(InlineKeyboardButton.builder()
             .text(testString)
             .callbackData(callbackData)
             .build());
 
-        if (addRow) {
-            keyboard.add(nextButton);
-        }
+        keyboard.add(nextButton);
     }
 
 }

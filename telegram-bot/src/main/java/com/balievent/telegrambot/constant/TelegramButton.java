@@ -19,6 +19,7 @@ public enum TelegramButton {
 
     //Month page buttons
     MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅", CallbackHandlerType.MONTH_EVENTS_PAGE),
+
     PREVIOUS_MONTH_PAGE("previous_month_page", "%s", CallbackHandlerType.MONTH_PAGINATION),
     NEXT_MONTH_PAGE("next_month_page", "%s", CallbackHandlerType.MONTH_PAGINATION),
 
@@ -44,7 +45,10 @@ public enum TelegramButton {
     //    SEARCH_PICK_DATE_EVENTS("search_pick_date_events", "Pick date", CallbackHandlerType.EVENT_DATE_SELECTION);
 
     EVENT_LOCATIONS_NEXT("month_events_page", "Next ➡️", CallbackHandlerType.MONTH_EVENTS_PAGE),
-    EVENT_START_FILTER("event_start_filter", "Filter", CallbackHandlerType.EVENT_START_FILTER);
+    EVENT_START_FILTER("event_start_filter", "Filter", CallbackHandlerType.EVENT_START_FILTER),
+
+    SELECT_ALL_LOCATIONS("select_all_locations", "Select all", CallbackHandlerType.EVENT_LOCATIONS_SELECTION),
+    DESELECT_ALL_LOCATIONS("deselect_all_locations", "Deselect all", CallbackHandlerType.EVENT_LOCATIONS_SELECTION);
 
     private final String callbackData;
     private final String buttonText;

@@ -1,6 +1,5 @@
 package com.balievent.telegrambot.model.entity;
 
-import com.balievent.telegrambot.constant.TgBotConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,38 +44,10 @@ public class EventSearchCriteria {
     @Builder.Default
     private List<String> locationNameList = new ArrayList<>();
 
-    @Column(name = "search_this_events")
-    private String searchThisEvents;
+    @Column(name = "date_filter")
+    private String dateFilter;
 
-    @Column(name = "date")
-    private String date;
-
-    public void toggleLocationName(final String locationName,
-                                   final List<String> locationIds) {
-        // если нужно удалить все локации
-        if (locationName.equals(TgBotConstants.DESELECT_ALL)) {
-            // удалить все локации кроме последней
-            if (!locationNameList.isEmpty()) {
-                // удаляем все элементы списка
-                locationNameList.clear();
-                // Добавляем кнопку Select All
-                locationNameList.add(TgBotConstants.SELECT_ALL);
-                return;
-            }
-        }
-        // если нужно добавить все локации
-        if (locationName.equals(TgBotConstants.SELECT_ALL)) {
-            // удалить все локации кроме последней
-            if (!locationNameList.isEmpty()) {
-                // удаляем все элементы списка
-                locationNameList.clear();
-                // добавить все существующие в базе
-                locationNameList.addAll(locationIds);
-                // Добавляем кнопку Select All
-                locationNameList.add(TgBotConstants.DESELECT_ALL);
-                return;
-            }
-        }
+    public void toggleLocationName(final String locationName) {
 
         if (locationNameList.contains(locationName)) {
             locationNameList.remove(locationName);

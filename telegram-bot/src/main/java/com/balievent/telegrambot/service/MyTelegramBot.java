@@ -84,7 +84,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     private void processCallbackQuery(final Update update) throws TelegramApiException {
-        if (eventFilterProcess(update)) {
+        if (eventLocationFilterProcess(update)) {
             return;
         }
         // получаем имя нажатой кнопки
@@ -94,10 +94,13 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         callbackHandlers.get(callbackHandlerType).handle(update);
     }
 
-    private boolean eventFilterProcess(final Update update) throws TelegramApiException {
+    //Метод который обрабатывает фильтры по локация
+    //Это исключительно для фильтрации локаций, чтобы не попадать в обработчик кнопок
+    //Сначала обрабатываем копку Next, потом по тексту сообщения
+    private boolean eventLocationFilterProcess(final Update update) throws TelegramApiException {
         //Проверку на MONTH_EVENTS_PAGE делаем отдельно раньше для сценария с выбором локации и нажатии на кнопку Next
         //(чтобы не попадать снова в хендлер с выбором локации)
-        if (update.getCallbackQuery().getData().equals(TelegramButton.MONTH_EVENTS_PAGE.getCallbackData())) {
+        if (TelegramButton.MONTH_EVENTS_PAGE.getCallbackData().equals(update.getCallbackQuery().getData())) {
             // Попадаем сюда если пользователь выбрал кнопку Next -> MONTH_EVENTS_PAGE
             callbackHandlers.get(CallbackHandlerType.MONTH_EVENTS_PAGE).handle(update);
             return true;
