@@ -1,6 +1,7 @@
 package com.balievent.telegrambot.service.handler.callback.impl.filterprocess;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
+import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.Location;
@@ -30,7 +31,7 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
     @Override
     public void handle(final Update update) throws TelegramApiException {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        final String selectedDate = update.getCallbackQuery().getData();
+        final String selectedLocation = update.getCallbackQuery().getData();
 
         final List<String> locationIds = locationRepository.findAll()// метод полностью дублирует class EventDateQuestionHandler()
             .stream()
@@ -38,7 +39,7 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
             .toList();
 
         // здесь удаляются / добавляются локации
-        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedDate, locationIds);
+        final EventSearchCriteria eventSearchCriteria = chooseLocation(selectedLocation, chatId, locationIds);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
@@ -49,4 +50,15 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
 
         myTelegramBot.execute(editMessageText);
     }
+
+    private EventSearchCriteria chooseLocation(final String selectedLocation, final Long chatId, final List<String> locationIds) {
+        if (TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
+            return eventSearchCriteriaService.selectAll(chatId, locationIds);
+        } else if (TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
+            return eventSearchCriteriaService.deselectAll(chatId);
+        } else {
+            return eventSearchCriteriaService.toggleLocationName(chatId, selectedLocation);
+        }
+    }
+
 }

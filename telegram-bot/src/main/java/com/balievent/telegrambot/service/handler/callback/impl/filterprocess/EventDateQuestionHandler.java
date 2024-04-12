@@ -30,7 +30,7 @@ public class EventDateQuestionHandler extends ButtonCallbackHandler {
     @Override
     public void handle(final Update update) throws TelegramApiException {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        final String selectedDate = update.getCallbackQuery().getData();
+        final String selectedDate = update.getCallbackQuery().getData(); // выбранные локации
 
         // список всех локаций
         final List<String> locationIds = locationRepository.findAll()    // метод полностью дублирует class EventLocationsQuestionHandler()
@@ -40,7 +40,9 @@ public class EventDateQuestionHandler extends ButtonCallbackHandler {
 
         // в переменной selectedDate сейчас лежит фильтр по датам из первого окна
         // этот метод добавляет / удаляет локации
-        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedDate, locationIds);
+        eventSearchCriteriaService.updateSearchCriteria(chatId, selectedDate);
+
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.getEventSearchCriteria(chatId);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)

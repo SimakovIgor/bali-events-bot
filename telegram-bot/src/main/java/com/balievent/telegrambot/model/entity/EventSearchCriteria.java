@@ -1,6 +1,5 @@
 package com.balievent.telegrambot.model.entity;
 
-import com.balievent.telegrambot.constant.TgBotConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,43 +44,10 @@ public class EventSearchCriteria {
     @Builder.Default
     private List<String> locationNameList = new ArrayList<>();
 
-    @Column(name = "date")
-    private String date;
+    @Column(name = "date_filter")
+    private String dateFilter;
 
-    public void toggleLocationName(final String locationName,
-                                   final List<String> locationIds) {
-        // если нужно удалить все локации
-        if (locationName.equals(TgBotConstants.DESELECT_ALL)) {
-            // удалить все локации кроме последней
-            if (!locationNameList.isEmpty()) {
-                // Получаем последний элемент, где лежит выбранный пользователем фильтр
-                final String lastElement = locationNameList.get(locationNameList.size() - 1);
-                // удаляем все элементы списка
-                locationNameList.clear();
-                // Добавляем кнопку Select All
-                locationNameList.add(TgBotConstants.SELECT_ALL);
-                // Добавляем в список переменную lastElement которая содержит пользователем фильтр
-                locationNameList.add(lastElement);
-                return;
-            }
-        }
-        // если нужно добавить все локации
-        if (locationName.equals(TgBotConstants.SELECT_ALL)) {
-            // удалить все локации кроме последней
-            if (!locationNameList.isEmpty()) {
-                // Получаем последний элемент, где лежит выбранный пользователем фильтр
-                final String lastElement = locationNameList.get(locationNameList.size() - 1);
-                // удаляем все элементы списка
-                locationNameList.clear();
-                // добавить все существующие в базе
-                locationNameList.addAll(locationIds);
-                // Добавляем кнопку Select All
-                locationNameList.add(TgBotConstants.DESELECT_ALL);
-                // Добавляем в список переменную lastElement которая содержит пользователем фильтр
-                locationNameList.add(lastElement);
-                return;
-            }
-        }
+    public void toggleLocationName(final String locationName) {
 
         if (locationNameList.contains(locationName)) {
             locationNameList.remove(locationName);

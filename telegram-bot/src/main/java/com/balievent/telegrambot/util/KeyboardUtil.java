@@ -76,6 +76,12 @@ public class KeyboardUtil {
             .text(getPreviousMonthButtonText(monthValue))
             .callbackData(TelegramButton.PREVIOUS_MONTH_PAGE.getCallbackData())
             .build();
+
+        final InlineKeyboardButton gotoFilterButton = InlineKeyboardButton.builder()
+            .text(TgBotConstants.GOTO_FILTER)
+            .callbackData(TelegramButton.EVENT_START_FILTER.getCallbackData())
+            .build();
+
         final InlineKeyboardButton nextMonthButton = InlineKeyboardButton.builder()
             .text(getNextMonthButtonText(monthValue))
             .callbackData(TelegramButton.NEXT_MONTH_PAGE.getCallbackData())
@@ -83,7 +89,7 @@ public class KeyboardUtil {
 
         return InlineKeyboardMarkup.builder()
             .keyboard(List.of(
-                List.of(previousMonthButton, nextMonthButton)
+                List.of(previousMonthButton, gotoFilterButton, nextMonthButton)
             ))
             .build();
     }
@@ -171,7 +177,6 @@ public class KeyboardUtil {
     //
     //        final KeyboardRow contactAndFavorite = new KeyboardRow();
     //        contactAndFavorite.add(TelegramButton.CONTACT_US.getButtonText());
-    //        contactAndFavorite.add(TelegramButton.FAVORITE_EVENTS.getButtonText());
     //        keyboard.add(contactAndFavorite);
     //
     //        return ReplyKeyboardMarkup.builder()
@@ -180,11 +185,14 @@ public class KeyboardUtil {
     //    }
 
     public static InlineKeyboardMarkup createEventDateSelectionKeyboard() {
+
         final List<InlineKeyboardButton> firstRow = new ArrayList<>();
+
         firstRow.add(InlineKeyboardButton.builder()
             .text(TelegramButton.SEARCH_TODAY_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_TODAY_EVENTS.getCallbackData())
             .build());
+
         firstRow.add(InlineKeyboardButton.builder()
             .text(TelegramButton.SEARCH_TOMORROW_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_TOMORROW_EVENTS.getCallbackData())
@@ -205,21 +213,15 @@ public class KeyboardUtil {
             .text(TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_ON_THIS_WEEKEND_EVENTS.getCallbackData())
             .build());
+
         thirdRow.add(InlineKeyboardButton.builder()
             .text(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getButtonText())
             .callbackData(TelegramButton.SEARCH_SHOW_ALL_EVENTS.getCallbackData())
             .build());
 
-        //        final List<InlineKeyboardButton> fourthRow = new ArrayList<>();
-        //        fourthRow.add(InlineKeyboardButton.builder()
-        //            .text(TelegramButton.SEARCH_PICK_DATE_EVENTS.getButtonText())
-        //            .callbackData(TelegramButton.SEARCH_PICK_DATE_EVENTS.getCallbackData())
-        //            .build());
-
         return InlineKeyboardMarkup.builder()
             .keyboard(List.of(firstRow, secondRow, thirdRow))
             .build();
-
     }
 
     public static InlineKeyboardMarkup createEventLocationsSelectionKeyboard(final List<String> allLocations,
@@ -248,13 +250,11 @@ public class KeyboardUtil {
         }
 
         // Добавляем кнопки "DESELECT_ALL"
-        if (selectedLocations.contains(TgBotConstants.DESELECT_ALL)) {
-            addNewButton(keyboard, TgBotConstants.DESELECT_ALL, TgBotConstants.DESELECT_ALL);
-        }
-
-        // Добавляем кнопки "SELECT_ALL"
-        if (selectedLocations.contains(TgBotConstants.SELECT_ALL)) {
-            addNewButton(keyboard, TgBotConstants.SELECT_ALL, TgBotConstants.SELECT_ALL);
+        if (selectedLocations.contains(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData())) {
+            addNewButton(keyboard, TelegramButton.DESELECT_ALL_LOCATIONS.getButtonText(), TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
+            // Добавляем кнопки "SELECT_ALL"
+        } else if (selectedLocations.contains(TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData())) {
+            addNewButton(keyboard, TelegramButton.SELECT_ALL_LOCATIONS.getButtonText(), TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData());
         }
 
         // Добавляем кнопки "Next"
@@ -265,7 +265,9 @@ public class KeyboardUtil {
             .build();
     }
 
-    private static void addNewButton(final List<List<InlineKeyboardButton>> keyboard, final String testString, final String callbackData) {
+    private static void addNewButton(final List<List<InlineKeyboardButton>> keyboard,
+                                     final String testString,
+                                     final String callbackData) {
         final List<InlineKeyboardButton> nextButton = new ArrayList<>();
         nextButton.add(InlineKeyboardButton.builder()
             .text(testString)
