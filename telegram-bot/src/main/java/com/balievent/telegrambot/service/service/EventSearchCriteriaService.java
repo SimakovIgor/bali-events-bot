@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,8 +42,10 @@ public class EventSearchCriteriaService {
         final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
 
-        eventSearchCriteria.setLocationNameList(locationNameList); // сохраняем все локации
-        eventSearchCriteria.getLocationNameList().add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
+        final List<String> list = new ArrayList<>(locationNameList);
+        list.add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
+
+        eventSearchCriteria.setLocationNameList(list);
 
         return eventSearchCriteria;
     }

@@ -21,7 +21,5 @@ public class TgBotConstants {
         Write the date in the format: 'dd.mm.yyyy' or choose from the calendar
         """;
 
-    public static final String DESELECT_ALL = "Deselect all";
-    public static final String SELECT_ALL = "Select all";
     public static final String GOTO_FILTER = "FILTER";
 }

@@ -1,5 +1,6 @@
 package com.balievent.telegrambot.service.handler.textmessage;
 
+import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Location;
@@ -40,7 +41,7 @@ public class StartCommandHandler extends TextMessageHandler {
             .map(Location::getId)
             .toList());
 
-        locationNameList.add(TgBotConstants.DESELECT_ALL); // добавляем кнопку "Deselect all" в список выделяемых объектов следующего окна
+        locationNameList.add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData()); // добавляем кнопку "Deselect all" в список выделяемых объектов следующего окна
 
         // сохраняем все локации и кнопку "Deselect all" в event_search_criteria.location_name_list
         eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId, locationNameList);
