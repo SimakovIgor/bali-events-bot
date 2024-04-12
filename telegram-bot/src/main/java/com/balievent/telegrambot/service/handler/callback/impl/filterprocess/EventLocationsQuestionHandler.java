@@ -23,11 +23,6 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
     private final EventSearchCriteriaService eventSearchCriteriaService;
     private final LocationRepository locationRepository;
 
-    private static boolean isSelectDeselectButtons(final String selectedLocation) {
-        return TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)
-            || TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation);
-    }
-
     @Override
     public CallbackHandlerType getCallbackHandlerType() {
         return CallbackHandlerType.EVENT_LOCATIONS_SELECTION;
@@ -44,12 +39,7 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
             .toList();
 
         // здесь удаляются / добавляются локации
-        final EventSearchCriteria eventSearchCriteria;
-        if (isSelectDeselectButtons(selectedLocation)) {
-            eventSearchCriteria = selectDeselectAll(selectedLocation, locationIds, chatId);
-        } else {
-            eventSearchCriteria = eventSearchCriteriaService.toggleLocationName(chatId, selectedLocation);
-        }
+        final EventSearchCriteria eventSearchCriteria = chooseLocation(selectedLocation, chatId, locationIds);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
@@ -61,16 +51,14 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
         myTelegramBot.execute(editMessageText);
     }
 
-    private EventSearchCriteria selectDeselectAll(final String selectedLocation,
-                                                  final List<String> locationIds,
-                                                  final Long chatId) {
-        // если нужно удалить все локации
-        if (TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
-            // удалить все локации кроме последней
+    private EventSearchCriteria chooseLocation(final String selectedLocation, final Long chatId, final List<String> locationIds) {
+        if (TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
+            return eventSearchCriteriaService.selectAll(chatId, locationIds);
+        } else if (TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
             return eventSearchCriteriaService.deselectAll(chatId);
         } else {
-            // удалить все локации кроме последней
-            return eventSearchCriteriaService.selectAll(chatId, locationIds);
+            return eventSearchCriteriaService.toggleLocationName(chatId, selectedLocation);
         }
     }
+
 }
