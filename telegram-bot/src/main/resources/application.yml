@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: 'true'
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 decorator:
   datasource:
@@ -41,5 +42,5 @@ logging:
 com:
   balievent:
     bot:
-      token: 6862871633:AAFQEI2mT7sjjiUjfSbgHHYZe7M9xPbjwlg
-      username: test_remove_me_sima_bot
+      token: ${TELEGRAM_TOKEN}
+      username: ${TELEGRAM_NAME}
