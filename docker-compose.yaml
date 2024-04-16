@@ -20,7 +20,7 @@ services:
 
   pgadmin:
     container_name: pgadmin_container
-    image: dpage/pgadmin4:8.4
+    image: dpage/pgadmin4:8.5
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@mymail.ru
       PGADMIN_DEFAULT_PASSWORD: adminpassword
@@ -35,39 +35,41 @@ services:
       - db
     restart: unless-stopped
 
-#  firefox:
-#    image: selenium/standalone-firefox
-#    hostname: firefox
-#    privileged: true
-#    shm_size: 2gb
-#    container_name: selenium-firefox
-#    ports:
-#      - "4445:4444"
-#      - "7900:7900"
-#    networks:
-#      - postgres
-#
-#  data-scrapper:
-#    image: simakoff/data-scrapper:latest
-#    container_name: data-scrapper
-#    environment:
-#      - "SPRING_PROFILES_ACTIVE=docker"
-#    ports:
-#      - "8082:8082"
-#    depends_on:
-#      - firefox
-#    networks:
-#      - postgres
+  #  firefox:
+  #    image: selenium/standalone-firefox
+  #    hostname: firefox
+  #    privileged: true
+  #    shm_size: 2gb
+  #    container_name: selenium-firefox
+  #    ports:
+  #      - "4445:4444"
+  #      - "7900:7900"
+  #    networks:
+  #      - postgres
+  #
+  #  data-scrapper:
+  #    image: simakoff/data-scrapper:latest
+  #    container_name: data-scrapper
+  #    environment:
+  #      - "SPRING_PROFILES_ACTIVE=docker"
+  #    ports:
+  #      - "8082:8082"
+  #    depends_on:
+  #      - firefox
+  #    networks:
+  #      - postgres
 
-#  telegram-bot:
-#    image: simakoff/telegram-bot:latest
-#    container_name: telegram-bot
-#    ports:
-#      - "8083:8083"
-#    networks:
-#      - postgres
-#    depends_on:
-#      - data-scrapper
+  telegram-bot:
+    image: simakoff/telegram-bot:latest
+    container_name: telegram-bot
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    ports:
+      - "8083:8083"
+    networks:
+      - postgres
+    depends_on:
+      - db
 
 networks:
   postgres:
