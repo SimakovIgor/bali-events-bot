@@ -1,14 +1,13 @@
-version: '3.5'
-# docker-compose up -d
+version: '3.8'
+# docker-compose bali-events-bot up -d
 
 services:
-  db:
-    container_name: postgres_container
-    image: postgres
-    command: [ "postgres", "-c", "log_statement=all" ]
+  telegram-bot-postgres:
+    container_name: telegram-bot-postgres
+    image: postgres:15.6
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${TELEGRAM_BOT_PG_NAME}
+      POSTGRES_PASSWORD: ${TELEGRAM_BOT_PG_PASSWORD}
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/
@@ -18,12 +17,12 @@ services:
       - postgres
     restart: unless-stopped
 
-  pgadmin:
-    container_name: pgadmin_container
+  telegram-bot-pgadmin:
+    container_name: telegram-bot-pgadmin
     image: dpage/pgadmin4:8.5
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@mymail.ru
-      PGADMIN_DEFAULT_PASSWORD: adminpassword
+      PGADMIN_DEFAULT_EMAIL: ${TELEGRAM_BOT_PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${TELEGRAM_BOT_PGADMIN_PASSWORD}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin:/var/lib/pgadmin
@@ -32,10 +31,10 @@ services:
     networks:
       - postgres
     depends_on:
-      - db
+      - telegram-bot-postgres
     restart: unless-stopped
 
-  #  firefox:
+  #  telegram-bot-firefox:
   #    image: selenium/standalone-firefox
   #    hostname: firefox
   #    privileged: true
@@ -47,7 +46,7 @@ services:
   #    networks:
   #      - postgres
   #
-  #  data-scrapper:
+  #  telegram-bot-data-scrapper:
   #    image: simakoff/data-scrapper:latest
   #    container_name: data-scrapper
   #    environment:
@@ -59,19 +58,19 @@ services:
   #    networks:
   #      - postgres
 
-  telegram-bot:
+  telegram-bot-app:
     image: simakoff/telegram-bot:latest
     container_name: telegram-bot
     environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
-      - "TELEGRAM_TOKEN=${TELEGRAM_TOKEN}"
-      - "TELEGRAM_NAME=${TELEGRAM_NAME}"
+      SPRING_PROFILES_ACTIVE: docker
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      TELEGRAM_NAME: ${TELEGRAM_NAME}
     ports:
       - "8083:8083"
     networks:
       - postgres
     depends_on:
-      - db
+      - telegram-bot-postgres
 
 networks:
   postgres:
