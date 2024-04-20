@@ -29,5 +29,5 @@ logging:
 com:
   balievent:
     bot:
-      token:
-      username:
+      token: ${TELEGRAM_TOKEN}
+      username: ${TELEGRAM_NAME}
