@@ -25,7 +25,7 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <postgresql.version>42.7.3</postgresql.version>
         <testcontainers.version>1.19.7</testcontainers.version>
-        <spotbugs-annotations.version>4.8.4</spotbugs-annotations.version>
+        <spotbugs-annotations.version>4.8.5</spotbugs-annotations.version>
         <plugins.checkstyle.puppycrawl.version>10.15.0</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
 
