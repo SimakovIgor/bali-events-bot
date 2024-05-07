@@ -3,6 +3,7 @@ package com.balievent.telegrambot.service.handler.textmessage;
 import com.balievent.telegrambot.constant.Settings;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
+import com.balievent.telegrambot.model.dto.BriefDetailedLocationMessageDto;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.handler.common.MediaHandler;
@@ -49,11 +50,13 @@ public class DateSelectedHandler extends TextMessageHandler {
 
         final ReplyKeyboard replyKeyboard = KeyboardUtil.getDayEventsKeyboard(currentPage, pageCount);
         final String displayDate = eventsDateFor.format(Settings.PRINT_DATE_TIME_FORMATTER);
-        final String eventsBriefMessage = MessageBuilderUtil.buildBriefEventsMessage(currentPage, eventList);
+        final BriefDetailedLocationMessageDto detailedLocationMessageDto = MessageBuilderUtil.buildBriefEventsMessage(currentPage, eventList);
+
+        userDataService.saveOrUpdateLocationMap(detailedLocationMessageDto.getLocationMap(), chatId);
 
         final SendMessage sendMessage = SendMessage.builder()
             .chatId(chatId)
-            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, eventsBriefMessage))
+            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(displayDate, detailedLocationMessageDto.getMessage()))
             .parseMode(ParseMode.HTML)
             .replyMarkup(replyKeyboard)
             .disableWebPagePreview(true)

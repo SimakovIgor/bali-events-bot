@@ -18,6 +18,7 @@ public enum TelegramButton {
     LAST_EVENTS_PAGE("last_events_page", ">> [%s/%s]", CallbackHandlerType.EVENTS_PAGINATION),
 
     //Month page buttons
+    DAY_EVENT_PAGE("day_event_page", "Back to the list for the day 📅", CallbackHandlerType.DAY_EVENT_PAGE),
     MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅", CallbackHandlerType.MONTH_EVENTS_PAGE),
 
     PREVIOUS_MONTH_PAGE("previous_month_page", "%s", CallbackHandlerType.MONTH_PAGINATION),

@@ -1,11 +1,13 @@
 package com.balievent.telegrambot.util;
 
 import com.balievent.telegrambot.constant.Settings;
+import com.balievent.telegrambot.model.dto.BriefDetailedLocationMessageDto;
 import com.balievent.telegrambot.model.entity.Event;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -14,16 +16,59 @@ import java.util.TreeMap;
 public class MessageBuilderUtil {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd_MM_yyyy");
 
-    public static String buildBriefEventsMessage(final int currentPage, final List<Event> eventList) {
-        final StringBuilder stringBuilder = new StringBuilder();
+    public static BriefDetailedLocationMessageDto buildBriefEventsMessage(
+        final int currentPage, final List<Event> eventList
+    ) {
+        // это цикл по всем событиям на текущий день.
+        final Map<String, Long> locationMap = new HashMap<>();
+        final StringBuilder result = new StringBuilder();
+        String line;
         for (int i = 0; i < eventList.size(); i++) {
             final Event event = eventList.get(i);
-            stringBuilder.append(1 + i + Settings.PAGE_SIZE * (currentPage - 1)).append(". ")
-                .append(CommonUtil.getLink(event.getEventName(), event.getEventUrl()))
-                .append("%n");
+
+            line = "/"
+                + (1 + i + Settings.PAGE_SIZE * (currentPage - 1))
+                + "__"
+                + processString(event.getEventName())
+                + "\n";
+
+            result.append(line);
+            locationMap.put(line.trim(), event.getId());
         }
 
-        return stringBuilder.toString();
+        return BriefDetailedLocationMessageDto.builder()
+            .message(result.toString())
+            .locationMap(locationMap)
+            .build();
+    }
+
+    public static String processString(final String input) {
+        // Удаляем все символы, кроме цифр, букв и пробелов
+        String processed = input.replaceAll("[^\\p{Alnum} ]", "");
+        // Заменяем пробелы на подчеркивания
+        processed = processed.replace(" ", "_")
+            .replace("__", "_");
+        return processed;
+    }
+
+    public static String buildEventsMessage(final List<Event> eventList) {
+        // это цикл по всем событиям на текущий день на данной локации.
+        final StringBuilder result = new StringBuilder();
+        String line = "";
+
+        for (int i = 0; i < eventList.size(); i++) {
+
+            final Event event = eventList.get(i);
+
+            line = "NAME: " + event.getEventName() + "\n"
+                + "Time: Begin: " + event.getStartDate().toLocalTime().toString() + "\n"
+                + "Time: End: " + event.getEndDate().toLocalTime().toString() + "\n"
+                + CommonUtil.getLink("Buy Tickets Now!", event.getEventUrl()) + "\n"
+                + GetGoogleMapLinkUtil.getGoogleMap("Location on Google map", event.getCoordinates()) + "\n";
+
+            result.append(line);
+        }
+        return result.toString();
     }
 
     public static String formatMessageForEventsGroupedByDay(final Map<LocalDate, List<Event>> eventMap) {
@@ -35,7 +80,7 @@ public class MessageBuilderUtil {
                 .append(" : ")
                 .append(value.size())
                 .append(" events")
-                .append("%n"));
+                .append("\n"));
 
         if (stringBuilder.isEmpty()) {
             stringBuilder.append("No events");

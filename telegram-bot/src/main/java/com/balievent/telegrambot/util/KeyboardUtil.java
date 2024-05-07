@@ -163,6 +163,17 @@ public class KeyboardUtil {
             .keyboard(List.of(paginationButtons, monthBackButtons))
             .build();
     }
+    public static InlineKeyboardMarkup getDetailedLocationKeyboard() {
+        final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
+        monthBackButtons.add(InlineKeyboardButton.builder()
+            .text(TelegramButton.DAY_EVENT_PAGE.getButtonText())
+            .callbackData(TelegramButton.DAY_EVENT_PAGE.getCallbackData())
+            .build());
+
+        return InlineKeyboardMarkup.builder()
+            .keyboard(List.of(monthBackButtons))
+            .build();
+    }
 
     //    public static ReplyKeyboardMarkup getMainMenuKeyboard() {
     //        final List<KeyboardRow> keyboard = new ArrayList<>();

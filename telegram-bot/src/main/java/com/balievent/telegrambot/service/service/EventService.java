@@ -1,5 +1,7 @@
 package com.balievent.telegrambot.service.service;
 
+import com.balievent.telegrambot.exceptions.ErrorCode;
+import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.repository.EventRepository;
 import com.balievent.telegrambot.util.MessageBuilderUtil;
@@ -98,4 +100,10 @@ public class EventService {
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
     }
 
+    //todo refactor
+    public List<Event> findEventsById(final Long id) {
+        final Event event = eventRepository.findById(id)
+            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
+        return List.of(event);
+    }
 }

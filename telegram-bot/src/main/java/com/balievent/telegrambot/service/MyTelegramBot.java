@@ -8,6 +8,7 @@ import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
+import com.balievent.telegrambot.service.service.UserDataService;
 import com.balievent.telegrambot.util.DateUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +30,19 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers;
     private final Map<CallbackHandlerType, ButtonCallbackHandler> callbackHandlers;
     private final TelegramBotProperties telegramBotProperties;
+    private final UserDataService userDataService;
 
     public MyTelegramBot(
         final @Lazy Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers,
         final @Lazy Map<CallbackHandlerType, ButtonCallbackHandler> callbackHandlers,
-        final TelegramBotProperties telegramBotProperties
+        final TelegramBotProperties telegramBotProperties,
+        final UserDataService userDataService
     ) {
         super(telegramBotProperties.getToken());
         this.textMessageHandlers = textMessageHandlers;
         this.telegramBotProperties = telegramBotProperties;
         this.callbackHandlers = callbackHandlers;
+        this.userDataService = userDataService;
     }
 
     @Override
@@ -75,6 +79,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED).handle(update);
         } else if (DateUtil.isDateSelected(messageText)) {
             textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update);
+            //todo: избавиться при переходе на кнопки в detailed location
+        } else if (userDataService.isRequestLocalMap(update)) { // проверяем наличие фразы в текущих локациях
+            textMessageHandlers.get(TextMessageHandlerType.LOCATION_COMMAND).handle(update); // идем показать выбранную локацию -> class LocationCommandHandler()
         } else {
             execute(DeleteMessage.builder()
                 .chatId(update.getMessage().getChatId())

@@ -64,7 +64,8 @@ public class EventsPaginationHandler extends ButtonCallbackHandler {
         final UserData userData = updateUserData(update);
 
         final List<Event> eventList = eventService.findEvents(userData.getSearchEventDate(), userData.getCurrentEventPage() - 1, Settings.PAGE_SIZE);
-        final String eventsBriefMessage = MessageBuilderUtil.buildBriefEventsMessage(userData.getCurrentEventPage(), eventList);
+        final String eventsBriefMessage = MessageBuilderUtil.buildBriefEventsMessage(userData.getCurrentEventPage(), eventList)
+            .getMessage();
 
         final String formattedDate = userData.getSearchEventDate().format(Settings.PRINT_DATE_TIME_FORMATTER);
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();

@@ -44,6 +44,26 @@ public class MediaHandler {
         }
     }
 
+    public void handle(final Long chatId, final Long locationId) {
+//        final Map<String, Long> locationMap = userData.getLocationMap();
+//        final Long value = locationMap.get(textMessage);
+        try {
+            final List<InputMediaPhoto> eventPhotos = getEventsById(locationId); // получаем список из одной фотографии
+            if (eventPhotos.isEmpty()) {
+                log.info("No event photos found for chatId: {}", chatId);
+                return;
+            }
+            // в зависимости от количества фотографий отсылаем блок фотографий пользователю
+            final List<Message> messageList = eventPhotos.size() == 1
+                                              ? sendSinglePhoto(chatId, eventPhotos)
+                                              : sendMultiplePhotos(chatId, eventPhotos);
+            // сохраняем список идентификаторов фотографий
+            userDataService.updateMediaIdList(messageList, chatId);
+        } catch (TelegramApiException e) {
+            log.error("Failed to send media", e);
+        }
+    }
+
     private SendMediaGroup handleMultipleMedia(final Long chatId, final List<InputMediaPhoto> eventPhotos) {
         return SendMediaGroup.builder()
             .chatId(chatId)
@@ -68,6 +88,18 @@ public class MediaHandler {
                 return inputMediaPhoto;
             })
             .toList();
+    }
+
+    private List<InputMediaPhoto> getEventsById(final Long userEventsId) {
+        // ищем запись по идентификатору
+        return eventService.findEventsById(userEventsId)
+            .stream()
+            .map(event -> {
+                final InputMediaPhoto inputMediaPhoto = new InputMediaPhoto(); // создаем контейнер TELEGRAM фотографий
+                inputMediaPhoto.setMedia(event.getImageUrl()); // берем ссылку на фото из postgres.public.event.event_url
+                return inputMediaPhoto;
+            })
+            .toList(); // добавляем в список
     }
 
     private List<Message> sendSinglePhoto(final Long chatId,

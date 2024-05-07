@@ -5,6 +5,11 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class TgBotConstants {
 
+    public static final String EVENT_NAME_TEMPLATE = """
+        📅 %s on: %s
+
+        %s""";
+
     public static final String EVENT_LIST_TEMPLATE = """
         📅 List of events on: %s
 

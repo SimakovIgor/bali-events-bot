@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -137,6 +138,13 @@ public class UserDataService {
         userData.setLastUserMessageId(messageId);
     }
 
+    @Transactional
+    //todo: избавиться при переходе на кнопки в detailed location
+    public void saveOrUpdateLocationMap(final Map<String, Long> locationMap, final Long chatId) {
+        final UserData userData = getUserData(chatId);
+        userData.setLocationMap(locationMap);
+    }
+
     public List<Integer> getAllMessageIdsForDelete(final UserData userData) {
         return Stream.of(
                 Optional.ofNullable(userData.getLastUserMessageId()).stream(),
@@ -146,6 +154,14 @@ public class UserDataService {
             .flatMap(i -> i)
             .filter(Objects::nonNull)
             .toList();
+    }
+
+    //todo: избавиться при переходе на кнопки в detailed location
+    public boolean isRequestLocalMap(final Update update) {
+        final String messageText = update.getMessage().getText().trim(); // ТЕКСТ СООБЩЕНИЯ
+        final Map<String, Long> locationMap = getUserData(update.getMessage().getChatId())
+            .getLocationMap(); // список возможны переходов
+        return locationMap.containsKey(messageText);
     }
 
 }
