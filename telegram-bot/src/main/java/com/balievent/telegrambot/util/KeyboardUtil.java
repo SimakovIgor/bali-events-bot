@@ -163,6 +163,7 @@ public class KeyboardUtil {
             .keyboard(List.of(paginationButtons, monthBackButtons))
             .build();
     }
+
     public static InlineKeyboardMarkup getDetailedLocationKeyboard() {
         final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
         monthBackButtons.add(InlineKeyboardButton.builder()

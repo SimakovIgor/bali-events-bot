@@ -29,39 +29,33 @@ public class MediaHandler {
     public void handle(final Long chatId, final UserData userData) {
         try {
             final List<InputMediaPhoto> eventPhotos = findEventPhotos(userData);
-            if (eventPhotos.isEmpty()) {
-                log.info("No event photos found for chatId: {}", chatId);
-                return;
-            }
-
-            final List<Message> messageList = eventPhotos.size() == 1
-                                              ? sendSinglePhoto(chatId, eventPhotos)
-                                              : sendMultiplePhotos(chatId, eventPhotos);
-
-            userDataService.updateMediaIdList(messageList, chatId);
+            sendPhotos(chatId, eventPhotos);
         } catch (TelegramApiException e) {
             log.error("Failed to send media", e);
         }
     }
 
     public void handle(final Long chatId, final Long locationId) {
-//        final Map<String, Long> locationMap = userData.getLocationMap();
-//        final Long value = locationMap.get(textMessage);
         try {
             final List<InputMediaPhoto> eventPhotos = getEventsById(locationId); // получаем список из одной фотографии
-            if (eventPhotos.isEmpty()) {
-                log.info("No event photos found for chatId: {}", chatId);
-                return;
-            }
-            // в зависимости от количества фотографий отсылаем блок фотографий пользователю
-            final List<Message> messageList = eventPhotos.size() == 1
-                                              ? sendSinglePhoto(chatId, eventPhotos)
-                                              : sendMultiplePhotos(chatId, eventPhotos);
-            // сохраняем список идентификаторов фотографий
-            userDataService.updateMediaIdList(messageList, chatId);
+            sendPhotos(chatId, eventPhotos);
         } catch (TelegramApiException e) {
             log.error("Failed to send media", e);
         }
+    }
+
+    private void sendPhotos(final Long chatId, final List<InputMediaPhoto> eventPhotos)
+        throws TelegramApiException {
+        if (eventPhotos.isEmpty()) {
+            log.info("No event photos found for chatId: {}", chatId);
+            return;
+        }
+
+        final List<Message> messageList = eventPhotos.size() == 1
+                                          ? sendSinglePhoto(chatId, eventPhotos)
+                                          : sendMultiplePhotos(chatId, eventPhotos);
+
+        userDataService.updateMediaIdList(messageList, chatId);
     }
 
     private SendMediaGroup handleMultipleMedia(final Long chatId, final List<InputMediaPhoto> eventPhotos) {

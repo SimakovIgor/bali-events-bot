@@ -15,8 +15,6 @@ import com.balievent.telegrambot.util.MessageBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessages;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -66,24 +64,8 @@ public class DayEventsHandler extends ButtonCallbackHandler {
             .build();
 
         myTelegramBot.execute(editMessageText);
-//        userDataService.updateLastBotMessageId(message.getMessageId(), chatId);
         removeMediaMessage(chatId, userData);
         mediaHandler.handle(chatId, userData);
-    }
-
-    private void removeMediaMessage(final Long chatId, final UserData userData) {
-        if (CollectionUtils.isEmpty(userData.getMediaMessageIdList())) {
-            return;
-        }
-        try {
-            myTelegramBot.execute(DeleteMessages.builder()
-                .chatId(chatId)
-                .messageIds(userData.getMediaMessageIdList())
-                .build());
-
-        } catch (TelegramApiException e) {
-            log.error("Media message not found {}", e.getMessage());
-        }
     }
 
 }
