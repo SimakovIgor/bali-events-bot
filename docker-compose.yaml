@@ -19,7 +19,7 @@ services:
 
   telegram-bot-pgadmin:
     container_name: telegram-bot-pgadmin
-    image: dpage/pgadmin4:8.5
+    image: dpage/pgadmin4:8.6
     environment:
       PGADMIN_DEFAULT_EMAIL: ${TELEGRAM_BOT_PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${TELEGRAM_BOT_PGADMIN_PASSWORD}
