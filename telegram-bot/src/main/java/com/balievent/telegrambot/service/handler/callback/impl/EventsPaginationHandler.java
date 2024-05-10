@@ -41,6 +41,7 @@ public class EventsPaginationHandler extends ButtonCallbackHandler {
         return CallbackHandlerType.EVENTS_PAGINATION;
     }
 
+    @SuppressWarnings("PMD.ReturnCount") //todo: refactor
     private UserData updateUserData(final Update update) {
         final String string = update.getCallbackQuery().getData();
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();

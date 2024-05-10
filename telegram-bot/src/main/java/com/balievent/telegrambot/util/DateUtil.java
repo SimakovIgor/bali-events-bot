@@ -15,6 +15,7 @@ public class DateUtil {
         return DateUtil.getMonthNumber(messageText) > 0;
     }
 
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ReturnCount"}) //todo: refactor
     public static int getMonthNumber(final String text) {
         if (text.toUpperCase(Locale.ENGLISH).contains("JAN")) {
             return 1;
@@ -49,6 +50,7 @@ public class DateUtil {
         return DateUtil.getFullMonthNumber(messageText) > 0;
     }
 
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ReturnCount"}) //todo: refactor
     public static int getFullMonthNumber(final String text) {
         if (text.toUpperCase(Locale.ENGLISH).contains("JANUARY")) {
             return 1;

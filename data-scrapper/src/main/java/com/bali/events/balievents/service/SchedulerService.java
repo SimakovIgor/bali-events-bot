@@ -14,7 +14,7 @@ public class SchedulerService {
     private final TheBeatBaliScrapperService theBeatBaliScrapperService;
 
     /**
-     * Запускаем задачу каждые 10 часов
+     * Запускаем задачу каждые 10 часов.
      * Логика работы программы начинается отсюда
      */
     @Scheduled(fixedDelay = 36000000L)
@@ -33,7 +33,7 @@ public class SchedulerService {
     }
 
     /**
-     * Генерируем случайную задержку от 1 до 2 минут
+     * Генерируем случайную задержку от 1 до 2 минут.
      *
      * @return - случайная задержка
      */

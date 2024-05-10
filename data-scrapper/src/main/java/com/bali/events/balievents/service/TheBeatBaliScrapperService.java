@@ -31,6 +31,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private final UpdateEventService updateEventService;
     private final WebDriver webDriver;
 
+    @SuppressWarnings("PMD.ReturnCount") //todo: refactor
     private static boolean isChildIdNotExists(final WebElement child) {
         if (child == null) {
             log.warn("Child element is null");
@@ -52,7 +53,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     /**
-     * Здесь указывается сайт который мы будем считывать
+     * Здесь указывается сайт который мы будем считывать.
      *
      * @return - корневой домен сайта
      */
@@ -62,7 +63,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     /**
-     * Метод для скачивания первого сайта (для другого сайта нужно писать другую логику аналогичного метода)
+     * Метод для скачивания первого сайта (для другого сайта нужно писать другую логику аналогичного метода).
      */
     @Override
     public void process() {
@@ -99,7 +100,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     /**
-     * Создаем и заполняем структуру полей (назовем это 'DTO')
+     * Создаем и заполняем структуру полей (назовем это 'DTO').
      *
      * @param child - элемент веб-страницы
      * @return - заполненный DTO
@@ -132,7 +133,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     /**
-     * Получаем список событий из веб-страницы
+     * Получаем список событий из веб-страницы.
      *
      * @param webDriver - открытый браузер
      * @return - список событий
@@ -142,7 +143,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     /**
-     * Переходим на следующую страницу с событиями
+     * Переходим на следующую страницу с событиями.
      *
      * @param webDriver - открытый браузер
      */
@@ -154,7 +155,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
     /**
      * Устанавливаем корневой домен скачиваемого сайта, и сайт появляется в открытом браузере
-     * (метод может зависнуть а может проскочить и тогда следующим шагом делаем задержку )
+     * (метод может зависнуть, а может проскочить и тогда следующим шагом делаем задержку).
      *
      * @param webDriver - открытый браузер
      */
@@ -165,7 +166,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     /**
-     * Задержка для того чтобы сайт успел загрузиться
+     * Задержка для того чтобы сайт успел загрузиться.
      *
      * @param milliseconds - время задержки в миллисекундах
      */

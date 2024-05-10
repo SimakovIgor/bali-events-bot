@@ -71,7 +71,7 @@
         <module name="FinalLocalVariable"/>
         <module name="FinalParameters"/>
         <!-- <module name="HiddenField"/> invalid -->
-        <module name="HideUtilityClassConstructor"/>
+        <!-- <module name="HideUtilityClassConstructor"/>-->
         <module name="IllegalCatch"/>
         <module name="IllegalIdentifierName"/>
         <module name="IllegalInstantiation"/>
@@ -230,8 +230,8 @@
             <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE###STATIC"/>
             <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
         </module>
-        <module name="RedundantImport"/>
         <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
         <module name="IllegalImport">
             <property name="id" value="IllegalImportMain"/>
             <property name="regexp" value="true"/>
@@ -254,9 +254,7 @@
         <module name="NoWhitespaceBefore"/>
         <module name="NoWhitespaceBeforeCaseDefaultColon"/>
         <module name="ParenPad"/>
-        <module name="OperatorWrap">
-            <property name="option" value="EOL"/>
-        </module>
+        <module name="OperatorWrap"/>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocBlockTagLocation"/>

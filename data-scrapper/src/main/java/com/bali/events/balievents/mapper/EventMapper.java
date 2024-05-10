@@ -35,7 +35,7 @@ public interface EventMapper {
     Location toLocationEntity(EventDto eventDto);
 
     /**
-     * Приведение строки формат: "2024-1-1T22:00+08:00" к стандартному LocalDateTime формат: "yyyy-M-d'T'HH:mm"
+     * Приведение строки формат: "2024-1-1T22:00+08:00" к стандартному LocalDateTime формат: "yyyy-M-d'T'HH:mm".
      *
      * @param fromDateTime - строка формат: "2024-1-1T22:00+08:00"
      * @return - LocalDateTime
