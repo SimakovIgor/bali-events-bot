@@ -73,12 +73,14 @@ public class UserDataService {
         return userDataRepository.save(getDefaultUserData(chatId));
     }
 
+    @Transactional
     public UserData incrementCurrentPage(final Long chatId) {
         final UserData userData = getUserData(chatId);
         userData.setCurrentEventPage(userData.getCurrentEventPage() + 1);
         return userData;
     }
 
+    @Transactional
     public UserData decrementCurrentPage(final Long chatId) {
         final UserData userData = userDataRepository.findById(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_001));

@@ -5,6 +5,7 @@ import com.bali.events.balievents.model.Scrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import static com.bali.events.balievents.support.SeleniumUtils.getAttributeByXpa
 public class TheBeatBaliScrapperService implements ScrapperService {
 
     public static final int MAX_MONTH_COUNT_WITH_EVENTS = 9;
-    private static final By BY_EVENT_GROUP = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]");
+    private static final By BY_EVENT_GROUP = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]/div[1]");
     //                                                                    /html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]/div
     //                                                                    /html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]/div[1]
     private static final By BY_BUTTON_WRAPPER = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[1]");
@@ -36,13 +37,18 @@ public class TheBeatBaliScrapperService implements ScrapperService {
             return true;
         }
 
-        final String externalId = child.getAttribute("id");
-        if (!StringUtils.hasText(externalId)) {
-            log.warn("Empty externalId, skipping this element");
+        try {
+            final String externalId = child.getAttribute("id");
+            if (!StringUtils.hasText(externalId)) {
+                log.warn("Empty externalId, skipping this element");
+                return true;
+            }
+
+            return false;
+        } catch (StaleElementReferenceException e) {
             return true;
         }
 
-        return false;
     }
 
     /**

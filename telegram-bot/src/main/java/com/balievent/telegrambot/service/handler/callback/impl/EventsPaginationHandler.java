@@ -6,6 +6,7 @@ import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;
+import com.balievent.telegrambot.model.dto.BriefDetailedLocationMessageDto;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
@@ -61,9 +62,13 @@ public class EventsPaginationHandler extends ButtonCallbackHandler {
     public void handle(final Update update) throws TelegramApiException {
         final UserData userData = updateUserData(update);
 
-        final List<Event> eventList = eventService.findEvents(userData.getSearchEventDate(), userData.getCurrentEventPage() - 1, Settings.PAGE_SIZE);
-        final String eventsBriefMessage = MessageBuilderUtil.buildBriefEventsMessage(userData.getCurrentEventPage(), eventList)
-            .getMessage();
+        final List<Event> eventList = eventService.findEvents(userData.getSearchEventDate(),
+            userData.getCurrentEventPage() - 1, Settings.PAGE_SIZE);
+        final BriefDetailedLocationMessageDto locationMessageDto =
+            MessageBuilderUtil.buildBriefEventsMessage(userData.getCurrentEventPage(), eventList);
+
+        userDataService.saveOrUpdateLocationMap(locationMessageDto.getLocationMap(),
+            update.getCallbackQuery().getMessage().getChatId());
 
         final String formattedDate = userData.getSearchEventDate().format(Settings.PRINT_DATE_TIME_FORMATTER);
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -71,7 +76,7 @@ public class EventsPaginationHandler extends ButtonCallbackHandler {
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
-            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedDate, eventsBriefMessage))
+            .text(TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedDate, locationMessageDto.getMessage()))
             .parseMode(ParseMode.HTML)
             .disableWebPagePreview(true)
             .replyMarkup(KeyboardUtil.getDayEventsKeyboard(userData.getCurrentEventPage(), userData.getTotalEventPages()))
