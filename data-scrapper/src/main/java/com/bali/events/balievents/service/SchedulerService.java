@@ -17,7 +17,7 @@ public class SchedulerService {
      * Запускаем задачу каждые 10 часов.
      * Логика работы программы начинается отсюда
      */
-    @Scheduled(fixedDelay = 36000000L)
+    @Scheduled(fixedDelay = 36_000_000L)
     public void scheduleTask() {
 
         log.info("Scheduled task started!");
@@ -38,6 +38,6 @@ public class SchedulerService {
      * @return - случайная задержка
      */
     private long getRandomDelay() {
-        return ThreadLocalRandom.current().nextLong(60000) + 60000;
+        return ThreadLocalRandom.current().nextLong(60_000) + 60_000;
     }
 }

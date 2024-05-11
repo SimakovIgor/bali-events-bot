@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class DateUtil {
 
     public static boolean isContainsTextMonth(final String messageText) {
-        return DateUtil.getMonthNumber(messageText) > 0;
+        return getMonthNumber(messageText) > 0;
     }
 
     @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ReturnCount"}) //todo: refactor
@@ -47,7 +47,7 @@ public class DateUtil {
     }
 
     public static boolean isCalendarMonthChanged(final String messageText) {
-        return DateUtil.getFullMonthNumber(messageText) > 0;
+        return getFullMonthNumber(messageText) > 0;
     }
 
     @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ReturnCount"}) //todo: refactor
@@ -86,12 +86,12 @@ public class DateUtil {
         final String datePatternWithUnderscore = "/\\d{2}_\\d{2}_\\d{4}";
         return Pattern.matches(datePatternWithDot, text)
             || Pattern.matches(datePatternWithUnderscore, text)
-            || DateUtil.isContainsTextMonth(text);
+            || isContainsTextMonth(text);
     }
 
     public static String convertToLocalDateSelected(final String text, final LocalDate currentLocalDate) {
         final int year = currentLocalDate.getYear();
-        final int month = DateUtil.getMonthNumber(text);
+        final int month = getMonthNumber(text);
         final int day = getDayFromText(text);
 
         return String.format("%02d.%02d.%d", day, month, year);
@@ -99,7 +99,7 @@ public class DateUtil {
 
     public static LocalDate convertToDateTimeCalendarMonthChanged(final String text, final LocalDate currentLocalDate) {
         final int day = currentLocalDate.getDayOfMonth();
-        final int monthNumber = DateUtil.getMonthNumber(text);
+        final int monthNumber = getMonthNumber(text);
         final int year = adjustYearForMonthTransition(currentLocalDate.getMonthValue(), monthNumber, currentLocalDate.getYear());
 
         final String formatted = String.format("%02d.%02d.%d", day, monthNumber, year);
@@ -107,8 +107,8 @@ public class DateUtil {
     }
 
     public static LocalDate parseSelectedDate(final String text, final LocalDate storedLocalDate) {
-        if (DateUtil.isContainsTextMonth(text)) {
-            final String strDate = DateUtil.convertToLocalDateSelected(text, storedLocalDate);
+        if (isContainsTextMonth(text)) {
+            final String strDate = convertToLocalDateSelected(text, storedLocalDate);
             return LocalDate.parse(strDate, Settings.PRINT_DATE_TIME_FORMATTER);
         } else if (text.startsWith("/")) {
             final String strDate = text.substring(1).replace("_", ".");

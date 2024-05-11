@@ -42,9 +42,9 @@ public interface EventMapper {
      */
     @Named("toLocalDateTime")
     default LocalDateTime toLocalDateTime(final String fromDateTime) {
-        final LocalDateTime localDateTime = LocalDateTime.parse(fromDateTime.substring(0, fromDateTime.indexOf("+")), FORMATTER);
+        final LocalDateTime localDateTime = LocalDateTime.parse(fromDateTime.substring(0, fromDateTime.indexOf('+')), FORMATTER);
 
-        final String offsetString = fromDateTime.substring(fromDateTime.indexOf("+") + 1);
+        final String offsetString = fromDateTime.substring(fromDateTime.indexOf('+') + 1);
         final int hours = Integer.parseInt(offsetString.split(":")[0]);
         final int minutes = Integer.parseInt(offsetString.split(":")[1]);
         final ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(hours, minutes);

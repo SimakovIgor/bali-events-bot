@@ -4,56 +4,17 @@ import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @UtilityClass
 public class KeyboardUtil {
 
-    private static final int COLS_COUNT = 5;
     private static final int EVENT_LOCATIONS_SELECTION_COLS_COUNT = 2;
-
-    public static ReplyKeyboardMarkup setCalendar(final int currentMonth) {
-        final Month month = Month.of(currentMonth);
-
-        final int daysInMonth = month.length(LocalDate.now().isLeapYear());
-        final String monthName = month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
-
-        final List<KeyboardRow> keyboard = new ArrayList<>();
-        KeyboardRow row = new KeyboardRow();
-
-        for (int i = 1; i <= daysInMonth; i++) {
-            final String buttonText = String.format("%02d %s", i, monthName);
-            row.add(buttonText);
-
-            if (i % COLS_COUNT == 0 && i < 30) {
-                keyboard.add(row);
-                row = new KeyboardRow();
-            }
-        }
-
-        keyboard.add(row);
-
-        final String buttonPreviousMonthText = getPreviousMonthButtonText(currentMonth);
-        final String buttonNextMonthText = getNextMonthButtonText(currentMonth);
-
-        final KeyboardRow monthChangeRow = new KeyboardRow();
-        monthChangeRow.add(buttonPreviousMonthText);
-        monthChangeRow.add(buttonNextMonthText);
-
-        keyboard.add(monthChangeRow);
-
-        return ReplyKeyboardMarkup.builder()
-            .keyboard(keyboard)
-            .build();
-    }
 
     public InlineKeyboardMarkup createInlineKeyboard(final TelegramButton telegramButton) {
         final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
@@ -236,12 +197,13 @@ public class KeyboardUtil {
             .build();
     }
 
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public static InlineKeyboardMarkup createEventLocationsSelectionKeyboard(final List<String> allLocations,
                                                                              final List<String> selectedLocations) {
         final List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
 
-        for (String locationId : allLocations) {
+        for (final String locationId : allLocations) {
             final String selectedIcon = selectedLocations.contains(locationId)
                                         ? "✅ "
                                         : "❌ ";
