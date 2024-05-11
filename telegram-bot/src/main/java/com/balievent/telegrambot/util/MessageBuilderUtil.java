@@ -54,11 +54,9 @@ public class MessageBuilderUtil {
     public static String buildEventsMessage(final List<Event> eventList) {
         // это цикл по всем событиям на текущий день на данной локации.
         final StringBuilder result = new StringBuilder();
-        String line = "";
+        String line;
 
-        for (int i = 0; i < eventList.size(); i++) {
-
-            final Event event = eventList.get(i);
+        for (final Event event : eventList) {
 
             line = "NAME: " + event.getEventName() + "\n"
                 + "Time: Begin: " + event.getStartDate().toLocalTime().toString() + "\n"
@@ -74,13 +72,12 @@ public class MessageBuilderUtil {
     public static String formatMessageForEventsGroupedByDay(final Map<LocalDate, List<Event>> eventMap) {
         final Map<LocalDate, List<Event>> reverseSortedMap = new TreeMap<>(eventMap);
 
-        final StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder(30);
         reverseSortedMap.forEach((key, value) ->
-            stringBuilder.append("/").append(key.format(DATE_TIME_FORMATTER))
+            stringBuilder.append('/').append(key.format(DATE_TIME_FORMATTER))
                 .append(" : ")
                 .append(value.size())
-                .append(" events")
-                .append("\n"));
+                .append(" events\n"));
 
         if (stringBuilder.isEmpty()) {
             stringBuilder.append("No events");

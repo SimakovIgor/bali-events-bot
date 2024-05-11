@@ -150,7 +150,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private void navigateToNextMonth(final WebDriver webDriver) {
         log.info("Switching to the next month...");
         webDriver.findElement(BY_BUTTON_WRAPPER).findElement(By.id("evcal_next")).click();
-        delay(20000);
+        delay(20_000);
     }
 
     /**
@@ -162,7 +162,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private void navigateToWebsite(final WebDriver webDriver) {
         webDriver.get(rootName());
         log.info("Web driver navigated to: " + rootName());
-        delay(25000);
+        delay(25_000);
     }
 
     /**

@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 @Disabled
 class ApplicationTests {
 
+    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     @Test
     void contextLoads() {
     }

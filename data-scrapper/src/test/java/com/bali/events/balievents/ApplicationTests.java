@@ -18,6 +18,7 @@ class ApplicationTests {
     @MockBean
     protected SchedulerService schedulerService;
 
+    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     @Test
     void contextLoads() {
     }
