@@ -29,6 +29,7 @@
         <plugins.checkstyle.puppycrawl.version>10.16.0</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
         <libs.pmd.version>7.0.0</libs.pmd.version>
+        <plugins.pmd.version>3.21.2</plugins.pmd.version>
 
         <sonar.organization>simakovigor</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -87,7 +88,6 @@
         </dependency>
     </dependencies>
 
-    <!--TODO maven-pmd-plugin, jacoco-maven-plugin-->
     <build>
         <plugins>
             <plugin>
@@ -192,6 +192,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
+                <version>${plugins.pmd.version}</version>
                 <configuration>
                     <failOnViolation>true</failOnViolation>
                     <includeTests>true</includeTests>
@@ -247,6 +248,26 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -287,6 +308,7 @@
                         </execution>
                     </executions>
                 </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
