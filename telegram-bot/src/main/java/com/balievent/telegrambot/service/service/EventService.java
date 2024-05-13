@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,8 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventService {
 
-    public static final int SHOW_ROW_COUNT = 5;
-    public static final Comparator<Map.Entry<LocalDate, List<Event>>> COMPARING_BY_LOCAL_DATE = Map.Entry.comparingByKey();
     private final EventRepository eventRepository;
 
     /**
@@ -36,30 +33,17 @@ public class EventService {
     public String getMessageWithEventsGroupedByDay(final LocalDate localDate,
                                                    final int dayStart,
                                                    final int dayFinish) {
-        final Map<LocalDate, List<Event>> eventsAndGroupByDay = getEventsAndGroupByDay(localDate, dayStart, dayFinish);
-
-        final Map<LocalDate, List<Event>> eventMap = eventsAndGroupByDay
+        final Map<LocalDate, List<Event>> eventMap = getEventsAndGroupByDay(localDate, dayStart, dayFinish)
             .entrySet()
             .stream()
-            .sorted(COMPARING_BY_LOCAL_DATE)
-            .limit(SHOW_ROW_COUNT)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return MessageBuilderUtil.formatMessageForEventsGroupedByDay(eventMap);
     }
 
-    /**
-     * This method retrieves a message containing a list of events grouped by day for a given date range.
-     *
-     * @param localDate the date for the user query
-     * @param dayStart  the starting day of the query range. Minimum value: 1
-     * @param dayFinish the ending day of the query range. Maximum value: length of the month for the given date
-     * @return a message string with the list of events grouped by day
-     */
-    public String getMessageWithEventsGroupedByDayFull(final LocalDate localDate,
-                                                       final int dayStart,
-                                                       final int dayFinish) {
-        final Map<LocalDate, List<Event>> eventMap = getEventsAndGroupByDay(localDate, dayStart, dayFinish)
+    public String getMessageWithEventsGroupedByDay(final LocalDateTime start,
+                                                   final LocalDateTime end) {
+        final Map<LocalDate, List<Event>> eventMap = getEventsAndGroupByDay(start, end)
             .entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -95,6 +79,13 @@ public class EventService {
                                                                final int dayFinish) {
         final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayStart, 0, 0);
         final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayFinish, 23, 59);
+        return eventRepository.findEventsByStartDateBetween(start, end)
+            .stream()
+            .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
+    }
+
+    private Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDateTime start,
+                                                               final LocalDateTime end) {
         return eventRepository.findEventsByStartDateBetween(start, end)
             .stream()
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));

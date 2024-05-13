@@ -3,13 +3,12 @@ package com.balievent.telegrambot.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor
 @Getter
 public enum TelegramButton {
     LETS_GO("month_events_page", "Let's go! 🚀", CallbackHandlerType.MONTH_EVENTS_PAGE),
-
-    SHOW_MONTH_FULL("show_month_full", "Show more ➕", CallbackHandlerType.SHOW_MORE_OR_LESS_EVENTS),
-    SHOW_MONTH_LESS("show_month_less", "Show less ➖", CallbackHandlerType.SHOW_MORE_OR_LESS_EVENTS),
 
     //Events page buttons
     FIRST_EVENTS_PAGE("first_events_page", "<< [1/%s]", CallbackHandlerType.EVENTS_PAGINATION),
@@ -55,4 +54,10 @@ public enum TelegramButton {
     private final String buttonText;
     private final CallbackHandlerType callbackHandlerType;
 
+    public static TelegramButton findByCallbackData(final String callbackData) {
+        return Arrays.stream(TelegramButton.values())
+            .filter(telegramButton -> callbackData.equals(telegramButton.getCallbackData()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Unexpected value: " + callbackData));
+    }
 }

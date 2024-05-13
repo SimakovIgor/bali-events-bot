@@ -216,11 +216,6 @@
                     </execution>
                 </executions>
                 <dependencies>
-<!--                    <dependency>-->
-<!--                        <groupId>ru.simakov</groupId>-->
-<!--                        <artifactId>smkv-pmd-rules</artifactId>-->
-<!--                        <version>${smkv-quality.version}</version>-->
-<!--                    </dependency>-->
                     <dependency>
                         <groupId>net.sourceforge.pmd</groupId>
                         <artifactId>pmd-compat6</artifactId>
@@ -308,7 +303,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
             </plugins>
         </pluginManagement>
     </build>

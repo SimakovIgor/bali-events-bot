@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = PostgreSqlInitializer.class)
 @ActiveProfiles("test")
 @Disabled
-class ApplicationTests {
+class TelegramBotApplicationTests {
 
     @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     @Test
