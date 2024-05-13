@@ -27,6 +27,9 @@ import java.time.temporal.TemporalAdjusters;
 @Service
 @Slf4j
 public class MonthEventsHandler extends ButtonCallbackHandler {
+    public static final LocalTime START_DAY_LOCAL_TIME = LocalTime.of(0, 0);
+    public static final LocalTime END_DAY_LOCAL_TIME = LocalTime.of(23, 59, 59);
+
     private final UserDataService userDataService;
     private final EventSearchCriteriaService eventSearchCriteriaService;
     private final EventService eventService;
@@ -64,40 +67,56 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
     }
 
     private String getMessageWithEventsGroupedByDayFull(final TelegramButton telegramButton) {
-        final LocalDate nowDate = LocalDate.now();
-        final LocalTime startLocalTime = LocalTime.of(0, 0);
-        final LocalTime localTimeEnd = LocalTime.of(23, 59, 59);
+        final LocalDate now = LocalDate.now();
 
         return switch (telegramButton) {
-            case SEARCH_TODAY_EVENTS -> eventService.getMessageWithEventsGroupedByDay(nowDate, nowDate.getDayOfMonth(), nowDate.getDayOfMonth());
+            case SEARCH_TODAY_EVENTS -> {
+                final LocalDateTime startLocalDateTime = LocalDateTime.of(now, START_DAY_LOCAL_TIME);
+                final LocalDateTime endLocalDateTime = LocalDateTime.of(now, END_DAY_LOCAL_TIME);
+
+                yield eventService.getMessageWithEventsGroupedByDay(startLocalDateTime, endLocalDateTime);
+            }
             case SEARCH_TOMORROW_EVENTS -> {
-                final LocalDate tomorrow = nowDate.plusDays(1);
-                yield eventService.getMessageWithEventsGroupedByDay(tomorrow, tomorrow.getDayOfMonth(), tomorrow.getDayOfMonth());
+                final LocalDate tomorrow = now.plusDays(1);
+
+                final LocalDateTime startLocalDateTime = LocalDateTime.of(tomorrow, START_DAY_LOCAL_TIME);
+                final LocalDateTime endLocalDateTime = LocalDateTime.of(tomorrow, END_DAY_LOCAL_TIME);
+
+                yield eventService.getMessageWithEventsGroupedByDay(startLocalDateTime, endLocalDateTime);
             }
             case SEARCH_THIS_WEEK_EVENTS -> {
-                final LocalDate endLocalDate = nowDate.plusWeeks(1);
+                final LocalDate endLocalDate = now.plusWeeks(1);
 
-                final LocalDateTime startLocalDateTime = LocalDateTime.of(nowDate, startLocalTime);
-                final LocalDateTime endLocalDateTime = LocalDateTime.of(endLocalDate, localTimeEnd);
+                final LocalDateTime startLocalDateTime = LocalDateTime.of(now, START_DAY_LOCAL_TIME);
+                final LocalDateTime endLocalDateTime = LocalDateTime.of(endLocalDate, END_DAY_LOCAL_TIME);
 
                 yield eventService.getMessageWithEventsGroupedByDay(startLocalDateTime, endLocalDateTime);
             }
             case SEARCH_NEXT_WEEK_EVENTS -> {
-                final LocalDate nextWeekLocalDate = nowDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-                final LocalDate endLocalDate = nextWeekLocalDate.plusWeeks(1);
+                final LocalDate startLocalDate = now.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+                final LocalDate endLocalDate = startLocalDate.plusWeeks(1);
 
-                final LocalDateTime startLocalDateTime = LocalDateTime.of(nextWeekLocalDate, startLocalTime);
-                final LocalDateTime endLocalDateTime = LocalDateTime.of(endLocalDate, localTimeEnd);
+                final LocalDateTime startLocalDateTime = LocalDateTime.of(startLocalDate, START_DAY_LOCAL_TIME);
+                final LocalDateTime endLocalDateTime = LocalDateTime.of(endLocalDate, END_DAY_LOCAL_TIME);
 
                 yield eventService.getMessageWithEventsGroupedByDay(startLocalDateTime, endLocalDateTime);
             }
-            //todo:
-            //            case SEARCH_ON_THIS_WEEKEND_EVENTS -> {
-            //
-            //            }
-            //            case SEARCH_SHOW_ALL_EVENTS -> {
-            //
-            //            }
+            case SEARCH_ON_THIS_WEEKEND_EVENTS -> {
+                final LocalDate startLocalDate = now.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+                final LocalDate endLocalDate = now.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+
+                final LocalDateTime startLocalDateTime = LocalDateTime.of(startLocalDate, START_DAY_LOCAL_TIME);
+                final LocalDateTime endLocalDateTime = LocalDateTime.of(endLocalDate, END_DAY_LOCAL_TIME);
+
+                yield eventService.getMessageWithEventsGroupedByDay(startLocalDateTime, endLocalDateTime);
+            }
+            case SEARCH_SHOW_ALL_EVENTS -> {
+                final LocalDateTime startLocalDateTime = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0);
+                final LocalDateTime endLocalDateTime = LocalDateTime.of(now.getYear(), now.getMonth(), now.lengthOfMonth(), 0, 0);
+
+                yield eventService.getMessageWithEventsGroupedByDay(startLocalDateTime, endLocalDateTime);
+            }
+
             default -> throw new IllegalStateException("Unexpected value: " + telegramButton);
         };
 

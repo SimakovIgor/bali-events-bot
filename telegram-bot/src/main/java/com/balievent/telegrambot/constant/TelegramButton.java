@@ -55,7 +55,7 @@ public enum TelegramButton {
     private final CallbackHandlerType callbackHandlerType;
 
     public static TelegramButton findByCallbackData(final String callbackData) {
-        return Arrays.stream(TelegramButton.values())
+        return Arrays.stream(values())
             .filter(telegramButton -> callbackData.equals(telegramButton.getCallbackData()))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Unexpected value: " + callbackData));
