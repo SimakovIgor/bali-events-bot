@@ -69,19 +69,19 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     }
 
     private void processTextMessage(final Update update) throws TelegramApiException {
-        final String messageText = update.getMessage().getText(); // ТЕКСТ СООБЩЕНИЯ
+        final String messageText = update.getMessage().getText();
         if (messageText.contains("/start")) {
-            textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update); // СОЗДАНИЕ ФИЛЬТРА ИЗ (6-И) КНОПОК ЭТО public class StartCommandHandler()
+            textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update);
             return;
         }
 
-        if (DateUtil.isCalendarMonthChanged(messageText)) {
-            textMessageHandlers.get(TextMessageHandlerType.CALENDAR_MONTH_CHANGED).handle(update);
-        } else if (DateUtil.isDateSelected(messageText)) {
+        if (DateUtil.isDateSelected(messageText)) {
             textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update);
             //todo: избавиться при переходе на кнопки в detailed location
-        } else if (userDataService.isRequestLocalMap(update)) { // проверяем наличие фразы в текущих локациях
-            textMessageHandlers.get(TextMessageHandlerType.LOCATION_COMMAND).handle(update); // идем показать выбранную локацию -> class LocationCommandHandler()
+            //проверяем наличие фразы в текущих локациях
+        } else if (userDataService.isRequestLocalMap(update)) {
+            // идем показать выбранную локацию -> class LocationCommandHandler()
+            textMessageHandlers.get(TextMessageHandlerType.LOCATION_COMMAND).handle(update);
         } else {
             execute(DeleteMessage.builder()
                 .chatId(update.getMessage().getChatId())

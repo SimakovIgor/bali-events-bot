@@ -46,7 +46,7 @@ public class MonthPaginationHandler extends ButtonCallbackHandler {
     public void handle(final Update update) throws TelegramApiException {
         final LocalDate calendarDate = updateUserData(update).getSearchEventDate();
         final String formattedMonth = DateUtil.getFormattedMonth(calendarDate);
-        final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDayFull(calendarDate, 1, calendarDate.lengthOfMonth());
+        final String detailedEventsForMonth = eventService.getMessageWithEventsGroupedByDay(calendarDate, 1, calendarDate.lengthOfMonth());
         final String eventListMessage = TgBotConstants.EVENT_LIST_TEMPLATE.formatted(formattedMonth, detailedEventsForMonth);
 
         final EditMessageText editMessageText = EditMessageText.builder()
