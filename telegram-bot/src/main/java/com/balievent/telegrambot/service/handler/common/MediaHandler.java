@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,8 +38,8 @@ public class MediaHandler {
 
     public void handle(final Long chatId, final Long locationId) {
         try {
-            final List<InputMediaPhoto> eventPhotos = getEventsById(locationId); // получаем список из одной фотографии
-            sendPhotos(chatId, eventPhotos);
+            final InputMediaPhoto inputMediaPhoto = getEventsById(locationId);
+            sendPhotos(chatId, List.of(inputMediaPhoto));
         } catch (TelegramApiException e) {
             log.error("Failed to send media", e);
         }
@@ -84,16 +85,14 @@ public class MediaHandler {
             .toList();
     }
 
-    private List<InputMediaPhoto> getEventsById(final Long userEventsId) {
-        // ищем запись по идентификатору
-        return eventService.findEventsById(userEventsId)
-            .stream()
+    private InputMediaPhoto getEventsById(final Long eventId) {
+        return Optional.of(eventService.findEventsById(eventId))
             .map(event -> {
-                final InputMediaPhoto inputMediaPhoto = new InputMediaPhoto(); // создаем контейнер TELEGRAM фотографий
-                inputMediaPhoto.setMedia(event.getImageUrl()); // берем ссылку на фото из postgres.public.event.event_url
+                final InputMediaPhoto inputMediaPhoto = new InputMediaPhoto();
+                inputMediaPhoto.setMedia(event.getImageUrl());
                 return inputMediaPhoto;
             })
-            .toList(); // добавляем в список
+            .orElseThrow(() -> new IllegalStateException("No event found with id: " + eventId));
     }
 
     private List<Message> sendSinglePhoto(final Long chatId,

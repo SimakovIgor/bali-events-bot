@@ -144,7 +144,7 @@ public class UserDataService {
     //todo: избавиться при переходе на кнопки в detailed location
     public void saveOrUpdateLocationMap(final Map<String, Long> locationMap, final Long chatId) {
         final UserData userData = getUserData(chatId);
-        userData.setLocationMap(locationMap);
+        userData.setEventMap(locationMap);
     }
 
     public List<Integer> getAllMessageIdsForDelete(final UserData userData) {
@@ -162,7 +162,7 @@ public class UserDataService {
     public boolean isRequestLocalMap(final Update update) {
         final String messageText = update.getMessage().getText().trim(); // ТЕКСТ СООБЩЕНИЯ
         final Map<String, Long> locationMap = getUserData(update.getMessage().getChatId())
-            .getLocationMap(); // список возможны переходов
+            .getEventMap(); // список возможны переходов
         return locationMap.containsKey(messageText);
     }
 
