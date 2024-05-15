@@ -85,8 +85,7 @@ public class DateUtil {
         final String datePatternWithDot = "\\d{2}\\.\\d{2}\\.\\d{4}";
         final String datePatternWithUnderscore = "/\\d{2}_\\d{2}_\\d{4}";
         return Pattern.matches(datePatternWithDot, text)
-            || Pattern.matches(datePatternWithUnderscore, text)
-            || isContainsTextMonth(text);
+            || Pattern.matches(datePatternWithUnderscore, text);
     }
 
     public static String convertToLocalDateSelected(final String text, final LocalDate currentLocalDate) {

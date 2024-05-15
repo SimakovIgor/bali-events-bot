@@ -44,6 +44,7 @@ public class LocationCommandHandler extends TextMessageHandler {
         final String textMessage = update.getMessage().getText();
 
         final UserData userData = userDataService.getUserData(chatId);
+        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
 
         clearChat(chatId, userData);
 

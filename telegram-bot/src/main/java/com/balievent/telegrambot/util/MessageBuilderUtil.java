@@ -16,17 +16,16 @@ import java.util.TreeMap;
 public class MessageBuilderUtil {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd_MM_yyyy");
 
-    public static BriefDetailedLocationMessageDto buildBriefEventsMessage(
-        final int currentPage, final List<Event> eventList
-    ) {
+    public static BriefDetailedLocationMessageDto buildBriefEventsMessage(final int currentPage,
+                                                                          final List<Event> eventList) {
         // это цикл по всем событиям на текущий день.
         final Map<String, Long> locationMap = new HashMap<>();
         final StringBuilder result = new StringBuilder();
-        String line;
+
         for (int i = 0; i < eventList.size(); i++) {
             final Event event = eventList.get(i);
 
-            line = "/"
+            final String line = "/"
                 + (1 + i + Settings.PAGE_SIZE * (currentPage - 1))
                 + "__"
                 + processString(event.getEventName())
@@ -56,7 +55,8 @@ public class MessageBuilderUtil {
 
         for (final Event event : eventList) {
             final String line = event.getEventName() + "\n"
-                + "Date time: " + event.getStartDate() + " " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n"
+                + "Date: " + event.getStartDate().format(Settings.PRINT_DATE_TIME_FORMATTER) + "\n"
+                + "Time: " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n"
                 + CommonUtil.getLink("Buy Tickets Now!", event.getEventUrl()) + "\n"
                 + GetGoogleMapLinkUtil.getGoogleMap("Location on Google map", event.getCoordinates()) + "\n";
 
