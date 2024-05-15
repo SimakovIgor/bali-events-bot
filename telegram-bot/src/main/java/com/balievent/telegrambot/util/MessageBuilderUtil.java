@@ -52,15 +52,11 @@ public class MessageBuilderUtil {
     }
 
     public static String buildEventsMessage(final List<Event> eventList) {
-        // это цикл по всем событиям на текущий день на данной локации.
         final StringBuilder result = new StringBuilder();
-        String line;
 
         for (final Event event : eventList) {
-
-            line = "NAME: " + event.getEventName() + "\n"
-                + "Time: Begin: " + event.getStartDate().toLocalTime().toString() + "\n"
-                + "Time: End: " + event.getEndDate().toLocalTime().toString() + "\n"
+            final String line = event.getEventName() + "\n"
+                + "Date time: " + event.getStartDate() + " " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n"
                 + CommonUtil.getLink("Buy Tickets Now!", event.getEventUrl()) + "\n"
                 + GetGoogleMapLinkUtil.getGoogleMap("Location on Google map", event.getCoordinates()) + "\n";
 

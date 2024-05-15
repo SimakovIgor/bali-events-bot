@@ -92,9 +92,8 @@ public class EventService {
     }
 
     //todo refactor
-    public List<Event> findEventsById(final Long id) {
-        final Event event = eventRepository.findById(id)
+    public Event findEventsById(final Long id) {
+        return eventRepository.findById(id)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
-        return List.of(event);
     }
 }

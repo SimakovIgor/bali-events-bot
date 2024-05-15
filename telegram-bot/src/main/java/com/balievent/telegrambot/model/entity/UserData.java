@@ -50,10 +50,10 @@ public class UserData {
     private Integer lastUserMessageId;
 
     //todo: избавиться при переходе на кнопки в detailed location
-    @Column(name = "location_map")
+    @Column(name = "event_map")
     @JdbcTypeCode(SqlTypes.JSON)
     @Builder.Default
-    private Map<String, Long> locationMap = new HashMap<>();
+    private Map<String, Long> eventMap = new HashMap<>();
 
     @Column(name = "media_message_id_list")
     @JdbcTypeCode(SqlTypes.JSON)
