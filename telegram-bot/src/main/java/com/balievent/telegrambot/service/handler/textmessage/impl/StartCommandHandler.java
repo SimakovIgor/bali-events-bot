@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.service.handler.textmessage;
+package com.balievent.telegrambot.service.handler.textmessage.impl;
 
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
@@ -6,6 +6,7 @@ import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.repository.LocationRepository;
+import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.service.service.EventSearchCriteriaService;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,16 +33,17 @@ public class StartCommandHandler extends TextMessageHandler {
 
     @Override
     public void handle(final Update update) throws TelegramApiException {
-        final Long chatId = update.getMessage().getChatId();                            // идентификатор пользователя
-        final UserData userData = userDataService.saveOrUpdateUserData(chatId);         // сохраняем в user_data.id
-        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);  // идентификатор сообщения сохраняем в user_data.last_user_message_id
+        final Long chatId = update.getMessage().getChatId();
+        final UserData userData = userDataService.saveOrUpdateUserData(chatId);
+        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
 
-        final List<String> locationNameList = new ArrayList<>(locationRepository.findAll() // получаем список всех локаций
+        final List<String> locationNameList = new ArrayList<>(locationRepository.findAll()
             .stream()
             .map(Location::getId)
             .toList());
 
-        locationNameList.add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData()); // добавляем кнопку "Deselect all" в список выделяемых объектов следующего окна
+        // добавляем кнопку "Deselect all" в список выделяемых объектов следующего окна
+        locationNameList.add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
 
         // сохраняем все локации и кнопку "Deselect all" в event_search_criteria.location_name_list
         eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId, locationNameList);

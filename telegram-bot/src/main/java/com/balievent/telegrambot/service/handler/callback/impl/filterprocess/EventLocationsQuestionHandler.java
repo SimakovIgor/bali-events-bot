@@ -38,7 +38,6 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
             .map(Location::getId)
             .toList();
 
-        // здесь удаляются / добавляются локации
         final EventSearchCriteria eventSearchCriteria = chooseLocation(selectedLocation, chatId, locationIds);
 
         final EditMessageText editMessageText = EditMessageText.builder()

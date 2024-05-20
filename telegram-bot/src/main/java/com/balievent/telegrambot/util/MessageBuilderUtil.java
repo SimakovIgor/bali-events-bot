@@ -50,18 +50,17 @@ public class MessageBuilderUtil {
         return processed;
     }
 
-    public static String buildEventsMessage(final List<Event> eventList) {
+    public static String buildEventsMessage(final Event event) {
         final StringBuilder result = new StringBuilder();
 
-        for (final Event event : eventList) {
-            final String line = event.getEventName() + "\n"
-                + "Date: " + event.getStartDate().format(Settings.PRINT_DATE_TIME_FORMATTER) + "\n"
-                + "Time: " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n"
-                + CommonUtil.getLink("Buy Tickets Now!", event.getEventUrl()) + "\n"
-                + GetGoogleMapLinkUtil.getGoogleMap("Location on Google map", event.getCoordinates()) + "\n";
+        final String line = event.getEventName() + "\n"
+            + "Date: " + event.getStartDate().format(Settings.PRINT_DATE_TIME_FORMATTER) + "\n"
+            + "Time: " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n"
+            + CommonUtil.getLink("Buy Tickets Now!", event.getEventUrl()) + "\n"
+            + GetGoogleMapLinkUtil.getGoogleMap("Location on Google map", event.getCoordinates()) + "\n";
 
-            result.append(line);
-        }
+        result.append(line);
+
         return result.toString();
     }
 

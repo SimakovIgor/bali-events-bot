@@ -74,9 +74,9 @@ public class EventService {
             .getContent();
     }
 
-    private Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDate localDate,
-                                                               final int dayStart,
-                                                               final int dayFinish) {
+    public Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDate localDate,
+                                                              final int dayStart,
+                                                              final int dayFinish) {
         final LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayStart, 0, 0);
         final LocalDateTime end = LocalDateTime.of(localDate.getYear(), localDate.getMonthValue(), dayFinish, 23, 59);
         return eventRepository.findEventsByStartDateBetween(start, end)
@@ -84,8 +84,8 @@ public class EventService {
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
     }
 
-    private Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDateTime start,
-                                                               final LocalDateTime end) {
+    public Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDateTime start,
+                                                              final LocalDateTime end) {
         return eventRepository.findEventsByStartDateBetween(start, end)
             .stream()
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));

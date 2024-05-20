@@ -55,9 +55,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(final Update update) {
         try {
             if (update.hasCallbackQuery()) {
-                processCallbackQuery(update);   // ВХОД ПО НАЖАТИЮ НА КНОПКУ
+                processCallbackQuery(update);
             } else {
-                processTextMessage(update);     // ВХОД ДЛЯ НОВОЫХ ОБЪЕКТОВ
+                processTextMessage(update);
             }
         } catch (ServiceException e) {
             log.error("ServiceException {}", e.getMessage(), e);
