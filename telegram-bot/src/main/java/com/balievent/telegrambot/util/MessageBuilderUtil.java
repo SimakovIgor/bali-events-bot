@@ -19,9 +19,7 @@ public class MessageBuilderUtil {
 
         final String line = event.getEventName() + "\n"
             + "Date: " + event.getStartDate().format(Settings.PRINT_DATE_TIME_FORMATTER) + "\n"
-            + "Time: " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n"
-            + CommonUtil.getLink("Buy Tickets Now!", event.getEventUrl()) + "\n"
-            + CommonUtil.getGoogleMap("Location on Google map", event.getCoordinates()) + "\n";
+            + "Time: " + event.getStartDate().toLocalTime() + " - " + event.getEndDate().toLocalTime() + "\n";
 
         result.append(line);
 

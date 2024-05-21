@@ -2,8 +2,8 @@ package com.balievent.telegrambot.configuration;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
-import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
-import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
+import com.balievent.telegrambot.service.callback.ButtonCallbackHandler;
+import com.balievent.telegrambot.service.textmessage.TextMessageHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

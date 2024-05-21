@@ -1,11 +1,11 @@
-package com.balievent.telegrambot.service.handler.callback.impl;
+package com.balievent.telegrambot.service.callback.impl;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.repository.LocationRepository;
-import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
+import com.balievent.telegrambot.service.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.service.EventSearchCriteriaService;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;

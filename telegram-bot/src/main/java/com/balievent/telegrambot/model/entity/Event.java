@@ -62,6 +62,8 @@ public class Event {
     @Column(name = "service_name")
     private String serviceName;
 
+    //todo: use PostGIS to store geo
+    //-8.848251098125878,115.16050894111189
     @Column(name = "coordinates")
     private String coordinates;
 }

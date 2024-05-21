@@ -6,9 +6,9 @@ import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.exceptions.ServiceException;
-import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
-import com.balievent.telegrambot.service.handler.textmessage.TextMessageHandler;
+import com.balievent.telegrambot.service.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.service.UserDataService;
+import com.balievent.telegrambot.service.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.util.DateUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -72,10 +72,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         final String messageText = update.getMessage().getText();
         if (messageText.contains("/start")) {
             textMessageHandlers.get(TextMessageHandlerType.START_COMMAND).handle(update);
-            return;
-        }
-
-        if (DateUtil.isDateSelected(messageText)) {
+        } else if (DateUtil.isDateSelected(messageText)) {
             textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update);
         } else {
             execute(DeleteMessage.builder()
@@ -92,7 +89,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         // получаем имя нажатой кнопки
         final String clickedButtonName = update.getCallbackQuery().getData().toUpperCase(Locale.ROOT);
 
-        final CallbackHandlerType callbackHandlerType = TelegramButton.valueOf(clickedButtonName).getCallbackHandlerType();
+        final CallbackHandlerType callbackHandlerType = TelegramButton.valueOf(clickedButtonName)
+            .getCallbackHandlerType();
         callbackHandlers.get(callbackHandlerType).handle(update);
     }
 

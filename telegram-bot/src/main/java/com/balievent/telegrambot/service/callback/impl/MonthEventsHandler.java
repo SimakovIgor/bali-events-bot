@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.service.handler.callback.impl;
+package com.balievent.telegrambot.service.callback.impl;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
 import com.balievent.telegrambot.constant.Settings;
@@ -7,7 +7,7 @@ import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.UserData;
-import com.balievent.telegrambot.service.handler.callback.ButtonCallbackHandler;
+import com.balievent.telegrambot.service.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.service.service.EventSearchCriteriaService;
 import com.balievent.telegrambot.service.service.EventService;
 import com.balievent.telegrambot.service.service.UserDataService;
@@ -22,7 +22,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.LinkPreviewOptions;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -67,7 +66,7 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
                 .chatId(chatId)
                 .text(TgBotConstants.EVENT_NAME_TEMPLATE.formatted(MessageBuilderUtil.buildEventsMessage(event)))
                 .parseMode(ParseMode.HTML)
-                .replyMarkup(KeyboardUtil.getDetailedLocationKeyboard())
+                .replyMarkup(KeyboardUtil.getDetailedEventViewKeyboard(event))
                 .linkPreviewOptions(getLinkPreviewOptions(event))
                 .build())
             .toList();
@@ -80,7 +79,7 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
 
     @SneakyThrows
     @Override
-    public void handle(final Update update) throws TelegramApiException {
+    public void handle(final Update update) {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
         final UserData userData = userDataService.getUserData(chatId);
         removeMediaMessage(chatId, userData);
@@ -94,7 +93,7 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
             myTelegramBot.execute(sendMessage);
 
             //todo: refactor this with ScheduledThreadPoolExecutor
-            Thread.sleep(500);
+            Thread.sleep(1000);
         }
 
         myTelegramBot.execute(SendMessage.builder()

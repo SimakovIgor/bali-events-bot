@@ -1,13 +1,9 @@
 package com.balievent.telegrambot.service.service;
 
-import com.balievent.telegrambot.exceptions.ErrorCode;
-import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.repository.EventRepository;
 import com.balievent.telegrambot.util.MessageBuilderUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,14 +18,6 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    /**
-     * This method retrieves a message containing a list of events grouped by day for a given date range.
-     *
-     * @param localDate the date for the user query
-     * @param dayStart  the starting day of the query range. Minimum value: 1
-     * @param dayFinish the ending day of the query range. Maximum value: length of the month for the given date
-     * @return a message string with the list of events grouped by day
-     */
     public String getMessageWithEventsGroupedByDay(final LocalDate localDate,
                                                    final int dayStart,
                                                    final int dayFinish) {
@@ -39,39 +27,6 @@ public class EventService {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return MessageBuilderUtil.formatMessageForEventsGroupedByDay(eventMap);
-    }
-
-    public String getMessageWithEventsGroupedByDay(final LocalDateTime start,
-                                                   final LocalDateTime end) {
-        final Map<LocalDate, List<Event>> eventMap = getEventsAndGroupByDay(start, end)
-            .entrySet()
-            .stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        return MessageBuilderUtil.formatMessageForEventsGroupedByDay(eventMap);
-    }
-
-    public int countEvents(final LocalDate localDate) {
-        final int day = localDate.getDayOfMonth();
-        final int month = localDate.getMonthValue();
-        final int year = localDate.getYear();
-
-        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
-        return eventRepository.countEventsByStartDateBetween(from, end);
-    }
-
-    public List<Event> findEvents(final LocalDate localDate, final int page, final int pageSize) {
-        final int day = localDate.getDayOfMonth();
-        final int month = localDate.getMonthValue();
-        final int year = localDate.getYear();
-
-        final LocalDateTime from = LocalDateTime.of(year, month, day, 0, 0);
-        final LocalDateTime end = LocalDateTime.of(year, month, day, 23, 59);
-
-        final Pageable pageable = PageRequest.of(page, pageSize);
-        return eventRepository.findEventsByStartDateBetween(from, end, pageable)
-            .getContent();
     }
 
     public Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDate localDate,
@@ -91,9 +46,4 @@ public class EventService {
             .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
     }
 
-    //todo refactor
-    public Event findEventsById(final Long id) {
-        return eventRepository.findById(id)
-            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
-    }
 }

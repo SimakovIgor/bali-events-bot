@@ -4,12 +4,9 @@ import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;
 import com.balievent.telegrambot.model.entity.UserData;
 import com.balievent.telegrambot.repository.UserDataRepository;
-import com.balievent.telegrambot.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,29 +28,6 @@ public class UserDataService {
             .build();
     }
 
-    /**
-     * Updates the calendar store with the selected date or the changed calendar month.
-     *
-     * @param update         - the update event from Telegram
-     * @param isMonthChanged - a flag indicating whether the calendar month has changed
-     * @return the updated local date
-     */
-    @Transactional
-    public UserData updateCalendarDate(final Update update, final boolean isMonthChanged) {
-        final Long chatId = update.getMessage().getChatId();
-        final String text = update.getMessage().getText();
-
-        final UserData userData = getUserData(chatId);
-
-        final LocalDate localDate = isMonthChanged
-                                    ? DateUtil.convertToDateTimeCalendarMonthChanged(text, userData.getSearchEventDate())
-                                    : DateUtil.parseSelectedDate(text, userData.getSearchEventDate());
-
-        userData.setSearchEventDate(localDate);
-
-        return userData;
-    }
-
     public UserData getUserData(final Long chatId) {
         return userDataRepository.findById(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_001));
@@ -73,21 +47,6 @@ public class UserDataService {
     }
 
     @Transactional
-    public UserData incrementCurrentPage(final Long chatId) {
-        final UserData userData = getUserData(chatId);
-        userData.setCurrentEventPage(userData.getCurrentEventPage() + 1);
-        return userData;
-    }
-
-    @Transactional
-    public UserData decrementCurrentPage(final Long chatId) {
-        final UserData userData = userDataRepository.findById(chatId)
-            .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_001));
-        userData.setCurrentEventPage(userData.getCurrentEventPage() - 1);
-        return userData;
-    }
-
-    @Transactional
     public UserData addMonthAndGetUserData(final Long chatId) {
         final UserData userData = userDataRepository.findById(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_001));
@@ -101,30 +60,6 @@ public class UserDataService {
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_001));
         userData.setSearchEventDate(userData.getSearchEventDate().minusMonths(1));
         return userData;
-    }
-
-    @Transactional
-    public UserData updateCurrentPage(final Long chatId, final int page) {
-        final UserData userData = getUserData(chatId);
-        userData.setCurrentEventPage(page);
-        return userData;
-    }
-
-    @Transactional
-    public void updatePageInfo(final Long chatId, final int pageMax, final int currentPage) {
-        final UserData userData = getUserData(chatId);
-        userData.setCurrentEventPage(currentPage);
-        userData.setTotalEventPages(pageMax);
-    }
-
-    @Transactional
-    public void updateMediaIdList(final List<Message> mediaIds, final Long chatId) {
-        final List<Integer> idList = mediaIds.stream()
-            .map(Message::getMessageId)
-            .toList();
-
-        final UserData userData = getUserData(chatId);
-        userData.setMediaMessageIdList(idList);
     }
 
     @Transactional
