@@ -16,9 +16,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,12 +46,6 @@ public class UserData {
 
     @Column(name = "last_user_message_id")
     private Integer lastUserMessageId;
-
-    //todo: избавиться при переходе на кнопки в detailed location
-    @Column(name = "event_map")
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Builder.Default
-    private Map<String, Long> eventMap = new HashMap<>();
 
     @Column(name = "media_message_id_list")
     @JdbcTypeCode(SqlTypes.JSON)

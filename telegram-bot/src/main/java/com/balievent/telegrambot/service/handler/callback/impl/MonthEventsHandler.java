@@ -1,6 +1,7 @@
 package com.balievent.telegrambot.service.handler.callback.impl;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
+import com.balievent.telegrambot.constant.Settings;
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.Event;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.LinkPreviewOptions;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -27,14 +29,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@SuppressWarnings("PMD.ClassFanOutComplexity")
+@SuppressWarnings({
+    "PMD.ClassFanOutComplexity",
+    "PMD.ExcessiveImports"}
+)
 public class MonthEventsHandler extends ButtonCallbackHandler {
     public static final LocalTime START_DAY_LOCAL_TIME = LocalTime.of(0, 0);
     public static final LocalTime END_DAY_LOCAL_TIME = LocalTime.of(23, 59, 59);
@@ -51,26 +55,22 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
         return linkPreviewOptions;
     }
 
-    private static List<SendMessage> prepareDetailedEventMessageList(final Long chatId,
-                                                                     final Map<LocalDate, List<Event>> eventsGroupedByDay) {
-        final List<SendMessage> sendMessages = new ArrayList<>();
-        for (Map.Entry<LocalDate, List<Event>> entry : eventsGroupedByDay.entrySet()) {
-            for (Event event : entry.getValue()) {
-                final String eventsBriefMessage = MessageBuilderUtil.buildEventsMessage(event);
+    private List<SendMessage> prepareSendMessageList(final Long chatId) {
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.getEventSearchCriteria(chatId);
+        final TelegramButton dateSearchType = TelegramButton.findByCallbackData(eventSearchCriteria.getDateFilter());
+        final Map<LocalDate, List<Event>> eventListByDay = getEventsAndGroupByDay(dateSearchType);
 
-                final SendMessage sendMessage = SendMessage.builder()
-                    .chatId(chatId)
-                    .text(TgBotConstants.EVENT_NAME_TEMPLATE.formatted(eventsBriefMessage))
-                    .parseMode(ParseMode.HTML)
-                    .replyMarkup(KeyboardUtil.getDetailedLocationKeyboard())
-                    .linkPreviewOptions(getLinkPreviewOptions(event))
-                    .build();
-
-                sendMessages.add(sendMessage);
-            }
-
-        }
-        return sendMessages;
+        return eventListByDay.values()
+            .stream()
+            .flatMap(List::stream)
+            .map(event -> SendMessage.builder()
+                .chatId(chatId)
+                .text(TgBotConstants.EVENT_NAME_TEMPLATE.formatted(MessageBuilderUtil.buildEventsMessage(event)))
+                .parseMode(ParseMode.HTML)
+                .replyMarkup(KeyboardUtil.getDetailedLocationKeyboard())
+                .linkPreviewOptions(getLinkPreviewOptions(event))
+                .build())
+            .toList();
     }
 
     @Override
@@ -85,17 +85,24 @@ public class MonthEventsHandler extends ButtonCallbackHandler {
         final UserData userData = userDataService.getUserData(chatId);
         removeMediaMessage(chatId, userData);
 
-        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.getEventSearchCriteria(chatId);
-        final TelegramButton telegramButton = TelegramButton.findByCallbackData(eventSearchCriteria.getDateFilter());
+        final List<SendMessage> sendMessageList = prepareSendMessageList(chatId);
 
-        final Map<LocalDate, List<Event>> eventsGroupedByDay = getEventsAndGroupByDay(telegramButton);
-        final List<SendMessage> sendMessageList = prepareDetailedEventMessageList(chatId, eventsGroupedByDay);
+        final Message firstMessage = myTelegramBot.execute(sendMessageList.getFirst());
 
-        for (SendMessage sendMessage : sendMessageList) {
-            myTelegramBot.executeAsync(sendMessage);
-            Thread.sleep(100);
+        for (int i = 1; i < sendMessageList.size() && i < Settings.SHOW_EVENTS_COUNT; i++) {
+            final SendMessage sendMessage = sendMessageList.get(i);
+            myTelegramBot.execute(sendMessage);
+
+            //todo: refactor this with ScheduledThreadPoolExecutor
+            Thread.sleep(500);
         }
 
+        myTelegramBot.execute(SendMessage.builder()
+            .chatId(chatId)
+            .replyToMessageId(firstMessage.getMessageId())
+            .text(TgBotConstants.MORE_OPTIONS_TEMPLATE.formatted(sendMessageList.size()))
+            .replyMarkup(KeyboardUtil.getShowMoreOptionsKeyboard(Settings.SHOW_EVENTS_COUNT))
+            .build());
     }
 
     private Map<LocalDate, List<Event>> getEventsAndGroupByDay(final TelegramButton telegramButton) {

@@ -8,7 +8,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @Getter
 public enum TelegramButton {
-    LETS_GO("month_events_page", "Let's go! 🚀", CallbackHandlerType.MONTH_EVENTS_PAGE),
+    LETS_GO("event_start_filter", "Let's go! 🚀", CallbackHandlerType.MONTH_EVENTS_PAGE),
 
     //Events page buttons
     FIRST_EVENTS_PAGE("first_events_page", "<< [1/%s]", CallbackHandlerType.EVENTS_PAGINATION),
@@ -42,7 +42,8 @@ public enum TelegramButton {
     SEARCH_NEXT_WEEK_EVENTS("search_next_week_events", "Next week", CallbackHandlerType.EVENT_DATE_SELECTION),
     SEARCH_ON_THIS_WEEKEND_EVENTS("search_on_this_weekend_events", "On this weekend", CallbackHandlerType.EVENT_DATE_SELECTION),
     SEARCH_SHOW_ALL_EVENTS("search_show_all_events", "Show all this month", CallbackHandlerType.EVENT_DATE_SELECTION),
-    //    SEARCH_PICK_DATE_EVENTS("search_pick_date_events", "Pick date", CallbackHandlerType.EVENT_DATE_SELECTION);
+
+    SHOW_MORE_EVENTS("show_more_events", "Show %s more 😼", CallbackHandlerType.MONTH_EVENTS_PAGE),
 
     EVENT_LOCATIONS_NEXT("month_events_page", "Next ➡️", CallbackHandlerType.MONTH_EVENTS_PAGE),
     EVENT_START_FILTER("event_start_filter", "Filter", CallbackHandlerType.EVENT_START_FILTER),

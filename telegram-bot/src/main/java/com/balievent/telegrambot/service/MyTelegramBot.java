@@ -77,11 +77,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
         if (DateUtil.isDateSelected(messageText)) {
             textMessageHandlers.get(TextMessageHandlerType.DATE_SELECTED).handle(update);
-            //todo: избавиться при переходе на кнопки в detailed location
-            //проверяем наличие фразы в текущих локациях
-        } else if (userDataService.isRequestLocalMap(update)) {
-            // идем показать выбранную локацию -> class LocationCommandHandler()
-            textMessageHandlers.get(TextMessageHandlerType.LOCATION_COMMAND).handle(update);
         } else {
             execute(DeleteMessage.builder()
                 .chatId(update.getMessage().getChatId())

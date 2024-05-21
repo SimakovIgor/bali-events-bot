@@ -1,7 +1,6 @@
 package com.balievent.telegrambot.util;
 
 import com.balievent.telegrambot.constant.TelegramButton;
-import com.balievent.telegrambot.constant.TgBotConstants;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -39,7 +38,7 @@ public class KeyboardUtil {
             .build();
 
         final InlineKeyboardButton gotoFilterButton = InlineKeyboardButton.builder()
-            .text(TgBotConstants.GOTO_FILTER)
+            .text(TelegramButton.EVENT_START_FILTER.getButtonText())
             .callbackData(TelegramButton.EVENT_START_FILTER.getCallbackData())
             .build();
 
@@ -137,6 +136,18 @@ public class KeyboardUtil {
             .build();
     }
 
+    public static InlineKeyboardMarkup getShowMoreOptionsKeyboard(final int countEvent) {
+        final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
+        monthBackButtons.add(InlineKeyboardButton.builder()
+            .text(TelegramButton.SHOW_MORE_EVENTS.getButtonText().formatted(countEvent))
+            .callbackData(TelegramButton.SHOW_MORE_EVENTS.getCallbackData())
+            .build());
+
+        return InlineKeyboardMarkup.builder()
+            .keyboard(List.of(monthBackButtons))
+            .build();
+    }
+
     //    public static ReplyKeyboardMarkup getMainMenuKeyboard() {
     //        final List<KeyboardRow> keyboard = new ArrayList<>();
     //
@@ -206,7 +217,7 @@ public class KeyboardUtil {
         for (final String locationId : allLocations) {
             final String selectedIcon = selectedLocations.contains(locationId)
                                         ? "✅ "
-                                        : "❌ ";
+                                        : "👉 ";
 
             row.add(InlineKeyboardButton.builder()
                 .text(selectedIcon + locationId)

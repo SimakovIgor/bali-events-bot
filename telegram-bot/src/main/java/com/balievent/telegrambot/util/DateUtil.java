@@ -46,41 +46,6 @@ public class DateUtil {
         }
     }
 
-    public static boolean isCalendarMonthChanged(final String messageText) {
-        return getFullMonthNumber(messageText) > 0;
-    }
-
-    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ReturnCount"}) //todo: refactor
-    public static int getFullMonthNumber(final String text) {
-        if (text.toUpperCase(Locale.ENGLISH).contains("JANUARY")) {
-            return 1;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("FEBRUARY")) {
-            return 2;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("MARCH")) {
-            return 3;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("APRIL")) {
-            return 4;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("MAY")) {
-            return 5;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("JUNE")) {
-            return 6;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("JULY")) {
-            return 7;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("AUGUST")) {
-            return 8;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("SEPTEMBER")) {
-            return 9;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("OCTOBER")) {
-            return 10;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("NOVEMBER")) {
-            return 11;
-        } else if (text.toUpperCase(Locale.ENGLISH).contains("DECEMBER")) {
-            return 12;
-        } else {
-            return 0;
-        }
-    }
-
     public static boolean isDateSelected(final String text) {
         final String datePatternWithDot = "\\d{2}\\.\\d{2}\\.\\d{4}";
         final String datePatternWithUnderscore = "/\\d{2}_\\d{2}_\\d{4}";

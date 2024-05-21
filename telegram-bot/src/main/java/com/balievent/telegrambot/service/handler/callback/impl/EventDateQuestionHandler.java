@@ -1,7 +1,6 @@
-package com.balievent.telegrambot.service.handler.callback.impl.filterprocess;
+package com.balievent.telegrambot.service.handler.callback.impl;
 
 import com.balievent.telegrambot.constant.CallbackHandlerType;
-import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.model.entity.Location;
@@ -19,26 +18,31 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
+public class EventDateQuestionHandler extends ButtonCallbackHandler {
     private final EventSearchCriteriaService eventSearchCriteriaService;
     private final LocationRepository locationRepository;
 
     @Override
     public CallbackHandlerType getCallbackHandlerType() {
-        return CallbackHandlerType.EVENT_LOCATIONS_SELECTION;
+        return CallbackHandlerType.EVENT_DATE_SELECTION;
     }
 
     @Override
     public void handle(final Update update) throws TelegramApiException {
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        final String selectedLocation = update.getCallbackQuery().getData();
+        final String selectedDate = update.getCallbackQuery().getData(); // выбранные локации
 
-        final List<String> locationIds = locationRepository.findAll()// метод полностью дублирует class EventDateQuestionHandler()
+        // список всех локаций
+        final List<String> locationIds = locationRepository.findAll()    // метод полностью дублирует class EventLocationsQuestionHandler()
             .stream()
             .map(Location::getId)
             .toList();
 
-        final EventSearchCriteria eventSearchCriteria = chooseLocation(selectedLocation, chatId, locationIds);
+        // в переменной selectedDate сейчас лежит фильтр по датам из первого окна
+        // этот метод добавляет / удаляет локации
+        eventSearchCriteriaService.updateSearchCriteria(chatId, selectedDate);
+
+        final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaService.getEventSearchCriteria(chatId);
 
         final EditMessageText editMessageText = EditMessageText.builder()
             .chatId(chatId)
@@ -49,15 +53,4 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
 
         myTelegramBot.execute(editMessageText);
     }
-
-    private EventSearchCriteria chooseLocation(final String selectedLocation, final Long chatId, final List<String> locationIds) {
-        if (TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
-            return eventSearchCriteriaService.selectAll(chatId, locationIds);
-        } else if (TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
-            return eventSearchCriteriaService.deselectAll(chatId);
-        } else {
-            return eventSearchCriteriaService.toggleLocationName(chatId, selectedLocation);
-        }
-    }
-
 }
