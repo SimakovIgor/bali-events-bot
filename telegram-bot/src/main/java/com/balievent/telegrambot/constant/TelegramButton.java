@@ -11,7 +11,7 @@ public enum TelegramButton {
     LETS_GO("lets_go", "Let's go! 🚀", CallbackHandlerType.EVENT_START_FILTER),
     //EVENT_START_FILTER("event_start_filter", "Filter", CallbackHandlerType.EVENT_START_FILTER),
 
-    MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅", CallbackHandlerType.MONTH_EVENTS_PAGE),
+    MONTH_EVENTS_PAGE("month_events_page", "Back to month 📅", CallbackHandlerType.SEND_EVENT_LIST_SERVICE),
 
     //filter choose event date buttons:
     SEARCH_TODAY_EVENTS("search_today_events", "Today", CallbackHandlerType.EVENT_DATE_SELECTION),
@@ -26,8 +26,8 @@ public enum TelegramButton {
     DETAILED_EVENT_VIEW_BUY_TICKET("-", "Buy Tickets Now! 💸", null),
 
     //===
-    SHOW_MORE_EVENTS("show_more_events", "Show %s more 😼", CallbackHandlerType.MONTH_EVENTS_PAGE),
-    FILTER_EVENT_LOCATIONS_COMPLETE("month_events_page", "Complete ✅️", CallbackHandlerType.MONTH_EVENTS_PAGE),
+    SHOW_MORE_EVENTS("show_more_events", "Show %s more 😼", CallbackHandlerType.SEND_EVENT_LIST_SERVICE),
+    FILTER_EVENT_LOCATIONS_COMPLETE("month_events_page", "Complete ✅️", CallbackHandlerType.SEND_EVENT_LIST_SERVICE),
 
     SELECT_ALL_LOCATIONS("select_all_locations", "Select all", CallbackHandlerType.EVENT_LOCATIONS_SELECTION),
     DESELECT_ALL_LOCATIONS("deselect_all_locations", "Deselect all 🔄", CallbackHandlerType.EVENT_LOCATIONS_SELECTION);

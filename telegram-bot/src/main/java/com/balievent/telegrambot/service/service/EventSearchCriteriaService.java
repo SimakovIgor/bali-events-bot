@@ -61,15 +61,14 @@ public class EventSearchCriteriaService {
     }
 
     @Transactional
-    public EventSearchCriteria saveOrUpdateEventSearchCriteria(final Long chatId, final List<String> locationNameList) {
+    public void saveOrUpdateEventSearchCriteria(final Long chatId, final List<String> locationNameList) {
         final Optional<EventSearchCriteria> userDataOptional = eventSearchCriteriaRepository.findByChatId(chatId);
         if (userDataOptional.isPresent()) {
             final EventSearchCriteria userData = userDataOptional.get();
-            userData.setLocationNameList(locationNameList); // сохраняем все локации и кнопки в event_search_criteria.location_name_list
+            userData.setLocationNameList(locationNameList);
             userData.setDateFilter("");
-            return userData;
         }
-        return eventSearchCriteriaRepository.save(EventSearchCriteria.builder()
+        eventSearchCriteriaRepository.save(EventSearchCriteria.builder()
             .chatId(chatId)
             .build());
     }

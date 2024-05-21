@@ -43,7 +43,6 @@ public class StartFilterHandler extends ButtonCallbackHandler {
             .toList();
 
         final List<String> locationNameList = new ArrayList<>(locationIdList);
-
         locationNameList.add(TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData());
 
         eventSearchCriteriaService.saveOrUpdateEventSearchCriteria(chatId, locationNameList);

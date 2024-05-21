@@ -1,10 +1,9 @@
-package com.balievent.telegrambot.service.textmessage.impl;
+package com.balievent.telegrambot.service.textmessage;
 
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
 import com.balievent.telegrambot.model.entity.UserData;
-import com.balievent.telegrambot.service.textmessage.TextMessageHandler;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

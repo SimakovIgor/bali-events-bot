@@ -11,12 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,24 +26,10 @@ public class UserData {
     @Id
     private Long id;
 
-    @Column(name = "search_event_date")
-    private LocalDate searchEventDate;
-
-    @Column(name = "current_event_page")
-    private Integer currentEventPage;
-
-    @Column(name = "total_event_pages")
-    private Integer totalEventPages;
-
     @Column(name = "last_bot_message_id")
     private Integer lastBotMessageId;
 
     @Column(name = "last_user_message_id")
     private Integer lastUserMessageId;
-
-    @Column(name = "media_message_id_list")
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Builder.Default
-    private List<Integer> mediaMessageIdList = new ArrayList<>();
 
 }
