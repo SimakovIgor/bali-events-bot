@@ -26,7 +26,7 @@ public enum TelegramButton {
     DETAILED_EVENT_VIEW_BUY_TICKET("-", "Buy Tickets Now! 💸", null),
 
     //===
-    SHOW_MORE_EVENTS("show_more_events", "Show %s more 😼", CallbackHandlerType.SEND_EVENT_LIST_SERVICE),
+    SHOW_MORE_EVENT_LIST("show_more_event_list", "Show %s more 😼", CallbackHandlerType.SHOW_MORE_EVENT_LIST_SERVICE),
     FILTER_EVENT_LOCATIONS_COMPLETE("month_events_page", "Complete ✅️", CallbackHandlerType.SEND_EVENT_LIST_SERVICE),
 
     SELECT_ALL_LOCATIONS("select_all_locations", "Select all", CallbackHandlerType.EVENT_LOCATIONS_SELECTION),

@@ -3,7 +3,7 @@ package com.balievent.telegrambot.service.textmessage;
 import com.balievent.telegrambot.constant.TelegramButton;
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.constant.TgBotConstants;
-import com.balievent.telegrambot.model.entity.UserData;
+import com.balievent.telegrambot.model.entity.UserProfile;
 import com.balievent.telegrambot.util.KeyboardUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,10 +24,10 @@ public class StartCommandHandler extends TextMessageHandler {
     @Override
     public void handle(final Update update) throws TelegramApiException {
         final Long chatId = update.getMessage().getChatId();
-        final UserData userData = userDataService.saveOrUpdateUserData(chatId);
-        userDataService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
+        final UserProfile userProfile = userProfileService.saveOrUpdateUserData(chatId);
+        userProfileService.saveUserMessageId(update.getMessage().getMessageId(), chatId);
 
-        clearChat(chatId, userData);
+        clearChat(chatId, userProfile);
 
         final SendMessage sendMessage = SendMessage.builder()
             .chatId(chatId)
@@ -36,7 +36,7 @@ public class StartCommandHandler extends TextMessageHandler {
             .build();
 
         final Message message = myTelegramBot.execute(sendMessage);
-        userDataService.updateLastBotMessageId(message.getMessageId(), chatId);
+        userProfileService.updateLastBotMessageId(message.getMessageId(), chatId);
     }
 
 }

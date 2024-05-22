@@ -1,10 +1,10 @@
 package com.balievent.telegrambot.service.textmessage;
 
 import com.balievent.telegrambot.constant.TextMessageHandlerType;
-import com.balievent.telegrambot.model.entity.UserData;
+import com.balievent.telegrambot.model.entity.UserProfile;
 import com.balievent.telegrambot.service.MyTelegramBot;
 import com.balievent.telegrambot.service.service.EventService;
-import com.balievent.telegrambot.service.service.UserDataService;
+import com.balievent.telegrambot.service.service.UserProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +23,14 @@ public abstract class TextMessageHandler {
     @Autowired
     protected EventService eventService;
     @Autowired
-    protected UserDataService userDataService;
+    protected UserProfileService userProfileService;
 
     public abstract TextMessageHandlerType getHandlerType();
 
     public abstract void handle(Update update) throws TelegramApiException;
 
-    protected void clearChat(final Long chatId, final UserData userData) {
-        final List<Integer> messageIds = userDataService.getAllMessageIdsForDelete(userData);
+    protected void clearChat(final Long chatId, final UserProfile userProfile) {
+        final List<Integer> messageIds = userProfileService.getAllMessageIdsForDelete(userProfile);
         if (CollectionUtils.isEmpty(messageIds)) {
             return;
         }

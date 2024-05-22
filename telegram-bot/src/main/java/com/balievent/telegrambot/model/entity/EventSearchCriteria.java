@@ -48,7 +48,6 @@ public class EventSearchCriteria {
     private String dateFilter;
 
     public void toggleLocationName(final String locationName) {
-
         if (locationNameList.contains(locationName)) {
             locationNameList.remove(locationName);
         } else {

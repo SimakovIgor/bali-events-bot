@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @SuppressWarnings("UncommentedMain")
-public class Application {
+public class DataScrapperApplication {
 
     public static void main(final String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(DataScrapperApplication.class, args);
     }
 
 }

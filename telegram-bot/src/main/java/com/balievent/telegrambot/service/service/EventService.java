@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +21,14 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public Map<LocalDate, List<Event>> getEventsAndGroupByDay(final LocalDateTime start,
-                                                              final LocalDateTime end) {
+    public List<Event> getEventsAndGroupByDay(final LocalDateTime start,
+                                              final LocalDateTime end) {
         return eventRepository.findEventsByStartDateBetween(start, end)
             .stream()
-            .collect(Collectors.groupingBy(event -> event.getStartDate().toLocalDate()));
+            .toList();
     }
 
-    public Map<LocalDate, List<Event>> getEventListGroupByLocalDate(final TelegramButton telegramButton) {
+    public List<Event> getFilteredEventList(final TelegramButton telegramButton) {
         final LocalDate now = LocalDate.now();
 
         return switch (telegramButton) {

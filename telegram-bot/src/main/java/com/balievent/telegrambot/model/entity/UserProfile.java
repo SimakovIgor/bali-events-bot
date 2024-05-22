@@ -21,8 +21,8 @@ import lombok.experimental.Accessors;
 @ToString
 
 @Entity
-@Table(name = "user_data")
-public class UserData {
+@Table(name = "userprofile")
+public class UserProfile {
     @Id
     private Long id;
 

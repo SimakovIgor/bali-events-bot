@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,15 +61,13 @@ public class EventSearchCriteriaService {
 
     @Transactional
     public void saveOrUpdateEventSearchCriteria(final Long chatId, final List<String> locationNameList) {
-        final Optional<EventSearchCriteria> userDataOptional = eventSearchCriteriaRepository.findByChatId(chatId);
-        if (userDataOptional.isPresent()) {
-            final EventSearchCriteria userData = userDataOptional.get();
-            userData.setLocationNameList(locationNameList);
-            userData.setDateFilter("");
-        }
-        eventSearchCriteriaRepository.save(EventSearchCriteria.builder()
-            .chatId(chatId)
-            .build());
+        eventSearchCriteriaRepository.findByChatId(chatId)
+            .ifPresentOrElse(eventSearchCriteria1 -> {
+                eventSearchCriteria1.setLocationNameList(locationNameList);
+                eventSearchCriteria1.setDateFilter("");
+            }, () -> eventSearchCriteriaRepository.save(EventSearchCriteria.builder()
+                .chatId(chatId)
+                .build()));
     }
 
     public EventSearchCriteria getEventSearchCriteria(final Long chatId) {

@@ -49,8 +49,8 @@ public class KeyboardUtil {
     public static InlineKeyboardMarkup getShowMoreOptionsKeyboard(final int countEvent) {
         final List<InlineKeyboardButton> monthBackButtons = new ArrayList<>();
         monthBackButtons.add(InlineKeyboardButton.builder()
-            .text(TelegramButton.SHOW_MORE_EVENTS.getButtonText().formatted(countEvent))
-            .callbackData(TelegramButton.SHOW_MORE_EVENTS.getCallbackData())
+            .text(TelegramButton.SHOW_MORE_EVENT_LIST.getButtonText().formatted(countEvent))
+            .callbackData(TelegramButton.SHOW_MORE_EVENT_LIST.getCallbackData())
             .build());
 
         return InlineKeyboardMarkup.builder()
