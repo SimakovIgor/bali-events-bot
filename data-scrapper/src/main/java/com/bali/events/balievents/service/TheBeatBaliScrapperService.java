@@ -22,7 +22,6 @@ import static com.bali.events.balievents.support.SeleniumUtils.getAttributeByXpa
 public class TheBeatBaliScrapperService implements ScrapperService {
 
     public static final int MAX_MONTH_COUNT_WITH_EVENTS = 9;
-//    private static final By BY_EVENT_GROUP = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]/div[1]");
     private static final By BY_EVENT_GROUP = By.xpath("/html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div/div/div/div/div[2]/div[4]/div");
 
     //                                                                    /html/body/div[1]/div[2]/div/div/main/article/div/div/section[3]/div/div[2]/div/div[2]/div/div/div[4]/div
