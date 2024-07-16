@@ -29,7 +29,7 @@
         <plugins.checkstyle.puppycrawl.version>10.17.0</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
         <libs.pmd.version>7.2.0</libs.pmd.version>
-        <plugins.pmd.version>3.23.0</plugins.pmd.version>
+        <plugins.pmd.version>3.24.0</plugins.pmd.version>
 
         <sonar.organization>simakovigor</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
