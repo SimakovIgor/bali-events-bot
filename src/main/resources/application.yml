@@ -45,5 +45,5 @@ logging:
 com:
   balievent:
     bot:
-      token: 6711002396:AAGKVf9gFAMbiJuW0vtjuu4FSbJr_F9r1hM
-      username: test_me_bali_sima_bot
+      token: ${TELEGRAM_TOKEN}
+      username: ${TELEGRAM_NAME}
