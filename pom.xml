@@ -13,12 +13,7 @@
     <artifactId>bali-events-bot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>telegram-bot</module>
-        <module>data-scrapper</module>
-    </modules>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>21</java.version>
@@ -36,6 +31,10 @@
 
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
         <datasource-proxy-spring-boot-starter.version>1.9.1</datasource-proxy-spring-boot-starter.version>
+
+        <telegrambots.version>6.9.7.1</telegrambots.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <selenium-java.version>4.23.0</selenium-java.version>
     </properties>
 
     <dependencies>
@@ -85,6 +84,22 @@
             <groupId>com.github.gavlyukovskiy</groupId>
             <artifactId>datasource-proxy-spring-boot-starter</artifactId>
             <version>${datasource-proxy-spring-boot-starter.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>${telegrambots.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium-java.version}</version>
         </dependency>
     </dependencies>
 
@@ -262,6 +277,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
             </plugin>
         </plugins>
 
