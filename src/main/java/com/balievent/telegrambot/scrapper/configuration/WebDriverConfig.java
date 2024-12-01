@@ -33,10 +33,10 @@ public class WebDriverConfig {
         } catch (MalformedURLException e) {
             throw new IllegalStateException(e);
         }
-        log.info("Connecting to remote Web Driver..." + removeWebDriver);
+        log.info("Connecting to remote Web Driver... {}", removeWebDriver);
 
         final WebDriver webDriver = new RemoteWebDriver(removeWebDriver, firefoxOptions);
-        log.info("Web driver successfully connected!: " + webDriver);
+        log.info("Web driver successfully connected!: {}", webDriver);
 
         return webDriver;
     }

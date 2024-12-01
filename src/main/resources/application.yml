@@ -8,9 +8,9 @@ spring:
   application:
     name: telegram-bot
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: postgres
+    password: admin
   jpa:
     open-in-view: false
     hibernate:
@@ -33,6 +33,9 @@ decorator:
         threshold: 10
       count-query: false
 
+webdriver:
+  local: true
+
 logging:
   level:
     org.zalando.logbook: TRACE
@@ -42,5 +45,5 @@ logging:
 com:
   balievent:
     bot:
-      token: ${TELEGRAM_TOKEN}
-      username: ${TELEGRAM_NAME}
+      token: 6711002396:AAGKVf9gFAMbiJuW0vtjuu4FSbJr_F9r1hM
+      username: test_me_bali_sima_bot

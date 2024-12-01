@@ -4,8 +4,8 @@ import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.Location;
 import com.balievent.telegrambot.repository.EventRepository;
 import com.balievent.telegrambot.repository.LocationRepository;
+import com.balievent.telegrambot.scrapper.dto.EventDto;
 import com.balievent.telegrambot.scrapper.mapper.EventMapper;
-import com.balievent.telegrambot.scrapper.model.EventDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,26 +26,25 @@ public class UpdateEventService {
             return;
         }
         final Location location = locationRepository.findById(eventDto.getLocationName())
-            .orElse(locationRepository.save(eventMapper.toLocationEntity(eventDto)));
+            .orElse(locationRepository.save(eventMapper.toLocation(eventDto)));
 
-        final Event eventEntity = eventMapper.toEventEntity(eventDto);
-        eventEntity.setLocation(location);
+        final Event event = eventMapper.toEvent(eventDto, location);
 
         eventRepository.findByExternalId(eventDto.getExternalId())
             .ifPresentOrElse(entity -> {
-                    entity.setEventName(eventEntity.getEventName());
-                    entity.setStartDate(eventEntity.getStartDate());
-                    entity.setEndDate(eventEntity.getEndDate());
-                    entity.setEventUrl(eventEntity.getEventUrl());
-                    entity.setImageUrl(eventEntity.getImageUrl());
-                    entity.setServiceName(eventEntity.getServiceName());
-                    entity.setCoordinates(eventEntity.getCoordinates());
+                    entity.setEventName(event.getEventName());
+                    entity.setStartDate(event.getStartDate());
+                    entity.setEndDate(event.getEndDate());
+                    entity.setEventUrl(event.getEventUrl());
+                    entity.setImageUrl(event.getImageUrl());
+                    entity.setServiceName(event.getServiceName());
+                    entity.setCoordinates(event.getCoordinates());
 
-                    if (!Objects.equals(entity.getLocation(), eventEntity.getLocation())) {
-                        entity.setLocation(eventEntity.getLocation());
+                    if (!Objects.equals(entity.getLocation(), event.getLocation())) {
+                        entity.setLocation(event.getLocation());
                     }
                 },
-                () -> eventRepository.save(eventEntity)
+                () -> eventRepository.save(event)
             );
     }
 }
