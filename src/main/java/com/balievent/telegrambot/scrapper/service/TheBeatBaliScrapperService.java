@@ -60,15 +60,10 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         navigateToWebsite(webDriver);
 
         for (int i = 0; i < MAX_MONTH_COUNT_WITH_EVENTS; i++) {
-            final List<WebElement> parsedEventList = getParsedEventList(webDriver);
-            log.info("Month proceeding [{} / {}]... Month events size: {} ", i, MAX_MONTH_COUNT_WITH_EVENTS, parsedEventList.size() - 1);
+            final List<WebElement> parsedEvents = findCalendarEventList(webDriver);
+            log.info("Month proceeding [{} / {}]... Month events size: {} ", i, MAX_MONTH_COUNT_WITH_EVENTS, parsedEvents.size() - 1);
 
-            // Если объектов менее 2, то это только объект рекламы у которого нет ID
-            if (parsedEventList.size() <= 2) {
-                continue;
-            }
-
-            processEvents(parsedEventList);
+            processEvents(parsedEvents);
             navigateToNextMonth(webDriver);
         }
 
@@ -90,7 +85,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         }
     }
 
-    private List<WebElement> getParsedEventList(final WebDriver webDriver) {
+    private List<WebElement> findCalendarEventList(final WebDriver webDriver) {
         return webDriver.findElement(EVENT_CALENDAR_LIST).findElements(By.xpath(BY_TOPICS));
     }
 
@@ -104,7 +99,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
     private void navigateToWebsite(final WebDriver webDriver) {
         webDriver.get(rootName());
-        log.info("Web driver navigated to: " + rootName());
+        log.info("Web driver navigated to: {}", rootName());
         delay(25_000);
     }
 

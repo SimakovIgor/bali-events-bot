@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 public class TgBotConstants {
 
     public static final String EVENT_NAME_TEMPLATE = """
-        📅 %s""";
+        %s""";
 
     public static final String EVENT_DATE_QUESTION = """
         When do you want to go to the event? 📅

@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.configuration;
+package com.balievent.telegrambot.scrapper.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
