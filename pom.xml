@@ -19,7 +19,7 @@
         <java.version>21</java.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <postgresql.version>42.7.7</postgresql.version>
-        <testcontainers.version>1.21.2</testcontainers.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
         <spotbugs-annotations.version>4.9.3</spotbugs-annotations.version>
         <plugins.checkstyle.puppycrawl.version>10.25.1</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
