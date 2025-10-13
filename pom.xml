@@ -34,7 +34,7 @@
 
         <telegrambots.version>6.9.7.1</telegrambots.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
-        <selenium-java.version>4.35.0</selenium-java.version>
+        <selenium-java.version>4.36.0</selenium-java.version>
     </properties>
 
     <dependencies>
