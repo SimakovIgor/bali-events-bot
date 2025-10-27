@@ -21,7 +21,7 @@
         <postgresql.version>42.7.8</postgresql.version>
         <testcontainers.version>1.21.3</testcontainers.version>
         <spotbugs-annotations.version>4.9.6</spotbugs-annotations.version>
-        <plugins.checkstyle.puppycrawl.version>12.0.1</plugins.checkstyle.puppycrawl.version>
+        <plugins.checkstyle.puppycrawl.version>12.1.1</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
         <libs.pmd.version>7.10.0</libs.pmd.version>
         <plugins.pmd.version>3.28.0</plugins.pmd.version>
