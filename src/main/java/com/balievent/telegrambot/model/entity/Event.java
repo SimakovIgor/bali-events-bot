@@ -36,6 +36,7 @@ import java.util.List;
 @Entity
 @Table(name = "event")
 public class Event {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,16 +47,15 @@ public class Event {
     @Column(name = "event_name")
     private String eventName;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "location_id", foreignKey = @ForeignKey(name = "fk_event_location"))
+    @ManyToOne(cascade = CascadeType.ALL,
+               fetch = FetchType.EAGER)
+    @JoinColumn(name = "location_id",
+                foreignKey = @ForeignKey(name = "fk_event_location"))
     @ToString.Exclude
     private Location location;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
-
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
 
     @Column(name = "event_url")
     private String eventUrl;
@@ -66,12 +66,14 @@ public class Event {
     @Column(name = "service_name")
     private String serviceName;
 
-    //todo: use PostGIS to store geo
+    // todo: use PostGIS to store geo
     //-8.848251098125878,115.16050894111189
     @Column(name = "coordinates")
     private String coordinates;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "event",
+               cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY)
     @Builder.Default
     @ToString.Exclude
     private List<UserProfileEvent> userProfileEventList = new ArrayList<>();

@@ -16,6 +16,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class UpdateEventService {
+
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
     private final EventMapper eventMapper;
@@ -34,7 +35,6 @@ public class UpdateEventService {
             .ifPresentOrElse(entity -> {
                     entity.setEventName(event.getEventName());
                     entity.setStartDate(event.getStartDate());
-                    entity.setEndDate(event.getEndDate());
                     entity.setEventUrl(event.getEventUrl());
                     entity.setImageUrl(event.getImageUrl());
                     entity.setServiceName(event.getServiceName());

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class EventDto {
+
     private String externalId;
     private String eventName;
     private String locationName;
