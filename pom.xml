@@ -23,7 +23,7 @@
         <spotbugs-annotations.version>4.9.6</spotbugs-annotations.version>
         <plugins.checkstyle.puppycrawl.version>12.1.1</plugins.checkstyle.puppycrawl.version>
         <plugins.checkstyle.thomasjensen.version>7.0.1</plugins.checkstyle.thomasjensen.version>
-        <libs.pmd.version>7.10.0</libs.pmd.version>
+        <libs.pmd.version>7.2.0</libs.pmd.version>
         <plugins.pmd.version>3.28.0</plugins.pmd.version>
 
         <sonar.organization>simakovigor</sonar.organization>
@@ -50,6 +50,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -101,10 +105,7 @@
             <artifactId>selenium-java</artifactId>
             <version>${selenium-java.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+
     </dependencies>
 
     <build>
@@ -283,10 +284,10 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>com.google.cloud.tools</groupId>-->
+            <!--                <artifactId>jib-maven-plugin</artifactId>-->
+            <!--            </plugin>-->
         </plugins>
 
         <pluginManagement>

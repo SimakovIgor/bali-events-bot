@@ -60,24 +60,25 @@ public interface EventMapper {
     }
 
     default EventDto createEventDto(final WebElement child, final String rootName) {
-        final String externalId = child.getAttribute("id");
-        final String eventName = getAttributeByClass(child, "evcal_event_title", "innerHTML");
-        final String locationName = getAttributeByClass(child, "event_location_attrs", "data-location_name");
-        final String locationAddress = getAttributeByClass(child, "event_location_attrs", "data-location_address");
-        final String startDate = getAttributeByXpath(child, "div/meta[2]", "content");
-        final String endDate = getAttributeByXpath(child, "div/meta[3]", "content");
-        final String eventUrl = getAttributeByXpath(child, "div/a", "href");
-        final String imageUrl = getAttributeByClass(child, "ev_ftImg", "data-img");
+        final String externalId = child.getAttribute("data-event-id");
+        final String eventName = getAttributeByClass(child, "tbe-event-title", "innerHTML");
+        //todo
+        final String locationName = getAttributeByClass(child, "fa fa-location-pin", "innerHTML");
+        //final String locationAddress = getAttributeByClass(child, "event_location_attrs", "data-location_address");
+        final String startDate = getAttributeByXpath(child, "fa fa-clock", "innerHTML");
+        //final String endDate = getAttributeByXpath(child, "div/meta[3]", "content");
+        //final String eventUrl = getAttributeByXpath(child, "div/a", "href");
+        final String imageUrl = getAttributeByClass(child, "tbe-event-image-column", "data-img");
         final String coordinates = getAttributeByClass(child, "evcal_location", "data-latlng");
 
         return EventDto.builder()
             .externalId(externalId)
             .eventName(eventName)
             .locationName(locationName)
-            .locationAddress(locationAddress)
+            //.locationAddress(locationAddress)
             .startDate(startDate)
-            .endDate(endDate)
-            .eventUrl(eventUrl)
+            //.endDate(endDate)
+            //.eventUrl(eventUrl)
             .imageUrl(imageUrl)
             .serviceName(rootName)
             .coordinates(coordinates)

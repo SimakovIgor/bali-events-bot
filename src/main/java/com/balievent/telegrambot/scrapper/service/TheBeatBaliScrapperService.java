@@ -22,7 +22,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
     public static final int MAX_MONTH_COUNT_WITH_EVENTS = 3;
     private static final By NEXT_MONTH_BUTTON = By.id("evcal_next");
-    private static final By EVENT_CALENDAR_LIST = By.id("evcal_list");
+    private static final By EVENT_CALENDAR_LIST = By.cssSelector(".tbe-date-events-list > .tbe-date-event-item");
     private static final String BY_TOPICS = "./child::*";
 
     private final UpdateEventService updateEventService;
@@ -37,7 +37,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         }
 
         try {
-            final String externalId = child.getAttribute("id");
+            final String externalId = child.getAttribute("data-event-id");
             if (!StringUtils.hasText(externalId)) {
                 log.warn("Empty externalId, skipping this element");
                 return true;
@@ -74,7 +74,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         for (int i = 0; i < parsedEventList.size(); i++) {
             final WebElement event = parsedEventList.get(i);
 
-            if (isChildIdNotExists(event)) {
+                if (isChildIdNotExists(event)) {
                 continue;
             }
 
@@ -86,7 +86,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     }
 
     private List<WebElement> findCalendarEventList(final WebDriver webDriver) {
-        return webDriver.findElement(EVENT_CALENDAR_LIST).findElements(By.xpath(BY_TOPICS));
+        return webDriver.findElements(EVENT_CALENDAR_LIST);
     }
 
     private void navigateToNextMonth(final WebDriver webDriver) {
@@ -100,7 +100,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private void navigateToWebsite(final WebDriver webDriver) {
         webDriver.get(rootName());
         log.info("Web driver navigated to: {}", rootName());
-        delay(25_000);
+        delay(15_000);
     }
 
     private void delay(final int milliseconds) {
