@@ -1,6 +1,5 @@
 package com.balievent.telegrambot.initializer;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -8,7 +7,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class PostgreSqlInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     private static final DockerImageName IMAGE = DockerImageName.parse("postgres:15.4");
     private static final Network NETWORK = Network.newNetwork();
