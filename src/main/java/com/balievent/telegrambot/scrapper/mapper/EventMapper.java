@@ -2,7 +2,8 @@ package com.balievent.telegrambot.scrapper.mapper;
 
 import com.balievent.telegrambot.model.entity.Event;
 import com.balievent.telegrambot.model.entity.Location;
-import com.balievent.telegrambot.scrapper.dto.EventDto;
+import com.balievent.telegrambot.scrapper.model.EventDto;
+import com.balievent.telegrambot.scrapper.model.RawEventHtml;
 import com.balievent.telegrambot.scrapper.utils.ZoneUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.BeanMapping;
@@ -37,6 +38,28 @@ public interface EventMapper {
     @Mapping(target = "address",
              source = "locationAddress")
     Location toLocation(EventDto eventDto);
+
+    @Mapping(target = "serviceName",
+             ignore = true)
+    @Mapping(target = "locationAddress",
+             ignore = true)
+    @Mapping(target = "externalId",
+             ignore = true)
+    @Mapping(target = "endDate",
+             ignore = true)
+    @Mapping(target = "coordinates",
+             ignore = true)
+    @Mapping(target = "eventName",
+             source = "eventName")
+    @Mapping(target = "startDate",
+             source = "startDate")
+    @Mapping(target = "locationName",
+             source = "locationName")
+    @Mapping(target = "eventUrl",
+             source = "eventUrl")
+    @Mapping(target = "imageUrl",
+             source = "imageUrl")
+    EventDto rawToDto(RawEventHtml raw);
 
     /**
      * Приведение строки формат: "2024-1-1T22:00+08:00" к стандартному LocalDateTime формат: "yyyy-M-d'T'HH:mm".

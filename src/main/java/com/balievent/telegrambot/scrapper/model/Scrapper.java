@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.scrapper.dto;
+package com.balievent.telegrambot.scrapper.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

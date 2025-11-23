@@ -3,6 +3,7 @@ package com.balievent.telegrambot.scrapper.client;
 import com.balievent.telegrambot.scrapper.configuration.TheBeatBaliProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -13,6 +14,7 @@ import java.net.http.HttpResponse;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TheBeatBaliClient {
@@ -51,7 +53,9 @@ public class TheBeatBaliClient {
             .POST(HttpRequest.BodyPublishers.ofString(body))
             .build();
 
+        log.info("HTTP Request: {}", request);
         final var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        log.info("HTTP Response: {}", response);
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Bad status: " + response.statusCode());
@@ -59,6 +63,7 @@ public class TheBeatBaliClient {
 
         return response.body();
     }
+
 }
 
 
