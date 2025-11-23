@@ -13,12 +13,12 @@ public class EventDto {
 
     private String externalId;
     private String eventName;
-    private String locationName;
-    private String locationAddress;
+    private String locationName; // unused
+    private String locationAddress; // unused
     private String startDate;
-    private String endDate;
+    private String endDate; // unused
     private String eventUrl;
     private String imageUrl;
-    private String serviceName;
-    private String coordinates;
+    private String serviceName; // unused
+    private String coordinates; // unused
 }

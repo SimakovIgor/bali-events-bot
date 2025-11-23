@@ -1,4 +1,4 @@
-package com.balievent.telegrambot.model.entity;
+package com.balievent.telegrambot.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

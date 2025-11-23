@@ -29,33 +29,31 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     @Override
     public void process() {
         final var nonce = beatBaliParser.loadCalendarNonce();
-        fetchEventsRange(
-            calendarRangeProperties.getStart(),
-            calendarRangeProperties.getEnd(),
-            nonce
-        );
+        fetchEventsRange(calendarRangeProperties.getStart(), calendarRangeProperties.getEnd(), nonce);
     }
 
     /**
      * Обход диапазона дат, по каждой дате — загрузка всех страниц с событиями
      */
     @SneakyThrows
-    public void fetchEventsRange(LocalDate start,
-                                 LocalDate end,
-                                 String nonce) {
+    private void fetchEventsRange(LocalDate start,
+                                  LocalDate end,
+                                  String nonce) {
         var current = start;
 
         while (!current.isAfter(end)) {
-            final var dateStr = current.format(DATE_TIME_FORMATTER);
-            log.info(">>> Загружаем события на дату: {}", dateStr);
+            final var date = current.format(DATE_TIME_FORMATTER);
+            log.info(">>> Загружаем события на дату: {}", date);
 
             final var events = fetchEventsForDate(current, nonce);
 
             if (events.isEmpty()) {
-                log.info("Нет событий на дату {}", dateStr);
+                log.info("Нет событий на дату {}", date);
             } else {
                 log.info("Получено событий {} шт", events.size());
                 events.forEach(e -> log.info(" - {} @ {}", e.getEventName(), e.getStartDate()));
+
+                // todo: save to db
             }
 
             randomDelay();
