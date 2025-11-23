@@ -34,7 +34,7 @@ public class UpdateEventService {
         eventRepository.findByExternalId(eventDto.getExternalId())
             .ifPresentOrElse(entity -> {
                     entity.setEventName(event.getEventName());
-                    entity.setStartDate(event.getStartDate());
+                    entity.setStartDateTime(event.getStartDateTime());
                     entity.setEventUrl(event.getEventUrl());
                     entity.setImageUrl(event.getImageUrl());
                     entity.setServiceName(event.getServiceName());

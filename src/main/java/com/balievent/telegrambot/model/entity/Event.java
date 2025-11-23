@@ -20,8 +20,11 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,8 +57,16 @@ public class Event {
     @ToString.Exclude
     private Location location;
 
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column(name = "start_date_time")
+    private OffsetDateTime startDateTime;
+
+    @Column(name = "create_date_time")
+    @CreationTimestamp
+    private Instant createDateTime;
+
+    @Column(name = "update_date_time")
+    @UpdateTimestamp
+    private Instant updateDateTime;
 
     @Column(name = "event_url")
     private String eventUrl;

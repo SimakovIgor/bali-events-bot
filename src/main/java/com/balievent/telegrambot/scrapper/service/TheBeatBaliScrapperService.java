@@ -1,5 +1,8 @@
 package com.balievent.telegrambot.scrapper.service;
 
+import com.balievent.telegrambot.scrapper.client.TheBeatBaliClient;
+import com.balievent.telegrambot.scrapper.client.TheBeatBaliParser;
+import com.balievent.telegrambot.scrapper.configuration.CalendarRangeProperties;
 import com.balievent.telegrambot.scrapper.dto.EventDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,20 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 @RequiredArgsConstructor
@@ -30,20 +24,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class TheBeatBaliScrapperService implements ScrapperService {
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final String WP_ADMIN_ADMIN_AJAX_PHP = "https://thebeatbali.com/wp-admin/admin-ajax.php";
-    public static final String COM_BALI_EVENTS = "https://thebeatbali.com/bali-events/";
-    // Ищем именно nonce внутри tbe_calendar_ajax
-    public static final Pattern PATTERN = Pattern.compile("var\\s+tbe_calendar_ajax\\s*=\\s*\\{[^}]*\"nonce\":\"([^\"]+)\"", Pattern.DOTALL);
-    public final HttpClient httpClient = HttpClient.newHttpClient();
 
     private final ObjectMapper objectMapper;
+    private final CalendarRangeProperties calendarRangeProperties;
+    private final TheBeatBaliClient beatBaliClientClient;
+    private final TheBeatBaliParser beatBaliParser;
 
     @Override
     public void process() {
-        final var nonce = loadCalendarNonce();
+        final var nonce = beatBaliParser.loadCalendarNonce();
         fetchEventsRange(
-            LocalDate.of(2025, 11, 1),
-            LocalDate.of(2025, 11, 30),
+            calendarRangeProperties.getStart(),
+            calendarRangeProperties.getEnd(),
             nonce
         );
     }
@@ -125,53 +117,6 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         return result;
     }
 
-    public String extractHtmlContent(String json) throws Exception {
-        final var root = objectMapper.readTree(json);
-        final var contentNode = root.path("data").path("content");
-
-        if (contentNode.isMissingNode() || contentNode.isNull()) {
-            throw new IllegalStateException("No data.content in response");
-        }
-
-        return contentNode.asText(); // здесь HTML с дивами tbe-date-event-item
-    }
-
-    /**
-     * HTTP-запрос за событиями для конкретной даты и страницы
-     */
-    @SneakyThrows
-    public String loadEventsJson(String date,
-                                 String nonce,
-                                 int page,
-                                 boolean loadMore) {
-
-        final var body = "action=" + URLEncoder.encode("tbe_get_date_events", UTF_8)
-            + "&nonce=" + URLEncoder.encode(nonce, UTF_8)
-            + "&date=" + URLEncoder.encode(date, UTF_8)
-            + "&show_past=yes"
-            + "&page=" + page
-            + "&load_more=" + loadMore
-            + "&filters%5Bcategory%5D="
-            + "&filters%5Bvenue%5D="
-            + "&filters%5Blocation%5D="
-            + "&filters%5Bshow_past%5D=yes";
-
-        final var request = HttpRequest.newBuilder()
-            .uri(URI.create(WP_ADMIN_ADMIN_AJAX_PHP))
-            .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-            .header("Accept", "application/json, */*")
-            .POST(HttpRequest.BodyPublishers.ofString(body))
-            .build();
-
-        final var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("Bad status: " + response.statusCode());
-        }
-
-        return response.body();
-    }
-
     /**
      * Разбор JSON-ответа: достаём HTML content + has_more + count
      */
@@ -201,7 +146,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
         while (true) {
             log.info("Загружаем события на дату {} страница {}", dateStr, page);
 
-            final var json = loadEventsJson(dateStr, nonce, page, loadMore);
+            final var json = beatBaliClientClient.loadEventsJson(dateStr, nonce, page, loadMore);
             final var eventsPage = parseEventsPage(json);
 
             if (eventsPage.content() == null || eventsPage.content().isBlank()) {
@@ -228,37 +173,6 @@ public class TheBeatBaliScrapperService implements ScrapperService {
             randomDelay();
         }
         return allEvents;
-    }
-
-    private String extractNonceFromScript(String scriptContent) {
-        final Matcher matcher = PATTERN.matcher(scriptContent);
-
-        if (matcher.find()) {
-            final var nonce = matcher.group(1);
-            log.info("Nonce успешно найден: {}", nonce);
-            return nonce;
-        }
-
-        log.info("Nonce не найден в скрипте tbe_calendar_ajax (длина скрипта = {} символов)", scriptContent.length());
-
-        throw new IllegalStateException("Nonce not found in tbe_calendar_ajax script");
-    }
-
-    @SneakyThrows
-    public String loadCalendarNonce() {
-        final var doc = Jsoup.connect(COM_BALI_EVENTS)
-            .userAgent("Mozilla/5.0")   // чтобы не казаться ботом
-            .timeout(10_000)
-            .get();
-
-        final var script = doc.getElementById("tbe-calendar-js-extra");
-
-        if (script == null) {
-            throw new IllegalStateException("Script with id 'tbe-calendar-js-extra' not found");
-        }
-
-        final var scriptContent = script.html();
-        return extractNonceFromScript(scriptContent);
     }
 
     // простая обёртка под страницу событий из JSON

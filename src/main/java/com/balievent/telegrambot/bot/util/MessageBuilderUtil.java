@@ -10,8 +10,7 @@ public class MessageBuilderUtil {
         final StringBuilder result = new StringBuilder();
 
         final String line = event.getEventName() + "\n\n"
-            + "📅 Date: " + event.getStartDate() + " "
-            + event.getStartDate() + "\n"
+            + "📅 Date: " + event.getStartDateTime() + "\n"
             + "🏠 Place: " + event.getLocation().getId() + "\n\n"
             + "📍 Address: " + event.getLocation().getAddress() + "\n";
 
