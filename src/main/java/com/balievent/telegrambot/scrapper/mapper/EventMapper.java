@@ -1,34 +1,39 @@
 package com.balievent.telegrambot.scrapper.mapper;
 
-import com.balievent.telegrambot.model.entity.Event;
-import com.balievent.telegrambot.model.entity.Location;
+import com.balievent.telegrambot.entity.Event;
+import com.balievent.telegrambot.entity.Location;
 import com.balievent.telegrambot.scrapper.model.EventDto;
 import com.balievent.telegrambot.scrapper.model.RawEventHtml;
-import com.balievent.telegrambot.scrapper.utils.ZoneUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 @Mapper(config = MapperConfiguration.class)
 public interface EventMapper {
 
-    DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-M-d'T'HH:mm");
+    DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
 
     @Mapping(target = "userProfileEventList",
              ignore = true)
     @Mapping(target = "updateDateTime",
              ignore = true)
-    @Mapping(target = "startDateTime",
-             expression = "java(toOffsetDateTime(eventDto.getStartDate()))")
     @Mapping(target = "createDateTime",
              ignore = true)
+    @Mapping(target = "id",
+             ignore = true)
+    @Mapping(target = "location",
+             source = "location")
+    @Mapping(target = "startDateTime",
+             expression = "java(mapStartDateTime(eventDto))")
     Event toEvent(EventDto eventDto,
                   Location location);
 
@@ -50,30 +55,28 @@ public interface EventMapper {
     @Mapping(target = "coordinates",
              ignore = true)
     @Mapping(target = "eventName",
-             source = "eventName")
-    @Mapping(target = "startDate",
-             source = "startDate")
+             source = "raw.eventName")
+    @Mapping(target = "time",
+             source = "raw.time")
     @Mapping(target = "locationName",
-             source = "locationName")
+             source = "raw.locationName")
     @Mapping(target = "eventUrl",
-             source = "eventUrl")
+             source = "raw.eventUrl")
     @Mapping(target = "imageUrl",
-             source = "imageUrl")
-    EventDto rawToDto(RawEventHtml raw);
+             source = "raw.imageUrl")
+    @Mapping(target = "date",
+             source = "date")
+    EventDto rawToDto(RawEventHtml raw,
+                      LocalDate date);
 
-    /**
-     * Приведение строки формат: "2024-1-1T22:00+08:00" к стандартному LocalDateTime формат: "yyyy-M-d'T'HH:mm".
-     *
-     * @param fromDateTime - строка формат: "2024-1-1T22:00+08:00"
-     * @return - LocalDateTime
-     */
     @Nullable
-    @Named("toOffsetDateTime")
-    default OffsetDateTime toOffsetDateTime(final String fromDateTime) {
-        if (StringUtils.isEmpty(fromDateTime)) {
+    @Named("mapStartDateTime")
+    default LocalDateTime mapStartDateTime(EventDto eventDto) {
+        if (StringUtils.isEmpty(eventDto.getTime())) {
             return null;
         }
-        LocalDateTime ldt = LocalDateTime.parse(fromDateTime);
-        return ZoneUtils.toBaliOffsetDateTime(ldt);
+
+        final var time = LocalTime.parse(eventDto.getTime(), FORMATTER);
+        return LocalDateTime.of(eventDto.getDate(), time);
     }
 }

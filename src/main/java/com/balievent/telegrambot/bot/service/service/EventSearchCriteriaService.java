@@ -1,9 +1,9 @@
 package com.balievent.telegrambot.bot.service.service;
 
 import com.balievent.telegrambot.bot.constant.TelegramButton;
+import com.balievent.telegrambot.entity.EventSearchCriteria;
 import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;
-import com.balievent.telegrambot.model.entity.EventSearchCriteria;
 import com.balievent.telegrambot.repository.EventSearchCriteriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventSearchCriteriaService {
+
     private final EventSearchCriteriaRepository eventSearchCriteriaRepository;
 
     @Transactional
@@ -60,7 +61,8 @@ public class EventSearchCriteriaService {
     }
 
     @Transactional
-    public void saveOrUpdateEventSearchCriteria(final Long chatId, final List<String> locationNameList) {
+    public void saveOrUpdateEventSearchCriteria(final Long chatId,
+                                                final List<String> locationNameList) {
         eventSearchCriteriaRepository.findByChatId(chatId)
             .ifPresentOrElse(eventSearchCriteria1 -> {
                 eventSearchCriteria1.setLocationNameList(locationNameList);

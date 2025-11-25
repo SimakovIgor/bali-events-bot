@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.bot.service.service;
 
 import com.balievent.telegrambot.bot.constant.TelegramButton;
-import com.balievent.telegrambot.model.entity.Event;
+import com.balievent.telegrambot.entity.Event;
 import com.balievent.telegrambot.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

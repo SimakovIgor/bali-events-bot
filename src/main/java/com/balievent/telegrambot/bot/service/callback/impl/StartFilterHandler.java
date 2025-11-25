@@ -10,7 +10,7 @@ import com.balievent.telegrambot.bot.constant.TgBotConstants;
 import com.balievent.telegrambot.bot.service.callback.ButtonCallbackHandler;
 import com.balievent.telegrambot.bot.service.service.EventSearchCriteriaService;
 import com.balievent.telegrambot.bot.util.KeyboardUtil;
-import com.balievent.telegrambot.model.entity.Location;
+import com.balievent.telegrambot.entity.Location;
 import com.balievent.telegrambot.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

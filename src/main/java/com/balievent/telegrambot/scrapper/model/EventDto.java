@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,10 +17,11 @@ public class EventDto {
     private String eventName;
     private String locationName; // unused
     private String locationAddress; // unused
-    private String startDate;
+    private String time;
     private String endDate; // unused
     private String eventUrl;
     private String imageUrl;
     private String serviceName; // unused
     private String coordinates; // unused
+    private LocalDate date;
 }

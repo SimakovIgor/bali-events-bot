@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.bot.util;
 
 import com.balievent.telegrambot.bot.constant.TelegramButton;
-import com.balievent.telegrambot.model.entity.Event;
+import com.balievent.telegrambot.entity.Event;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;

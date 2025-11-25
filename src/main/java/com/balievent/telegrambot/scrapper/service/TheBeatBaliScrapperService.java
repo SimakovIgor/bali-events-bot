@@ -25,6 +25,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     private final CalendarRangeProperties calendarRangeProperties;
     private final TheBeatBaliClient beatBaliClientClient;
     private final TheBeatBaliParser beatBaliParser;
+    private final UpdateEventService updateEventService;
 
     @Override
     public void process() {
@@ -35,7 +36,6 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     /**
      * Обход диапазона дат, по каждой дате — загрузка всех страниц с событиями
      */
-    @SneakyThrows
     private void fetchEventsRange(LocalDate start,
                                   LocalDate end,
                                   String nonce) {
@@ -51,7 +51,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
                 log.info("Нет событий на дату {}", date);
             } else {
                 log.info("Получено событий {} шт", events.size());
-                events.forEach(e -> log.info(" - {} @ {}", e.getEventName(), e.getStartDate()));
+                events.forEach(e -> log.info(" - {} @ {}", e.getEventName(), e.getTime()));
 
                 // todo: save to db
             }
@@ -89,7 +89,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
                 break;
             }
 
-            final var pageEvents = beatBaliParser.parseEventsFromHtml(eventsPage.content());
+            final var pageEvents = beatBaliParser.parseEventsFromHtml(eventsPage.content(), date);
             if (pageEvents.isEmpty()) {
                 log.info("Нет событий в HTML для даты {} страницы {}, прекращаем загрузку", dateStr, page);
                 break;
@@ -97,6 +97,7 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
             log.info("Получено событий на дату {} страница {}: {}", dateStr, page, pageEvents.size());
             allEvents.addAll(pageEvents);
+            allEvents.forEach(updateEventService::saveOrUpdate);
 
             if (!eventsPage.hasMore()) {
                 log.info("has_more=false для даты {}, дальше страниц нет", dateStr);

@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.scrapper.service;
 
-import com.balievent.telegrambot.model.entity.Event;
-import com.balievent.telegrambot.model.entity.Location;
+import com.balievent.telegrambot.entity.Event;
+import com.balievent.telegrambot.entity.Location;
 import com.balievent.telegrambot.repository.EventRepository;
 import com.balievent.telegrambot.repository.LocationRepository;
 import com.balievent.telegrambot.scrapper.mapper.EventMapper;
@@ -31,13 +31,12 @@ public class UpdateEventService {
 
         final Event event = eventMapper.toEvent(eventDto, location);
 
-        eventRepository.findByExternalId(eventDto.getExternalId())
+        eventRepository.findByEventUrl(eventDto.getExternalId())
             .ifPresentOrElse(entity -> {
                     entity.setEventName(event.getEventName());
                     entity.setStartDateTime(event.getStartDateTime());
                     entity.setEventUrl(event.getEventUrl());
                     entity.setImageUrl(event.getImageUrl());
-                    entity.setServiceName(event.getServiceName());
                     entity.setCoordinates(event.getCoordinates());
 
                     if (!Objects.equals(entity.getLocation(), event.getLocation())) {

@@ -4,7 +4,7 @@ import com.balievent.telegrambot.bot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.bot.service.MyTelegramBot;
 import com.balievent.telegrambot.bot.service.service.EventService;
 import com.balievent.telegrambot.bot.service.service.UserProfileService;
-import com.balievent.telegrambot.model.entity.UserProfile;
+import com.balievent.telegrambot.entity.UserProfile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.bot.util;
 
-import com.balievent.telegrambot.model.entity.Event;
+import com.balievent.telegrambot.entity.Event;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

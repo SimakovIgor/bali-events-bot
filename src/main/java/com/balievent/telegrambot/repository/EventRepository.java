@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.repository;
 
-import com.balievent.telegrambot.model.entity.Event;
+import com.balievent.telegrambot.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.OffsetDateTime;
@@ -14,4 +14,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Optional<Event> findByExternalId(String externalId);
 
+    Optional<Event> findByEventUrl(String eventUrl);
 }

@@ -4,7 +4,7 @@ import com.balievent.telegrambot.bot.constant.TelegramButton;
 import com.balievent.telegrambot.bot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.bot.constant.TgBotConstants;
 import com.balievent.telegrambot.bot.util.KeyboardUtil;
-import com.balievent.telegrambot.model.entity.UserProfile;
+import com.balievent.telegrambot.entity.UserProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

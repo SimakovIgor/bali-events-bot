@@ -1,8 +1,8 @@
 package com.balievent.telegrambot.bot.service.service;
 
+import com.balievent.telegrambot.entity.UserProfile;
 import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;
-import com.balievent.telegrambot.model.entity.UserProfile;
 import com.balievent.telegrambot.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
+
     private final UserProfileRepository userProfileRepository;
 
     public UserProfile getUserData(final Long chatId) {
@@ -34,13 +35,15 @@ public class UserProfileService {
     }
 
     @Transactional
-    public void updateLastBotMessageId(final Integer messageId, final Long chatId) {
+    public void updateLastBotMessageId(final Integer messageId,
+                                       final Long chatId) {
         final UserProfile userProfile = getUserData(chatId);
         userProfile.setLastBotMessageId(messageId);
     }
 
     @Transactional
-    public void saveUserMessageId(final Integer messageId, final Long chatId) {
+    public void saveUserMessageId(final Integer messageId,
+                                  final Long chatId) {
         final UserProfile userProfile = getUserData(chatId);
         userProfile.setLastUserMessageId(messageId);
     }

@@ -24,7 +24,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class Event {
     private Location location;
 
     @Column(name = "start_date_time")
-    private OffsetDateTime startDateTime;
+    private LocalDateTime startDateTime;
 
     @Column(name = "create_date_time")
     @CreationTimestamp
@@ -73,10 +73,6 @@ public class Event {
 
     @Column(name = "image_url")
     private String imageUrl;
-
-    @Column(name = "service_name")
-    private String serviceName;
-
     // todo: use PostGIS to store geo
     //-8.848251098125878,115.16050894111189
     @Column(name = "coordinates")

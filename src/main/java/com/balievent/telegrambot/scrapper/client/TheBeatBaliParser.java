@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -66,11 +67,10 @@ public class TheBeatBaliParser {
     /**
      * Парсинг HTML-блока с событиями
      */
-    public List<EventDto> parseEventsFromHtml(String html) {
+    public List<EventDto> parseEventsFromHtml(String html,
+                                              LocalDate date) {
         final var doc = Jsoup.parse(html);
-
         final var events = doc.select(".tbe-date-events-list > .tbe-date-event-item");
-
         final List<EventDto> result = new ArrayList<>();
 
         for (var e : events) {
@@ -81,7 +81,7 @@ public class TheBeatBaliParser {
                 getAttr(e, ".tbe-event-actions a", "href"),
                 getAttr(e, ".tbe-event-featured-img", "src")
             );
-            result.add(eventMapper.rawToDto(raw));
+            result.add(eventMapper.rawToDto(raw, date));
         }
 
         return result;

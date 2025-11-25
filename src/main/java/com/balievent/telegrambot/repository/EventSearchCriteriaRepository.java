@@ -1,6 +1,6 @@
 package com.balievent.telegrambot.repository;
 
-import com.balievent.telegrambot.model.entity.EventSearchCriteria;
+import com.balievent.telegrambot.entity.EventSearchCriteria;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,12 +1,12 @@
 package com.balievent.telegrambot.bot.service.service;
 
 import com.balievent.telegrambot.bot.constant.Settings;
+import com.balievent.telegrambot.entity.Event;
+import com.balievent.telegrambot.entity.UserProfile;
+import com.balievent.telegrambot.entity.UserProfileEvent;
+import com.balievent.telegrambot.entity.UserProfileEventKey;
 import com.balievent.telegrambot.exceptions.ErrorCode;
 import com.balievent.telegrambot.exceptions.ServiceException;
-import com.balievent.telegrambot.model.entity.Event;
-import com.balievent.telegrambot.model.entity.UserProfile;
-import com.balievent.telegrambot.model.entity.UserProfileEvent;
-import com.balievent.telegrambot.model.entity.UserProfileEventKey;
 import com.balievent.telegrambot.repository.UserProfileEventRepository;
 import com.balievent.telegrambot.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserProfileEventService {
+
     private final UserProfileEventRepository userProfileEventRepository;
     private final UserProfileRepository userProfileRepository;
 
     @Transactional
-    public void saveUserEvents(final List<Event> eventList, final Long chatId) {
+    public void saveUserEvents(final List<Event> eventList,
+                               final Long chatId) {
         final UserProfile userProfile = userProfileRepository.findById(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
 

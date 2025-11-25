@@ -1,7 +1,7 @@
 package com.balievent.telegrambot.repository;
 
-import com.balievent.telegrambot.model.entity.UserProfileEvent;
-import com.balievent.telegrambot.model.entity.UserProfileEventKey;
+import com.balievent.telegrambot.entity.UserProfileEvent;
+import com.balievent.telegrambot.entity.UserProfileEventKey;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
