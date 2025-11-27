@@ -32,7 +32,7 @@ public class EventSearchCriteriaService {
         final EventSearchCriteria eventSearchCriteria = eventSearchCriteriaRepository.findByChatId(chatId)
             .orElseThrow(() -> new ServiceException(ErrorCode.ERR_CODE_999));
 
-        eventSearchCriteria.toggleLocationName(locationName); // сохраняем список локаций
+        eventSearchCriteria.toggleLocationName(locationName);
         return eventSearchCriteria;
     }
 
@@ -64,9 +64,9 @@ public class EventSearchCriteriaService {
     public void saveOrUpdateEventSearchCriteria(final Long chatId,
                                                 final List<String> locationNameList) {
         eventSearchCriteriaRepository.findByChatId(chatId)
-            .ifPresentOrElse(eventSearchCriteria1 -> {
-                eventSearchCriteria1.setLocationNameList(locationNameList);
-                eventSearchCriteria1.setDateFilter("");
+            .ifPresentOrElse(searchCriteria -> {
+                searchCriteria.setLocationNameList(locationNameList);
+                searchCriteria.setDateFilter("");
             }, () -> eventSearchCriteriaRepository.save(EventSearchCriteria.builder()
                 .chatId(chatId)
                 .build()));

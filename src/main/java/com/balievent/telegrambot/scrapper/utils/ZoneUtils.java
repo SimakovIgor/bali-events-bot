@@ -24,7 +24,7 @@ public final class ZoneUtils {
      * переносим его через ZonedDateTime.
      */
     @Nullable
-    public static LocalDateTime toBali(LocalDateTime localDateTime) {
+    public static LocalDateTime toBali(final LocalDateTime localDateTime) {
         if (localDateTime == null) {
             return null;
         }
@@ -38,7 +38,7 @@ public final class ZoneUtils {
      * Парсит строку в LocalDateTime и трактует её как локальную для Бали
      */
     @Nullable
-    public static LocalDateTime parseToBaliLocal(String dateTimeString) {
+    public static LocalDateTime parseToBaliLocal(final String dateTimeString) {
         if (dateTimeString == null || dateTimeString.isBlank()) {
             return null;
         }

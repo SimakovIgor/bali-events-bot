@@ -50,8 +50,7 @@ com:
         base_url: "https://thebeatbali.com"
     calendar:
       range:
-        start: 2025-11-01
-        end: 2025-11-30
+        end: 2025-12-03
     bot:
       token: 6711002396:AAGKVf9gFAMbiJuW0vtjuu4FSbJr_F9r1hM
       username: test_me_bali_sima_bot

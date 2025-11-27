@@ -2,6 +2,7 @@ package com.balievent.telegrambot.scrapper.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,7 +18,7 @@ public class SchedulerService {
      * Запускаем задачу каждые 10 часов.
      * Логика работы программы начинается отсюда
      */
-    //@Scheduled(fixedDelay = 36_000_000L)
+    @Scheduled(fixedDelay = 36_000_000L)
     public void scheduleTask() {
 
         log.info("Scheduled task started!");

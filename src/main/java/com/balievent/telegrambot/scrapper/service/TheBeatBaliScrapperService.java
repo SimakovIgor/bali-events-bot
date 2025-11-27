@@ -30,15 +30,15 @@ public class TheBeatBaliScrapperService implements ScrapperService {
     @Override
     public void process() {
         final var nonce = beatBaliParser.loadCalendarNonce();
-        fetchEventsRange(calendarRangeProperties.getStart(), calendarRangeProperties.getEnd(), nonce);
+        fetchEventsRange(LocalDate.now(), calendarRangeProperties.getEnd(), nonce);
     }
 
     /**
      * Обход диапазона дат, по каждой дате — загрузка всех страниц с событиями
      */
-    private void fetchEventsRange(LocalDate start,
-                                  LocalDate end,
-                                  String nonce) {
+    private void fetchEventsRange(final LocalDate start,
+                                  final LocalDate end,
+                                  final String nonce) {
         var current = start;
 
         while (!current.isAfter(end)) {
@@ -63,15 +63,15 @@ public class TheBeatBaliScrapperService implements ScrapperService {
 
     @SneakyThrows
     private void randomDelay() {
-        int delay = ThreadLocalRandom.current().nextInt(820, 1630);
+        final var delay = ThreadLocalRandom.current().nextInt(820, 1630);
         Thread.sleep(delay);
     }
 
     /**
      * Загрузка всех событий за один день с учётом пагинации (page / has_more)
      */
-    public List<EventDto> fetchEventsForDate(LocalDate date,
-                                             String nonce) {
+    public List<EventDto> fetchEventsForDate(final LocalDate date,
+                                             final String nonce) {
         final List<EventDto> allEvents = new ArrayList<>();
         int page = 1;
         boolean loadMore = false;

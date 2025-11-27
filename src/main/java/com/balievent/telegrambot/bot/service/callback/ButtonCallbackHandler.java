@@ -8,6 +8,7 @@ import com.balievent.telegrambot.bot.service.service.UserProfileEventService;
 import com.balievent.telegrambot.bot.util.KeyboardUtil;
 import com.balievent.telegrambot.bot.util.MessageBuilderUtil;
 import com.balievent.telegrambot.entity.Event;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.List;
 @Service
 @Slf4j
 public abstract class ButtonCallbackHandler {
+
     @Autowired
     protected MyTelegramBot myTelegramBot;
     @Autowired
@@ -36,11 +38,8 @@ public abstract class ButtonCallbackHandler {
         return linkPreviewOptions;
     }
 
-    public abstract CallbackHandlerType getCallbackHandlerType();
-
-    public abstract void handle(Update update) throws TelegramApiException;
-
-    private List<SendMessage> prepareSendMessageList(final Long chatId, final List<Event> eventList) {
+    private static List<SendMessage> prepareSendMessageList(final Long chatId,
+                                                            final List<Event> eventList) {
         return eventList
             .stream()
             .map(event -> SendMessage.builder()
@@ -53,30 +52,42 @@ public abstract class ButtonCallbackHandler {
             .toList();
     }
 
-    //todo: вынести и использовать через композицию, а не через наследование
-    protected void sendNextUnseenEvents(final Long chatId)
-        throws TelegramApiException, InterruptedException {
+    public abstract CallbackHandlerType getCallbackHandlerType();
+
+    public abstract void handle(Update update) throws TelegramApiException;
+
+    // todo: вынести и использовать через композицию, а не через наследование
+    @SneakyThrows
+    protected void sendNextUnseenEvents(final Long chatId) {
 
         final List<Event> nextUnseenEvents = userProfileEventService.findNextUnseenEvents(chatId);
         final List<SendMessage> sendMessageList = prepareSendMessageList(chatId, nextUnseenEvents);
 
-        final Message firstMessage = myTelegramBot.execute(sendMessageList.getFirst());
-        for (int i = 1; i < sendMessageList.size(); i++) {
+        Message firstSentMessage = null;
+        for (int i = 0; i < sendMessageList.size(); i++) {
             final SendMessage sendMessage = sendMessageList.get(i);
-            myTelegramBot.execute(sendMessage);
+            final Message sent = myTelegramBot.execute(sendMessage);
 
-            //todo: refactor this with ScheduledThreadPoolExecutor
+            if (i == 0) {
+                firstSentMessage = sent;
+            }
+
+            // todo: refactor this with ScheduledThreadPoolExecutor
             Thread.sleep(1000);
         }
 
         final int unseenCount = userProfileEventService.findUnseenCount(chatId);
-
         final int lastUnseenPart = Math.min(unseenCount, Settings.SHOW_EVENTS_COUNT);
-        myTelegramBot.execute(SendMessage.builder()
+
+        final SendMessage.SendMessageBuilder builder = SendMessage.builder()
             .chatId(chatId)
-            .replyToMessageId(firstMessage.getMessageId())
             .text(TgBotConstants.MORE_OPTIONS_TEMPLATE.formatted(unseenCount))
-            .replyMarkup(KeyboardUtil.getShowMoreOptionsKeyboard(lastUnseenPart))
-            .build());
+            .replyMarkup(KeyboardUtil.getShowMoreOptionsKeyboard(lastUnseenPart));
+
+        if (firstSentMessage != null) {
+            builder.replyToMessageId(firstSentMessage.getMessageId());
+        }
+
+        myTelegramBot.execute(builder.build());
     }
 }

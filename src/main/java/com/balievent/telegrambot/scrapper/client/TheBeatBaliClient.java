@@ -23,10 +23,10 @@ public class TheBeatBaliClient {
     private final HttpClient httpClient = HttpClient.newBuilder()
         .build();
 
-    private static String buildRequestBody(String nonce,
-                                           String date,
-                                           int page,
-                                           boolean loadMore) {
+    private static String buildRequestBody(final String nonce,
+                                           final String date,
+                                           final int page,
+                                           final boolean loadMore) {
         return "action=" + URLEncoder.encode("tbe_get_date_events", UTF_8)
             + "&nonce=" + URLEncoder.encode(nonce, UTF_8)
             + "&date=" + URLEncoder.encode(date, UTF_8)
@@ -40,10 +40,10 @@ public class TheBeatBaliClient {
     }
 
     @SneakyThrows
-    public String loadEventsJson(String date,
-                                 String nonce,
-                                 int page,
-                                 boolean loadMore) {
+    public String loadEventsJson(final String date,
+                                 final String nonce,
+                                 final int page,
+                                 final boolean loadMore) {
         final var body = buildRequestBody(nonce, date, page, loadMore);
 
         final var request = HttpRequest.newBuilder()

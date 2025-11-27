@@ -5,16 +5,15 @@ import com.balievent.telegrambot.scrapper.mapper.EventMapper;
 import com.balievent.telegrambot.scrapper.model.EventDto;
 import com.balievent.telegrambot.scrapper.model.EventsPage;
 import com.balievent.telegrambot.scrapper.model.RawEventHtml;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +49,7 @@ public class TheBeatBaliParser {
         return extractNonceFromScript(scriptContent);
     }
 
-    private String extractNonceFromScript(String scriptContent) {
+    private String extractNonceFromScript(final String scriptContent) {
         final Matcher matcher = PATTERN.matcher(scriptContent);
 
         if (matcher.find()) {
@@ -64,41 +63,34 @@ public class TheBeatBaliParser {
         throw new IllegalStateException("Nonce not found in tbe_calendar_ajax script");
     }
 
-    /**
-     * Парсинг HTML-блока с событиями
-     */
-    public List<EventDto> parseEventsFromHtml(String html,
-                                              LocalDate date) {
+    public List<EventDto> parseEventsFromHtml(final String html,
+                                              final LocalDate date) {
         final var doc = Jsoup.parse(html);
         final var events = doc.select(".tbe-date-events-list > .tbe-date-event-item");
-        final List<EventDto> result = new ArrayList<>();
-
-        for (var e : events) {
-            RawEventHtml raw = new RawEventHtml(
+        return events.stream()
+            .map(e -> new RawEventHtml(
                 getText(e, ".tbe-event-title"),
                 getText(e, ".tbe-event-duration"),
                 getText(e, ".tbe-event-venue"),
                 getAttr(e, ".tbe-event-actions a", "href"),
                 getAttr(e, ".tbe-event-featured-img", "src")
-            );
-            result.add(eventMapper.rawToDto(raw, date));
-        }
-
-        return result;
+            ))
+            .map(raw -> eventMapper.rawToDto(raw, date))
+            .toList();
     }
 
-    private String getText(org.jsoup.nodes.Element el,
-                           String selector) {
-        var found = el.selectFirst(selector);
+    private String getText(final Element el,
+                           final String selector) {
+        final var found = el.selectFirst(selector);
         return found != null
             ? found.text()
             : null;
     }
 
-    private String getAttr(org.jsoup.nodes.Element el,
-                           String selector,
-                           String attr) {
-        var found = el.selectFirst(selector);
+    private String getAttr(final Element el,
+                           final String selector,
+                           final String attr) {
+        final var found = el.selectFirst(selector);
         return found != null
             ? found.attr(attr)
             : null;
@@ -108,9 +100,9 @@ public class TheBeatBaliParser {
      * Разбор JSON-ответа: достаём HTML content + has_more + count
      */
     @SneakyThrows
-    public EventsPage parseEventsPage(String json) {
-        final JsonNode root = objectMapper.readTree(json);
-        final JsonNode data = root.path("data");
+    public EventsPage parseEventsPage(final String json) {
+        final var root = objectMapper.readTree(json);
+        final var data = root.path("data");
 
         return new EventsPage(
             data.path("content").asText(""),

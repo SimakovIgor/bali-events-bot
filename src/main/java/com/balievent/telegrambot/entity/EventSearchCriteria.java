@@ -36,7 +36,9 @@ public class EventSearchCriteria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "chat_id", unique = true, nullable = false)
+    @Column(name = "chat_id",
+            unique = true,
+            nullable = false)
     private Long chatId;
 
     @Column(name = "location_name_list")

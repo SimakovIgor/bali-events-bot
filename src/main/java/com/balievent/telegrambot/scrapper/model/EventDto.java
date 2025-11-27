@@ -21,6 +21,5 @@ public class EventDto {
     private String eventUrl;
     private String imageUrl;
     private String serviceName; // unused
-    private String coordinates; // unused
     private LocalDate date;
 }

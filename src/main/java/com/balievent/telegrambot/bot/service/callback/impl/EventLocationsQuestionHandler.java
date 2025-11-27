@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
+
     private final EventSearchCriteriaService eventSearchCriteriaService;
     private final LocationRepository locationRepository;
 
@@ -50,7 +51,9 @@ public class EventLocationsQuestionHandler extends ButtonCallbackHandler {
         myTelegramBot.execute(editMessageText);
     }
 
-    private EventSearchCriteria chooseLocation(final String selectedLocation, final Long chatId, final List<String> locationIds) {
+    private EventSearchCriteria chooseLocation(final String selectedLocation,
+                                               final Long chatId,
+                                               final List<String> locationIds) {
         if (TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {
             return eventSearchCriteriaService.selectAll(chatId, locationIds);
         } else if (TelegramButton.DESELECT_ALL_LOCATIONS.getCallbackData().equals(selectedLocation)) {

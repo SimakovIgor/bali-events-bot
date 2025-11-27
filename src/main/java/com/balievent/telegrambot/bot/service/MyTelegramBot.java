@@ -25,6 +25,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class MyTelegramBot extends TelegramLongPollingBot {
+
     private final Map<TextMessageHandlerType, TextMessageHandler> textMessageHandlers;
     private final Map<CallbackHandlerType, ButtonCallbackHandler> callbackHandlers;
     private final TelegramBotProperties telegramBotProperties;
@@ -86,18 +87,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         callbackHandlers.get(callbackHandlerType).handle(update);
     }
 
-    //Метод который обрабатывает фильтры по локация
-    //Это исключительно для фильтрации локаций, чтобы не попадать в обработчик кнопок
-    //Сначала обрабатываем копку Next, потом по тексту сообщения
+    // Метод который обрабатывает фильтры по локация
+    // Это исключительно для фильтрации локаций, чтобы не попадать в обработчик кнопок
+    // Сначала обрабатываем копку Next, потом по тексту сообщения
     private boolean eventLocationFilterProcess(final Update update) throws TelegramApiException {
-        //Проверку на MONTH_EVENTS_PAGE делаем отдельно раньше для сценария с выбором локации и нажатии на кнопку Next
+        // Проверку на MONTH_EVENTS_PAGE делаем отдельно раньше для сценария с выбором локации и нажатии на кнопку Next
         //(чтобы не попадать снова в хендлер с выбором локации)
         if (TelegramButton.MONTH_EVENTS_PAGE.getCallbackData().equals(update.getCallbackQuery().getData())) {
             // Попадаем сюда если пользователь выбрал кнопку Next -> MONTH_EVENTS_PAGE
             callbackHandlers.get(CallbackHandlerType.SEND_EVENT_LIST_SERVICE).handle(update);
             return true;
 
-            //Проверка по содержанию сообщения из-за того, что callback с локациями динамический и нельзя на него завязываться
+            // Проверка по содержанию сообщения из-за того, что callback с локациями динамический и нельзя на него завязываться
         } else if (update.getCallbackQuery().getMessage() instanceof Message message
             && TgBotConstants.EVENT_LOCATIONS_QUESTION.equals(message.getText())) {
             callbackHandlers.get(CallbackHandlerType.EVENT_LOCATIONS_SELECTION).handle(update);

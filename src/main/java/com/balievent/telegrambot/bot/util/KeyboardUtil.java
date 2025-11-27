@@ -29,12 +29,6 @@ public class KeyboardUtil {
     }
 
     public static InlineKeyboardMarkup getDetailedEventViewKeyboard(final Event event) {
-        final List<InlineKeyboardButton> inlineKeyboardButtons1 = new ArrayList<>();
-        inlineKeyboardButtons1.add(InlineKeyboardButton.builder()
-            .url(CommonUtil.getGoogleMap(event.getCoordinates()))
-            .text(TelegramButton.DETAILED_EVENT_VIEW_ON_MAP.getButtonText())
-            .build());
-
         final List<InlineKeyboardButton> inlineKeyboardButtons2 = new ArrayList<>();
         inlineKeyboardButtons2.add(InlineKeyboardButton.builder()
             .url(event.getEventUrl())
@@ -42,7 +36,7 @@ public class KeyboardUtil {
             .build());
 
         return InlineKeyboardMarkup.builder()
-            .keyboard(List.of(inlineKeyboardButtons1, inlineKeyboardButtons2))
+            .keyboard(List.of(inlineKeyboardButtons2))
             .build();
     }
 
@@ -126,8 +120,8 @@ public class KeyboardUtil {
 
         for (final String locationId : allLocations) {
             final String selectedIcon = selectedLocations.contains(locationId)
-                                        ? "✅ "
-                                        : "👉 ";
+                ? "✅ "
+                : "👉 ";
 
             row.add(InlineKeyboardButton.builder()
                 .text(selectedIcon + locationId)
@@ -152,7 +146,6 @@ public class KeyboardUtil {
             addNewButton(keyboard, TelegramButton.SELECT_ALL_LOCATIONS.getButtonText(), TelegramButton.SELECT_ALL_LOCATIONS.getCallbackData());
         }
 
-        // Добавляем кнопки "Next"
         addNewButton(keyboard, TelegramButton.FILTER_EVENT_LOCATIONS_COMPLETE.getButtonText(), TelegramButton.FILTER_EVENT_LOCATIONS_COMPLETE.getCallbackData());
 
         return InlineKeyboardMarkup.builder()

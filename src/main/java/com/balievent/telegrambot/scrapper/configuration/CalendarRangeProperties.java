@@ -11,6 +11,5 @@ import java.time.LocalDate;
 @ConfigurationProperties(prefix = "com.balievent.calendar.range")
 public class CalendarRangeProperties {
 
-    private LocalDate start;
     private LocalDate end;
 }

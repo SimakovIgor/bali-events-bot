@@ -37,7 +37,6 @@ public class UpdateEventService {
                     entity.setStartDateTime(event.getStartDateTime());
                     entity.setEventUrl(event.getEventUrl());
                     entity.setImageUrl(event.getImageUrl());
-                    entity.setCoordinates(event.getCoordinates());
 
                     if (!Objects.equals(entity.getLocation(), event.getLocation())) {
                         entity.setLocation(event.getLocation());

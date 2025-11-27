@@ -50,8 +50,6 @@ public interface EventMapper {
              ignore = true)
     @Mapping(target = "endDate",
              ignore = true)
-    @Mapping(target = "coordinates",
-             ignore = true)
     @Mapping(target = "eventName",
              source = "raw.eventName")
     @Mapping(target = "time",
@@ -69,7 +67,7 @@ public interface EventMapper {
 
     @Nullable
     @Named("mapStartDateTime")
-    default LocalDateTime mapStartDateTime(EventDto eventDto) {
+    default LocalDateTime mapStartDateTime(final EventDto eventDto) {
         if (StringUtils.isEmpty(eventDto.getTime())) {
             return null;
         }

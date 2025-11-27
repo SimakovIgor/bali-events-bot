@@ -2,7 +2,6 @@ package com.balievent.telegrambot.bot.service.textmessage;
 
 import com.balievent.telegrambot.bot.constant.TextMessageHandlerType;
 import com.balievent.telegrambot.bot.service.MyTelegramBot;
-import com.balievent.telegrambot.bot.service.service.EventService;
 import com.balievent.telegrambot.bot.service.service.UserProfileService;
 import com.balievent.telegrambot.entity.UserProfile;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +17,9 @@ import java.util.List;
 @Slf4j
 @Service
 public abstract class TextMessageHandler {
+
     @Autowired
     protected MyTelegramBot myTelegramBot;
-    @Autowired
-    protected EventService eventService;
     @Autowired
     protected UserProfileService userProfileService;
 
@@ -29,7 +27,8 @@ public abstract class TextMessageHandler {
 
     public abstract void handle(Update update) throws TelegramApiException;
 
-    protected void clearChat(final Long chatId, final UserProfile userProfile) {
+    protected void clearChat(final Long chatId,
+                             final UserProfile userProfile) {
         final List<Integer> messageIds = userProfileService.getAllMessageIdsForDelete(userProfile);
         if (CollectionUtils.isEmpty(messageIds)) {
             return;
