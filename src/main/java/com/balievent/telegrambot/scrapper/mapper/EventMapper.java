@@ -48,8 +48,6 @@ public interface EventMapper {
              ignore = true)
     @Mapping(target = "locationAddress",
              ignore = true)
-    @Mapping(target = "externalId",
-             ignore = true)
     @Mapping(target = "endDate",
              ignore = true)
     @Mapping(target = "coordinates",

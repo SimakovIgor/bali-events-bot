@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Builder
 public class EventDto {
 
-    private String externalId;
     private String eventName;
     private String locationName; // unused
     private String locationAddress; // unused

@@ -31,7 +31,7 @@ public class UpdateEventService {
 
         final Event event = eventMapper.toEvent(eventDto, location);
 
-        eventRepository.findByEventUrl(eventDto.getExternalId())
+        eventRepository.findByEventUrl(eventDto.getEventUrl())
             .ifPresentOrElse(entity -> {
                     entity.setEventName(event.getEventName());
                     entity.setStartDateTime(event.getStartDateTime());

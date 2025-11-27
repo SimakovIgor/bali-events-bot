@@ -23,7 +23,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +43,6 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "external_id")
-    private String externalId;
-
     @Column(name = "event_name")
     private String eventName;
 
@@ -62,11 +58,11 @@ public class Event {
 
     @Column(name = "create_date_time")
     @CreationTimestamp
-    private Instant createDateTime;
+    private LocalDateTime createDateTime;
 
     @Column(name = "update_date_time")
     @UpdateTimestamp
-    private Instant updateDateTime;
+    private LocalDateTime updateDateTime;
 
     @Column(name = "event_url")
     private String eventUrl;
